@@ -2,7 +2,7 @@
 
 Implemented features are:
 
-1. [Authentication](https://github.com/Boghche/Boghche/web/core/auth)
+1. [Authentication](https://github.com/Boghche/Boghche/tree/master/web/core/auth)
 	1. Group-Permission based Users
 	2. Token base authentications
 	3. APIs are listed below:
