@@ -1,0 +1,4 @@
+{
+	"SQLALCHEMY_DATABASE_URI": "postgres://gomnama:123@localhost/gomnama",
+	"SECRET_KEY": "0c3e5d1c3760ff76f2cfd279d6a9c782a1adfdd0cff340ef"
+}

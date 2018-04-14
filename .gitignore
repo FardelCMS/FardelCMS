@@ -1,0 +1,6 @@
+env/
+venv/
+build/
+source/
+
+*.pyc
