@@ -12,6 +12,7 @@ __all__ = ['User', 'Permission', 'Group', 'RevokedToken', 'setup_permissions']
 def setup_permissions():
     Group.setup_permissions()
     User.setup_permissions()
+    Permission.setup_permissions()
 
 
 class AbstractModelWithPermission():    
@@ -25,13 +26,21 @@ class AbstractModelWithPermission():
                 db.session.commit()
 
 
-class Permission(db.Model):
+class Permission(db.Model, AbstractModelWithPermission):
     __tablename__ = "auth_permissions"
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(64))
     code_name = db.Column(db.String(64), index=True)
 
     groups = db.relationship('Group', secondary='auth_groups_permissions')
+
+    class Meta:
+        permissions = (
+            ('can_get_permissions', 'Can get permissions'),
+        )
+
+    def dict(self):
+        return {'name': self.name, 'code_name':self.code_name}
 
 
 class Group(db.Model, AbstractModelWithPermission):
@@ -44,9 +53,6 @@ class Group(db.Model, AbstractModelWithPermission):
     class Meta:
         permissions = (
             ('can_get_groups', 'Can get groups'),
-            ('can_add_groups', 'Can add groups'),
-            ('can_edit_groups', 'Can edit groups'),
-            ('can_delete_groups', 'Can delete groups'),
         )
 
     def add_permission(self, permission):
@@ -57,6 +63,12 @@ class Group(db.Model, AbstractModelWithPermission):
         if permission in [perm.code_name for perm in self.permissions]:
             return True
         return False
+
+    def dict(self):        
+        return {
+            'id': self.id, 'name':self.name,
+            'permissions': [p.dict() for p in self.permissions]
+        }
 
 
 class GroupPermission(db.Model):
@@ -90,9 +102,6 @@ class User(db.Model, AbstractModelWithPermission):
     class Meta:
         permissions = (
             ('can_get_users', 'Can get users'),
-            ('can_add_users', 'Can add users'),
-            ('can_edit_users', 'Can edit users'),
-            ('can_delete_users', 'Can delete users'),
         )
 
     @property

@@ -23,17 +23,15 @@ def permission_required(permission):
 def staff_required_rest(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if current_user.is_authenticated:
-            if current_user.is_staff or current_user.is_admin:
-                return func(*args, **kwargs)
+        if current_user and (current_user.is_staff or current_user.is_admin):
+            return func(*args, **kwargs)
         return rest_abort(403)
     return wrapper
 
 def admin_required_rest(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if current_user.is_authenticated:
-            if current_user.is_admin:
-                return func(*args, **kwargs)
+        if current_user and current_user.is_admin:
+            return func(*args, **kwargs)
         return rest_abort(403)
     return wrapper
