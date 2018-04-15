@@ -6,6 +6,9 @@ All the endpoints starts with '/api/auth/{function}/'
 
 * url : '/api/auth/register/'
 * content-type: 'application/json'
+
+###### POST
+
 * required arguments:
 	* email
 	* password
@@ -33,6 +36,9 @@ Unsuccessful responses:
 
 * url : '/api/auth/login/'
 * content-type: 'application/json'
+
+###### POST
+
 * required arguments:
 	* email
 	* password
@@ -60,6 +66,8 @@ Unsuccessful responses:
 * content-type: 'application/json'
 * Authorization header with refresh token required
 
+###### POST
+
 ```
 Successful response (200):
 {
@@ -72,6 +80,8 @@ Successful response (200):
 * url : '/api/auth/logout/'
 * content-type: 'application/json'
 * Authorization header with access token required
+
+###### POST
 
 ```
 Successful response (200):
@@ -86,6 +96,8 @@ Successful response (200):
 * content-type: 'application/json'
 * Authorization header with refresh token required
 
+###### POST
+
 ```
 Successful response (200):
 {
@@ -99,6 +111,8 @@ Successful response (200):
 * content-type: 'application/json'
 * Authorization header with access token is optional
 
+###### GET
+
 ```
 Successful response (200):
 {
@@ -111,6 +125,28 @@ Successful response (200):
 ******** OR **********
 {'message':'Not login', 'user':None}
 ```
+
+###### PUT
+
+* To update your user profile
+* Optional fields are
+	* first_name
+	* last_name
+	* email
+	* password
+
+```
+(200): {
+	"message":"Profile successfully updated"
+}
+```
+
+```
+(204): {
+	"message": "No profile to update"
+}
+```
+
 
 ## Errors
 

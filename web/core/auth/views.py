@@ -131,3 +131,20 @@ class ProfileApi(BaseResource):
         if current_user:
             return {"user":current_user.dict()}
         return {"message":"Not login", "user":None}
+
+    def put(self):
+        if current_user:
+            data = request.get_json()
+            fields = {
+                "first_name": data.get('first_name'),
+                "last_name": data.get('last_name'),                
+                "email": data.get('email'),
+                "password": data.get('password'),
+            }
+            for field in fields:
+                if data[field]:
+                    setattr(current_user, field, data[field])
+
+            db.session.commit()
+            return {"message":"Profile successfully updated"}, 200
+        return {"message": "No profile to update"}, 204
