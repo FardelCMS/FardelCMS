@@ -114,4 +114,4 @@ class DeleteBaseResource(GetBaseResource):
                 "message":"%ss successfully deleted, count: %d" % (
                     self.resource_class.__name__, deleteds
                 )}
-        return {"message":"No %s deleted" % self.resource_class.__name__.lower()}, 422
+        return {"message":"No %s deleted" % self.resource_class.__name__.lower()}, 404

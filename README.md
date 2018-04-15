@@ -12,6 +12,8 @@ Implemented features are:
 		4. Logout API
 		6. LogoutRefresh API
 		5. ProfileApi API
+2. Admin Panel
+	1. [Authentication API for admin](https://github.com/Boghche/Boghche/tree/master/web/core/panel/views/AUTHDOC.md)
 
 ## Installation
 

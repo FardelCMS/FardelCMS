@@ -178,3 +178,15 @@ def check_if_token_in_blacklist(decrypted_token):
 @jwt.revoked_token_loader
 def revoked_token_loader():
     return jsonify({'message':'Token has been revoked'}), 401
+
+@jwt.expired_token_loader
+def expired_token_loader():
+    return jsonify({"message": "Token has expired"}), 401
+
+@jwt.invalid_token_loader
+def invalid_token_loader(reason):
+    return jsonify({"message": reason}), 422
+
+@jwt.needs_fresh_token_loader
+def needs_fresh_token_loader():
+    return jsonify({"message": "Fresh token required"}), 401
