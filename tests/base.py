@@ -20,27 +20,50 @@ class BaseTestCase(unittest.TestCase):
             token = self.access_token
         return token
 
-    def post(self, url, data=None, with_token=True, with_rtoken=False):
+    def request(self, method, url, with_token, with_rtoken, data=None):
         token = self.get_token(with_token, with_rtoken)
+        headers = {}
+        data = data or {}
         if with_token or with_rtoken:
             headers = {
                 "Authorization": 'Bearer %s' % token
             }
+        if method == "get":
+            return self.client.get(
+                url, data=json.dumps(data),
+                content_type='application/json',
+                headers=headers
+            )
+        elif method == "post":
             return self.client.post(
                 url, data=json.dumps(data),
                 content_type='application/json',
                 headers=headers
             )
-        return self.client.post(url, data=json.dumps(data),content_type='application/json')
+        elif method == "delete":
+            return self.client.delete(
+                url, data=json.dumps(data),
+                content_type='application/json',
+                headers=headers
+            )            
+        elif method == "put":
+            return self.client.put(
+                url, data=json.dumps(data),
+                content_type='application/json',
+                headers=headers
+            )
 
-    def get(self, url, data=None, with_token=True, with_rtoken=False):
-        token = self.get_token(with_token, with_rtoken)
-        if with_token:
-            headers = {
-                "Authorization": 'Bearer %s' % token
-            }
-            return self.client.get(url, headers=headers)
-        return self.client.get(url)
+    def post(self, url, data=None, with_token=True, with_rtoken=False):
+        return self.request('post', url, with_token, with_rtoken, data=data)
+
+    def get(self, url, with_token=True, with_rtoken=False, data=None):
+        return self.request('get', url, with_token, with_rtoken, data=data)
+
+    def delete(self, url, data=None, with_token=True, with_rtoken=False):
+        return self.request('delete', url, with_token, with_rtoken, data=data)
+
+    def put(self, url, data=None, with_token=True, with_rtoken=False):
+        return self.request('put', url, with_token, with_rtoken, data=data)
 
     def get_json(self, data):
         return json.loads(data)
