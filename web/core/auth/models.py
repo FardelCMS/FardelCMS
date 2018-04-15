@@ -54,7 +54,7 @@ class Group(db.Model, AbstractModelWithPermission):
         self.permissions.append(perm)
 
     def can(self, permission):
-        if permission in [perm.code_name for perm in permissions]:
+        if permission in [perm.code_name for perm in self.permissions]:
             return True
         return False
 
@@ -113,12 +113,18 @@ class User(db.Model, AbstractModelWithPermission):
 
     def set_admin(self):
         self.is_admin = True
+        db.session.commit()
+
+    def set_staff(self):
         self.is_staff = True
+        db.session.commit()
 
     def can(self, permission):
         if self.is_admin:
             return True
-        return self.group.can(permission)
+        elif self.group:
+            return self.group.can(permission)
+        return False
 
     def dict(self):
         obj = {
