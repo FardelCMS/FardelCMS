@@ -16,6 +16,8 @@ class AuthTestCase(BaseTestCase):
     def test_register(self):
         json_data, code = self.register()
         self.assertEqual(json_data['message'], 'Successfully registered')
+        self.assertIsNotNone(json_data['access_token'])
+        self.assertIsNotNone(json_data['refresh_token'])
         self.assertEqual(200, code)
 
         json_data, code = self.register()
