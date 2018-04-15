@@ -12,10 +12,19 @@ All the endpoints starts with '/api/auth/{function}/'
 * responses with access_token + refresh_token
 
 ```
+Successful response (200):
 {
     'message': 'Successfully registered',
 	'access_token': '????',
 	'refresh_token': '????',
+}
+-----------------------
+Unsuccessful responses:
+409: {
+    'message': 'A user with this email already exists.'
+}
+400: {
+	'message':'Unvalid form submitted'
 }
 ```
 
@@ -29,10 +38,19 @@ All the endpoints starts with '/api/auth/{function}/'
 	* password
 
 ```
+Successful response (200):
 {
     'message':'Successfully logined',
 	'access_token': '????',
 	'refresh_token': '????'
+}
+-----------------------
+Unsuccessful responses:
+(400): {
+	'message':'Unvalid form submitted'
+}
+(401): {
+    'message':'Username or password is not correct'
 }
 ```
 
@@ -43,6 +61,7 @@ All the endpoints starts with '/api/auth/{function}/'
 * Authorization header with refresh token required
 
 ```
+Successful response (200):
 {
 	'access_token': '????'
 }
@@ -55,7 +74,10 @@ All the endpoints starts with '/api/auth/{function}/'
 * Authorization header with access token required
 
 ```
-{'message': 'Access token has been revoked'}
+Successful response (200):
+{
+	'message': 'Access token has been revoked'
+}
 ```
 
 ## LogoutRefresh API
@@ -65,7 +87,10 @@ All the endpoints starts with '/api/auth/{function}/'
 * Authorization header with refresh token required
 
 ```
-{'message': 'Refresh token has been revoked'}
+Successful response (200):
+{
+	'message': 'Refresh token has been revoked'
+}
 ```
 
 ## ProfileApi API
@@ -75,6 +100,7 @@ All the endpoints starts with '/api/auth/{function}/'
 * Authorization header with access token is optional
 
 ```
+Successful response (200):
 {
 	"user":
 	{
@@ -84,4 +110,34 @@ All the endpoints starts with '/api/auth/{function}/'
 }
 ******** OR **********
 {'message':'Not login', 'user':None}
+```
+
+## Errors
+
+If a token needs to be refreshed:
+```
+(401): {
+	"message": "Fresh token required"
+}
+```
+
+Invalid token:
+```
+(422): {
+	"message": reason
+}
+```
+
+Expired token:
+```
+(401): {
+	"message": "Token has expired"
+}
+```
+
+Revoked token:
+```
+(401): {
+	'message':'Token has been revoked'
+}
 ```
