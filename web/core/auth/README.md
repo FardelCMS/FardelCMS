@@ -38,7 +38,7 @@ All the endpoints starts with '/api/auth/{function}/'
 
 ## RefreshToken API
 
-* url : '/api/auth/login/'
+* url : '/api/auth/refresh-token/'
 * content-type: 'application/json'
 * Authorization header with refresh token required
 
