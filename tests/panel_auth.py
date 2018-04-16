@@ -130,7 +130,7 @@ class UserApiTestCase(BasePanelTestCase):
         response = self.delete('/api/panel/users/%d/' % user_id)
         json_data = self.get_json(response.data)
         self.assertEqual(json_data['message'], "No user deleted")
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 404)
 
 
 class GroupApiTestCase(BasePanelTestCase):
