@@ -2,7 +2,6 @@ from sqlalchemy import or_
 from flask import render_template, redirect, url_for, jsonify, request, make_response
 
 from flask_restful import Api, abort, reqparse
-from flask_login import login_user, logout_user, login_required
 from flask_jwt_extended import (
     create_access_token, create_refresh_token,
     jwt_required, jwt_refresh_token_required,
