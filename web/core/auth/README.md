@@ -92,7 +92,7 @@ Successful response (200):
 
 ## LogoutRefresh API
 
-* url : '/api/auth/logout/'
+* url : '/api/auth/logout-refresh/'
 * content-type: 'application/json'
 * Authorization header with refresh token required
 
