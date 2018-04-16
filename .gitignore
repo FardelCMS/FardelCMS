@@ -102,3 +102,6 @@ ENV/
 
 # flask migration
 migration/
+
+# upload files
+uploads/

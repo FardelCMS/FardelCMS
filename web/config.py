@@ -1,14 +1,24 @@
+import os 
+
+from pathlib import Path
+
 
 class BaseConfig(object):
     VERSION = "0.1.0"
     MINIFY = False
 
-    SECRET_KEY = 'qt584635@(*$(KC=oijr )*@$*^SAd- okasfoijh*(@Y$*)A)S(+D'
+    SECRET_KEY = 'qt584635@(*$(KC=oijr )*@$*^SAd- okasfoijh*(@Y$*)A)S(+D' # move this to os.environment
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+
+    UPLOAD_FOLDER = Path(__file__).parent.parent / 'uploads'
+
+    ACTIVE_APPS = (
+        # "blog",
+    )
 
     # MAIL_SERVER = ""
     # MAIL_USERNAME = ""
