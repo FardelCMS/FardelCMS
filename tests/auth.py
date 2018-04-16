@@ -70,6 +70,11 @@ class AuthTestCase(BaseTestCase):
         self.assertIsNotNone(json_data['user'])
         self.assertEqual(200, response.status_code)
 
+        response = self.put('/api/auth/profile/', data={'first_name':'test2'})
+        json_data = self.get_json(response.data)
+        self.assertEqual(json_data['user']['first_name'], 'test2')
+        self.assertEqual(200, response.status_code)
+
     def test_refresh_token(self):
         self.register()
         response = self.post('/api/auth/refresh-token/', with_rtoken=True)

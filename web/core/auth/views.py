@@ -123,7 +123,8 @@ class RefreshTokenApi(BaseResource):
 class ProfileApi(BaseResource):
     endpoints = ['/profile/']
     method_decorators = {
-        'get':[jwt_optional]
+        'get':[jwt_optional],
+        'put':[jwt_required]
     }
 
     def get(self):
@@ -141,9 +142,10 @@ class ProfileApi(BaseResource):
                 "password": data.get('password'),
             }
             for field in fields:
-                if data[field]:
+                if data.get(field):
                     setattr(current_user, field, data[field])
 
             db.session.commit()
-            return {"message":"Profile successfully updated"}, 200
+            return {"message":"Profile successfully updated",
+                    'user':current_user.dict()}, 200
         return {"message": "No profile to update"}, 204
