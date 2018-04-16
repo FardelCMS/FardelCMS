@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import request
 from flask_restful import Api, abort
 from flask_jwt_extended import current_user, jwt_required
 
@@ -8,14 +8,14 @@ from web.ext import db
 from .. import mod, staff_required_rest, admin_required_rest, permission_required
 from ...base import BaseResource, GetBaseResource, PostBaseResource, DeleteBaseResource
 
-panel_api = Api(mod)
+panel_auth_api = Api(mod)
 
 panel_decorators = [staff_required_rest, jwt_required]
 
 
 def rest_resource(resource_cls):
     """ Decorator for adding resources to Api App """
-    panel_api.add_resource(resource_cls, *resource_cls.endpoints)
+    panel_auth_api.add_resource(resource_cls, *resource_cls.endpoints)
     return resource_cls
 
 @rest_resource
