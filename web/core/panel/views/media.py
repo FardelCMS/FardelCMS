@@ -32,10 +32,11 @@ def is_safe_path(basedir, path, follow_symlinks=True):
 @rest_resource
 class FileApi(BaseResource):
     endpoints = ['/files/']
-    # method_decorators = {
-    #     'post': [permission_required('can_create_files')] + panel_decorators,
-    #     'delete': [permission_required('can_delete_files')] + panel_decorators,
-    # }
+    method_decorators = {
+        # 'get': [permission_required('can_see_directory')] + panel_decorators,
+        'post': [permission_required('can_create_files')] + panel_decorators,
+        'delete': [permission_required('can_delete_files')] + panel_decorators,
+    }
     def get(self):
         """ Directory listing of upload folder """
         uploads_folder = current_app.config['UPLOAD_FOLDER']
@@ -55,8 +56,37 @@ class FileApi(BaseResource):
 
     def post(self):
         """ To create file """
-        pass
+        file = request.files.get('file')
+        path = request.form.get('path', '')
+        if not file:
+            return {"message":"No file to upload"}, 422
+
+        uploads_folder = current_app.config['UPLOAD_FOLDER']
+        lookup_folder = uploads_folder / path
+        if is_safe_path(str(os.getcwd() / lookup_folder), str(lookup_folder)):
+            file = File(path, file=file)
+            file.save()
+            return {'message':'File saved successfully', 'file':{"url":file.url}}
+        return {"message":"Invalid path"}, 422
 
     def delete(self):
         """ To delete file """
-        pass
+        data = request.get_json()
+        if not data.get('url'):
+            return {"message": "No file url specified"}, 422
+
+        url = data['url']
+        path_to_file = current_app.config['UPLOAD_FOLDER'] / url.replace('/uploads/', '', 1)
+
+        if os.path.isdir(path_to_file):
+            try:
+                os.rmdir(path_to_file)
+            except:
+                return {"message":"Directory must be empty"}, 422
+            return {"message":"File deleted successfully"}
+            
+        if os.path.isfile(path_to_file):
+            os.remove(path_to_file)
+            return {"message":"File deleted successfully"}
+
+        return {"message":"File not found"}, 404

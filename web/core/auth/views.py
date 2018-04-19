@@ -45,11 +45,15 @@ class RegistrationApi(BaseResource):
 
         password = data['password']
         email = data['email']
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
 
         if User.query.filter_by(email=email).first():
             return self.alread_exists()
 
-        u = User(password=password, email=email)
+        u = User(password=password, email=email,
+                 first_name=first_name, last_name=last_name)
+
         db.session.add(u)
         db.session.commit()
         access_token = create_access_token(identity=u.email)

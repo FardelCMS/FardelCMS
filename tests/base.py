@@ -2,6 +2,8 @@ import json
 import unittest
 
 from web.app import create_app
+from web.ext import db
+from web.core.auth.models import User, Group
 
 class BaseTestCase(unittest.TestCase):
     access_token = None
@@ -20,7 +22,7 @@ class BaseTestCase(unittest.TestCase):
             token = self.access_token
         return token
 
-    def request(self, method, url, with_token, with_rtoken, data=None):
+    def request(self, method, url, with_token, with_rtoken, data=None, **kwargs):
         token = self.get_token(with_token, with_rtoken)
         headers = {}
         data = data or {}
@@ -53,17 +55,17 @@ class BaseTestCase(unittest.TestCase):
                 headers=headers
             )
 
-    def post(self, url, data=None, with_token=True, with_rtoken=False):
-        return self.request('post', url, with_token, with_rtoken, data=data)
+    def post(self, url, data=None, with_token=True, with_rtoken=False, **kwargs):
+        return self.request('post', url, with_token, with_rtoken, data=data, **kwargs)
 
-    def get(self, url, with_token=True, with_rtoken=False, data=None):
-        return self.request('get', url, with_token, with_rtoken, data=data)
+    def get(self, url, with_token=True, with_rtoken=False, data=None, **kwargs):
+        return self.request('get', url, with_token, with_rtoken, data=data, **kwargs)
 
-    def delete(self, url, data=None, with_token=True, with_rtoken=False):
-        return self.request('delete', url, with_token, with_rtoken, data=data)
+    def delete(self, url, data=None, with_token=True, with_rtoken=False, **kwargs):
+        return self.request('delete', url, with_token, with_rtoken, data=data, **kwargs)
 
-    def put(self, url, data=None, with_token=True, with_rtoken=False):
-        return self.request('put', url, with_token, with_rtoken, data=data)
+    def put(self, url, data=None, with_token=True, with_rtoken=False, **kwargs):
+        return self.request('put', url, with_token, with_rtoken, data=data, **kwargs)
 
     def get_json(self, data):
         return json.loads(data)
@@ -99,3 +101,33 @@ class BaseTestCase(unittest.TestCase):
         response = self.get('/api/auth/profile/')
         json_data = self.get_json(response.data)
         return response, json_data
+
+
+class BasePanelTestCase(BaseTestCase):
+    group_name = "Test"
+    def create_simple_group(self):
+        with self.app.app_context():
+            g = Group(name=self.group_name)
+            db.session.add(g)
+            db.session.flush()
+            g.add_permission('can_get_users')
+            db.session.commit()
+            return g
+
+    def create_admin(self):
+        with self.app.app_context():
+            u = User(email=self.email, password=self.password)
+            db.session.add(u)
+            u.set_admin()
+
+    def create_staff(self):
+        with self.app.app_context():
+            u = User(email=self.email, password=self.password)
+            db.session.add(u)
+            u.set_staff()
+
+    def set_staff_to_group(self, g):
+        with self.app.app_context():
+            u = User.query.filter_by(email=self.email).first()
+            u.group = g
+            db.session.commit()

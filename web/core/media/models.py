@@ -1,6 +1,9 @@
+import os
 import uuid
+
 from pathlib import Path
 from flask import current_app
+from werkzeug.utils import secure_filename
 
 from ..auth.models import AbstractModelWithPermission
 
@@ -40,15 +43,17 @@ class File(AbstractModelWithPermission):
 
     def save(self):
         self.create_folders()
-        self.file.save(self.abs_folder_path, filename)
+        filename = secure_filename(self.name)
+        self.file.save(os.path.join(self.abs_folder_path, filename))
 
     @property
     def url(self):
         if self._url is None:
+            path_format = '/uploads/%s/%s'
             if self.file:
-                self._url = str(Path('/uploads/%s/%s' % (self.location, self.name)))
+                self._url = str(Path(path_format % (self.location, self.name)))
             else:
-                self._url = str(Path('/uploads/%s/%s' % (self.location, self.file_name)))
+                self._url = str(Path(path_format % (self.location, self.file_name)))
             return self._url
         return self._url
 
@@ -68,6 +73,7 @@ class File(AbstractModelWithPermission):
 
     class Meta:
         permissions = (
+            ('can_see_directory', 'Can see directory listing'),
             ('can_create_files', 'Can create files'),
             ('can_delete_files', 'Can delete files'),
         )

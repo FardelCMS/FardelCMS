@@ -2,41 +2,12 @@ from web.ext import db
 
 from web.core.auth.models import User, Group
 
-from .base import BaseTestCase
+from ..base import BasePanelTestCase
 
 __all__ = (
     'PanelAuthTestCase',
     'UserApiTestCase',
 )
-
-class BasePanelTestCase(BaseTestCase):
-    group_name = "Test"
-    def create_simple_group(self):
-        with self.app.app_context():
-            g = Group(name=self.group_name)
-            db.session.add(g)
-            db.session.flush()
-            g.add_permission('can_get_users')
-            db.session.commit()
-            return g
-
-    def create_admin(self):
-        with self.app.app_context():
-            u = User(email=self.email, password=self.password)
-            db.session.add(u)
-            u.set_admin()
-
-    def create_staff(self):
-        with self.app.app_context():
-            u = User(email=self.email, password=self.password)
-            db.session.add(u)
-            u.set_staff()
-
-    def set_staff_to_group(self, g):
-        with self.app.app_context():
-            u = User.query.filter_by(email=self.email).first()
-            u.group = g
-            db.session.commit()
 
 
 class PanelAuthTestCase(BasePanelTestCase):
