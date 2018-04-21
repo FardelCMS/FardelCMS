@@ -43,7 +43,7 @@ class BaseConfig(object):
 
 
 class DevConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = 'postgresql://arash_shop:123@localhost/arash_shop'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://dev_shop:123@localhost/dev_shop'
     DEBUG = True
 
 
