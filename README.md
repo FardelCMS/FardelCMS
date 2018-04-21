@@ -62,3 +62,10 @@ $ python test.py
 ```
 $ python wsgi.py
 ```
+
+###### To have sample data
+
+```
+$ pip install mimesis
+$ python manage.py generate_fake
+```

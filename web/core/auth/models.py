@@ -2,6 +2,7 @@ import json
 import time
 import bcrypt
 
+from sqlalchemy.exc import IntegrityError 
 from flask import current_app, jsonify
 
 from web.ext import db, jwt
@@ -103,6 +104,25 @@ class User(db.Model, AbstractModelWithPermission):
         permissions = (
             ('can_get_users', 'Can get users'),
         )
+
+    @staticmethod
+    def _bootstrap(count):
+        from mimesis import Person
+        person = Person('en')
+
+        for _ in range(count):
+            u = User(
+                email=person.email(),
+                confirmed=True,
+                first_name=person.name(),
+                last_name=person.surname(),
+            )
+
+            db.session.add(u)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
 
     @property
     def password(self):

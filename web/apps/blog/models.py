@@ -1,5 +1,9 @@
 import time
 
+from sqlalchemy.sql.expression import func
+from sqlalchemy.exc import IntegrityError 
+from sqlalchemy import event 
+
 from ...core.auth.models import AbstractModelWithPermission
 from ...ext import db
 
@@ -50,7 +54,7 @@ class PostStatus(db.Model):
 class Category(db.Model, AbstractModelWithPermission):
     __tablename__ = "blog_categories"
     id = db.Column(db.Integer, primary_key=True, index=True)
-    name = db.Column(db.String(64))
+    name = db.Column(db.String(64), unique=True)
 
     class Meta:
         permissions = (
@@ -58,6 +62,20 @@ class Category(db.Model, AbstractModelWithPermission):
             ('can_edit_categories', 'Can edit categories'),
             ('can_delete_categories', 'Can delete categories'),
         )
+
+    @staticmethod
+    def _bootstrap(count):
+        from mimesis import Text
+        text = Text(locale='en')
+
+        for _ in range(count):
+            c = Category(name=text.word())
+            db.session.add(c)
+
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
 
     def dict(self):
         obj = {'id':self.id, 'name':self.name}
@@ -95,6 +113,30 @@ class Post(db.Model, AbstractModelWithPermission):
             ('can_delete_posts', 'Can delete posts'),
         )
 
+    @staticmethod
+    def _bootstrap(count):
+        from mimesis import Text
+        text = Text(locale='en')
+
+        for _ in range(count):
+            p = Post(
+                title=text.title(), content=text.text(quantity=100),
+                publish_time=time.time(), status_id=1, allow_comment=True,
+                category_id=Category.query.order_by(func.random()).first().id,                
+            )
+            db.session.add(p)
+
+            for i in range(3):
+                t = Tag.query.order_by(func.random()).first()
+                p.tags.append(t)
+
+            db.session.flush()
+
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+
     def get_comments(self, page=1):
         """ What is use of this function? """
         return Comment.query.filter_by(post_id=self.id, parent_comment_id=None
@@ -103,17 +145,18 @@ class Post(db.Model, AbstractModelWithPermission):
     def get_status(self):
         pass
 
-    def summarized(self):
-        return "%s ..." % self.content[:256]
+    def summarized(self, length=256):
+        return "%s ..." % self.content[:length]
 
     def dict(self, summarized=True, admin=False):
         obj = {
             'id': self.id, 'title':self.title, 'allow_comment': self.allow_comment,
-            'created_time':self.created_time, 'update_time':self.update_time,
-            'category':self.category.dict(), 'tags':[tag.dict() for tag in self.tags]
+            'create_time':self.create_time, 'update_time':self.update_time,
+            'category':self.category.dict(), 'tags':[tag.dict() for tag in self.tags],
+            'image':self.image
         }
         if summarized:
-            obj['summarized'] = self.summarized
+            obj['summarized'] = self.summarized()
         else:
             obj['content'] = self.content
             # obj['comments'] = [c.dict() for c in self.get_comments()]
@@ -136,14 +179,27 @@ class Tag(db.Model, AbstractModelWithPermission):
             ('can_edit_tags', 'Can edit tags'),
         )
 
+    @staticmethod
+    def _bootstrap(count):
+        from mimesis import Text
+        text = Text(locale='en')
+
+        for _ in range(count):
+            t = Tag(name=text.word())
+            db.session.add(t)
+
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+
     def dict(self, posts=False):
         obj = {
             'id':self.id, 'name':self.name, 'frequency':self.frequency
         }
         if posts:
-            return obj.update({"posts":self.posts.dict()})
-        else:
-            return obj
+            obj.update({"posts":[p.dict() for p in self.posts]})
+        return obj
 
 
 class PostTag(db.Model):
@@ -177,6 +233,31 @@ class Comment(db.Model, AbstractModelWithPermission):
             ('can_edit_comments', 'Can edit comments'),
         )
 
+    @staticmethod
+    def _bootstrap(count):
+        from mimesis import Text
+        import random
+        from ...core.auth.models import User
+
+        text = Text(locale='en')
+
+        for _ in range(count):
+            c = Comment(
+                content=text.text(quantity=10),
+                user_id=User.query.order_by(func.random()).first().id,
+                post_id=Post.query.order_by(func.random()).first().id,                
+            )
+            db.session.add(c)
+
+            if random.random() > .75:
+                c.parent_comment_id = Comment.query.filter_by(
+                    post_id=c.post_id).order_by(func.random()).first().id
+
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+
     def dict(self):
         obj = {
             'author_email':self.author_email, 'author_name':self.author_name,
@@ -187,6 +268,7 @@ class Comment(db.Model, AbstractModelWithPermission):
             obj['user'] = self.user.dict()
         return obj
 
-# @event.listens_for(Post, 'before_insert')
+# @event.listens_for(PostTag, 'after_insert')
 # def receive_before_insert(mapper, connection, target):
-#     pass
+#     print(target)
+#     print(mapper)

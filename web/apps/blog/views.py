@@ -1,3 +1,5 @@
+from flask import request
+
 from flask_restful import Api, abort, Resource
 from flask_jwt_extended import current_user, jwt_optional
 
@@ -15,13 +17,16 @@ def rest_resource(resource_cls):
 
 def get_valid_post(post_id):
     post = Post.query.filter_by(id=post_id).first()
-    if post.status.name != "Publish":
+    if not post:
+        return None
+    if post and post.status.name != "Publish":
         return None
     return post
 
 @mod.before_app_first_request
 def create_permissions():
     setup_permissions()
+    PostStatus.generate_default()
 
 
 @rest_resource
@@ -58,7 +63,7 @@ class CommentApi(Resource):
         page = request.args.get('page', 1)
         per_page = request.args.get('page', 16)
         comments = Comment.query.filter_by(
-            post_id=self.id, parent_comment_id=None, approved=True
+            post_id=post_id, parent_comment_id=None, approved=True
         ).paginate(page=page, per_page=per_page, error_out=False).items
 
         return {'comments':[c.dict() for c in comments]}
@@ -94,8 +99,8 @@ class CommentApi(Resource):
 
 @rest_resource
 class TagApi(Resource):
-    endpoints = ['/tags/<tag_id>/posts', '/tags/']
-    def get(self, tag_id):
+    endpoints = ['/tags/<tag_id>/posts/', '/tags/']
+    def get(self, tag_id=None):
         if tag_id:
             tag = Tag.query.filter_by(id=tag_id).first()
             if not tag:
@@ -108,12 +113,16 @@ class TagApi(Resource):
 
 @rest_resource
 class CategoryApi(Resource):
-    endpoints = ['/categories/<category_id>/posts', '/categories/']
-    def get(self, category_id):
+    endpoints = ['/categories/<category_id>/posts/', '/categories/']
+    def get(self, category_id=None):
         if category_id:
             category = Category.query.filter_by(id=category_id).first()
             if not category:
                 return {"message":"No category found with this id"}, 404
+                
+            page = request.args.get('page', 1)
+            per_page = request.args.get('page', 16)
+
             category_dict = category.dict()
             posts = Post.query.outerjoin(PostStatus # Alternatively use filter_by(status_id==1) ?
                 ).filter(PostStatus.name=='Publish', Post.category_id==category_id
