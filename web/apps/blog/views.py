@@ -12,22 +12,29 @@ def rest_resource(resource_cls):
     blog_api.add_resource(resource_cls, *resource_cls.endpoints)
     return resource_cls
 
+def get_valid_post(post_id):
+    post = Post.query.filter_by(id=post_id).first()
+    if post.status.name != "Publish":
+        return None
+    return post
+
 
 @rest_resource
 class PostApi(Resource):
     endpoints = ['/posts/', '/posts/<post_id>/']
     def get(self, post_id=None):
         if post_id:
-            post = Post.query.filter_by(id=post_id).first()
-            if post.status.name != "Publish":
+            post = get_valid_post(post_id)
+            if not post:
                 return {"message":"No post with this id"}, 404
 
             return {'post':post.dict(summarized=False)}
 
         page = request.args.get('page', 1)
+        per_page = request.args.get('page', 16)
         posts = Post.query.outerjoin(PostStatus # Alternatively use filter_by(status_id==1) ?
             ).filter(PostStatus.name=='Publish').order_by(Post.publish_time
-            ).paginate(page=page, per_page=16, error_out=False).items
+            ).paginate(page=page, per_page=per_page, error_out=False).items
         return {'posts':[post.dict() for post in posts]}
 
 
@@ -39,13 +46,15 @@ class CommentApi(Resource):
     }
 
     def get(self, post_id):
-        post = Post.query.filter_by(id=post_id).first()
-        if post.status.name != "Publish":
+        post = get_valid_post(post_id)
+        if not post:
             return {"message":"No post with this id"}, 404
 
-        page = request.args.get('page')
-        comments = Comment.query.filter_by(post_id=self.id, parent_comment_id=None
-            ).paginate(page=page, per_page=32, error_out=False).items
+        page = request.args.get('page', 1)
+        per_page = request.args.get('page', 16)
+        comments = Comment.query.filter_by(
+            post_id=self.id, parent_comment_id=None, approved=True
+        ).paginate(page=page, per_page=per_page, error_out=False).items
 
         return {'comments':[c.dict() for c in comments]}
 
@@ -73,7 +82,35 @@ class CommentApi(Resource):
         return {"message":"Comment successfuly added.", 'comment':c.dict()}
 
 
+@rest_resource
 class TagApi(Resource):
     endpoints = ['/tags/<tag_id>/', '/tags/']
     def get(self, tag_id):
-        pass
+        if tag_id:
+            tag = Tag.query.filter_by(id=tag_id).first()
+            if not tag:
+                return {"message":"No tag found with this id"}, 404
+            return {'tag':tag.dict(posts=True)}
+
+        tags = Tag.query.all()
+        return {'tags':[tag.dict() for tag in tags]}
+
+
+@rest_resource
+class CategoryApi(Resource):
+    endpoints = ['/categories/<category_id>/posts', '/categories/']
+    def get(self, category_id):
+        if category_id:
+            category = Category.query.filter_by(id=category_id).first()
+            if not category:
+                return {"message":"No category found with this id"}, 404
+            category_dict = category.dict()
+            posts = Post.query.outerjoin(PostStatus # Alternatively use filter_by(status_id==1) ?
+                ).filter(PostStatus.name=='Publish', Post.category_id==category_id
+                ).order_by(Post.publish_time
+                ).paginate(page=page, per_page=per_page, error_out=False).items
+            category_dict['posts'] = [post.dict() for post in posts]
+            return {'category':category_dict}
+
+        categories = Category.query.all()
+        return {'categories':[category.dict() for category in categories]}

@@ -44,6 +44,10 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(64))
 
+    def dict(self):
+        obj = {'id':self.id, 'name':self.name}
+        return obj
+
 
 class Post(db.Model):
     __tablename__ = "blog_posts"
@@ -129,7 +133,7 @@ class Comment(db.Model):
 
     content = db.Column(db.Text)
     create_time = db.Column(db.Integer, default=time.time)
-    approved = db.Column(db.Boolean, default=False)
+    approved = db.Column(db.Boolean, default=True)
 
     parent_comment_id = db.Column(db.Integer, db.ForeignKey('blog_comments.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), index=True)
