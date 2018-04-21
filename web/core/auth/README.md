@@ -12,6 +12,9 @@ All the endpoints starts with '/api/auth/{function}/'
 * required arguments:
 	* email
 	* password
+* optional arguments:
+	* first_name
+	* last_name
 * responses with access_token + refresh_token
 
 ```
