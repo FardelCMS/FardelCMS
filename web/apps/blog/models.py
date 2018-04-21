@@ -1,10 +1,18 @@
 import time
 
-from web.ext import db
+from ...core.auth.models import AbstractModelWithPermission
+from ...ext import db
 
 __all__ = (
-    'Category', 'Post', 'Tag', 'Comment', 'PostStatus'
+    'Category', 'Post', 'Tag', 'Comment', 'PostStatus', 'setup_permissions'
 )
+
+def setup_permissions():
+    Comment.setup_permissions()
+    Category.setup_permissions()
+    Post.setup_permissions()
+    Tag.setup_permissions()
+
 
 class PostStatus(db.Model):
     """
@@ -39,17 +47,24 @@ class PostStatus(db.Model):
                 db.session.add(ps)
                 db.session.commit()
 
-class Category(db.Model):
+class Category(db.Model, AbstractModelWithPermission):
     __tablename__ = "blog_categories"
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(64))
+
+    class Meta:
+        permissions = (
+            ('can_create_categories', 'Can create categories'),
+            ('can_edit_categories', 'Can edit categories'),
+            ('can_delete_categories', 'Can delete categories'),
+        )
 
     def dict(self):
         obj = {'id':self.id, 'name':self.name}
         return obj
 
 
-class Post(db.Model):
+class Post(db.Model, AbstractModelWithPermission):
     __tablename__ = "blog_posts"
     id = db.Column(db.Integer, primary_key=True, index=True)
     
@@ -70,6 +85,15 @@ class Post(db.Model):
     status = db.relationship('PostStatus')
     tags = db.relationship('Tag', secondary='blog_posts_tags')
     # comments = db.relationship('Comment')
+
+    class Meta:
+        permissions = (
+            ('can_get_posts', 'Can get posts'),
+            ('can_create_posts', 'Can create posts'),
+            ('can_publish_posts', 'Can publish posts'),
+            ('can_edit_posts', 'Can edit posts'),
+            ('can_delete_posts', 'Can delete posts'),
+        )
 
     def get_comments(self, page=1):
         """ What is use of this function? """
@@ -98,13 +122,19 @@ class Post(db.Model):
         return obj
 
 
-class Tag(db.Model):
+class Tag(db.Model, AbstractModelWithPermission):
     __tablename__ = "blog_tags"
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(64), index=True)
     frequency = db.Column(db.Integer)
 
     posts = db.relationship('Post', secondary='blog_posts_tags')
+
+    class Meta:
+        permissions = (
+            ('can_create_tags', 'Can create tags'),
+            ('can_edit_tags', 'Can edit tags'),
+        )
 
     def dict(self, posts=False):
         obj = {
@@ -123,7 +153,7 @@ class PostTag(db.Model):
     tag_id = db.Column(db.Integer, db.ForeignKey('blog_tags.id'))
 
 
-class Comment(db.Model):
+class Comment(db.Model, AbstractModelWithPermission):
     __tablename__ = "blog_comments"
     id = db.Column(db.Integer, primary_key=True, index=True)
 
@@ -139,7 +169,13 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
 
     user = db.relationship("User")
-    parent_comment = relationship('Comment', remote_side=[id], backref='replies')
+    parent_comment = db.relationship('Comment', remote_side=[id], backref='replies')
+
+    class Meta:
+        permissions = (
+            ('can_delete_comments', 'Can delete comments'),
+            ('can_edit_comments', 'Can edit comments'),
+        )
 
     def dict(self):
         obj = {

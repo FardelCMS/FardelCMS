@@ -1,7 +1,12 @@
 from flask import send_file, current_app
 
 from . import mod
-from .models import *
+from .models import setup_permissions
+
+
+@mod.before_app_first_request
+def create_permissions():
+    setup_permissions()
 
 
 @mod.route('/uploads/<path_to_file>')

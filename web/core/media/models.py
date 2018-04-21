@@ -7,6 +7,11 @@ from werkzeug.utils import secure_filename
 
 from ..auth.models import AbstractModelWithPermission
 
+__all__ = ('File', 'setup_permissions')
+
+def setup_permissions():
+    File.setup_permissions()
+
 
 class File(AbstractModelWithPermission):
     __slot__ = [

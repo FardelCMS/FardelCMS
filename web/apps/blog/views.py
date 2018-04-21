@@ -6,6 +6,7 @@ from .models import *
 
 
 blog_api = Api(mod)
+    
 
 def rest_resource(resource_cls):
     """ Decorator for adding resources to Api App """
@@ -17,6 +18,10 @@ def get_valid_post(post_id):
     if post.status.name != "Publish":
         return None
     return post
+
+@mod.before_app_first_request
+def create_permissions():
+    setup_permissions()
 
 
 @rest_resource
