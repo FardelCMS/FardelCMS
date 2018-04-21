@@ -17,7 +17,7 @@ class BaseConfig(object):
     UPLOAD_FOLDER = Path(__file__).parent.parent / 'uploads'
 
     ACTIVE_APPS = (
-        # "blog",
+        "blog",
     )
 
     # MAIL_SERVER = ""

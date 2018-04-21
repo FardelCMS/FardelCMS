@@ -22,21 +22,6 @@ class BaseResource(Resource):
                 return False
         return True
 
-    def get(self, *args, **kwargs):
-        abort(405)
-
-    def post(self, *args, **kwargs):
-        abort(405)
-
-    def put(self, *args, **kwargs):
-        abort(405)
-
-    def patch(self, *args, **kwargs):
-        abort(405)
-
-    def delete(self, *args, **kwargs):
-        abort(405)
-
 
 class GetBaseResource(BaseResource):
     resource_class = None
