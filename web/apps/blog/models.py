@@ -84,9 +84,8 @@ class Post(db.Model):
 
     def dict(self, summarized=True, admin=False):
         obj = {
-            'id': self.id, 'title':self.title, 'url':self.url,
-            'allow_comment': self.allow_comment, 'created_time':self.created_time,
-            'update_time':self.update_time,
+            'id': self.id, 'title':self.title, 'allow_comment': self.allow_comment,
+            'created_time':self.created_time, 'update_time':self.update_time,
             'category':self.category.dict(), 'tags':[tag.dict() for tag in self.tags]
         }
         if summarized:
@@ -143,13 +142,14 @@ class Comment(db.Model):
     parent_comment = relationship('Comment', remote_side=[id], backref='replies')
 
     def dict(self):
-        return {
+        obj = {
             'author_email':self.author_email, 'author_name':self.author_name,
-            'id':self.id, "content":self.content, 'status':self.status,
-            'create_time':self.create_time, "user": self.user.email,
+            'id':self.id, "content":self.content, 'create_time':self.create_time,
             'replies': [c.dict() for c in self.replies]
         }
-
+        if self.user:
+            obj['user'] = self.user.dict()
+        return obj
 
 # @event.listens_for(Post, 'before_insert')
 # def receive_before_insert(mapper, connection, target):

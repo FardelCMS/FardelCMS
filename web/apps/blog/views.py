@@ -59,6 +59,10 @@ class CommentApi(Resource):
         return {'comments':[c.dict() for c in comments]}
 
     def post(self, post_id):
+        post = get_valid_post(post_id)
+        if not post:
+            return {"message":"No post with this id"}, 404
+
         data = request.get_json()
         user_id = getattr(current_user, 'id', None)
         author_name = data.get('author_name')
@@ -67,7 +71,8 @@ class CommentApi(Resource):
         content = data.get('content')
         if not user_id and not (not author_email or not author_name):
             return {
-                "message":"Author name and Author email are required to post a comment."
+                "message":"Author name and Author email are required to\
+ post a comment  or you need to sign in"
             }, 422
 
         if not content:
@@ -79,12 +84,12 @@ class CommentApi(Resource):
         )
         db.session.add(c)
         db.session.commit()
-        return {"message":"Comment successfuly added.", 'comment':c.dict()}
+        return {"message":"Comment successfuly added", 'comment':c.dict()}
 
 
 @rest_resource
 class TagApi(Resource):
-    endpoints = ['/tags/<tag_id>/', '/tags/']
+    endpoints = ['/tags/<tag_id>/posts', '/tags/']
     def get(self, tag_id):
         if tag_id:
             tag = Tag.query.filter_by(id=tag_id).first()
