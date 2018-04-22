@@ -80,11 +80,15 @@ class LoginApi(BaseResource):
         if u and u.check_password(password):
             access_token = create_access_token(identity=u.email)
             refresh_token = create_refresh_token(identity=u.email)
-            return {
+            obj = {
                 'message':'Successfully logined',
                 'access_token': access_token,
-                'refresh_token': refresh_token
+                'refresh_token': refresh_token,
             }
+            access = u.access_dict()
+            if access:
+                obj['access'] = access
+            return obj
         return {
             'message':'Username or password is not correct'
         }, 401

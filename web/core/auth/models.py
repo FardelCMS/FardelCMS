@@ -160,12 +160,16 @@ class User(db.Model, AbstractModelWithPermission):
             'id':self.id, 'first_name':self.first_name, 'last_name':self.last_name,
             'email':self.email
         }
+        return obj
+
+    def access_dict(self):
+        obj = {}
         if self.group:
-            obj['group'] = self.group.name
+            obj['group'] = self.group.dict()
         if self.is_admin:
-            obj['is_admin'] = self.is_admin
+            obj['is_admin'] = True
         if self.is_staff:
-            obj['is_staff'] = self.is_staff
+            obj['is_staff'] = True
         return obj
 
     def __repr__(self):
