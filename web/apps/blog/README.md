@@ -49,7 +49,7 @@ Comment object:
 
 ###### get
 
-* url: ```/posts/```
+* url: ```/api/blog/posts/```
 * query parameters:
 	* page
 	* per_page
@@ -60,7 +60,7 @@ Comment object:
 }
 ```
 
-* url: ```/posts/<post_id>/```
+* url: ```/api/blog/posts/<post_id>/```
 
 ```javascript
 {
