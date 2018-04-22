@@ -142,6 +142,10 @@ class Post(db.Model, AbstractModelWithPermission):
         return Comment.query.filter_by(post_id=self.id, parent_comment_id=None
             ).paginate(page=page, per_page=32, error_out=False).items
 
+    @property
+    def comments_count(self):
+        return Comment.query.filter_by(post_id=self.id).count()
+
     def get_status(self):
         pass
 
@@ -153,7 +157,7 @@ class Post(db.Model, AbstractModelWithPermission):
             'id': self.id, 'title':self.title, 'allow_comment': self.allow_comment,
             'create_time':self.create_time, 'update_time':self.update_time,
             'category':self.category.dict(), 'tags':[tag.dict() for tag in self.tags],
-            'image':self.image
+            'image':self.image, 'comments_count': self.comments_count
         }
         if summarized:
             obj['summarized'] = self.summarized()

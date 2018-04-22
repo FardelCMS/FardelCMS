@@ -30,6 +30,7 @@ post object:
     "category":category_object, "tags":[list of tag_objects]
     "content": "content of post"
     "summarized": "Summarized text of content"
+    "comments_count": Integer,
     // We have summarized or content ( not both together )
 }
 ```
