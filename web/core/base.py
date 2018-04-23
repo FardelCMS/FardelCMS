@@ -88,7 +88,7 @@ class DeleteBaseResource(GetBaseResource):
     def delete(self, obj_id=None):
         self.check_implemented()
         if not obj_id:
-            return self.obj_id_required()
+            abort(403)
 
         deleteds = self.resource_class.query.filter_by(id=obj_id).delete()
         db.session.commit()

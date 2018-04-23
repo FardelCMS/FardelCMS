@@ -15,7 +15,6 @@ def setup_permissions():
     Comment.setup_permissions()
     Category.setup_permissions()
     Post.setup_permissions()
-    Tag.setup_permissions()
 
 
 class PostStatus(db.Model):
@@ -50,6 +49,7 @@ class PostStatus(db.Model):
                 ps = PostStatus(name=status)
                 db.session.add(ps)
                 db.session.commit()
+
 
 class Category(db.Model, AbstractModelWithPermission):
     __tablename__ = "blog_categories"
@@ -89,7 +89,8 @@ class Post(db.Model, AbstractModelWithPermission):
     image = db.Column(db.String(512))
     title = db.Column(db.String(256))
     content = db.Column(db.Text)
-    editted_content = db.Column(db.Text)
+    summarized = db.Column(db.Text)
+    edited_content = db.Column(db.Text)
     create_time = db.Column(db.Integer, default=time.time)
     update_time = db.Column(db.Integer, default=time.time, onupdate=time.time)
     publish_time = db.Column(db.Integer)
@@ -113,6 +114,9 @@ class Post(db.Model, AbstractModelWithPermission):
             ('can_delete_posts', 'Can delete posts'),
         )
 
+    def add_tags(self, tags):
+        pass
+
     @staticmethod
     def _bootstrap(count):
         from mimesis import Text
@@ -121,7 +125,8 @@ class Post(db.Model, AbstractModelWithPermission):
         for _ in range(count):
             p = Post(
                 title=text.title(), content=text.text(quantity=100),
-                publish_time=time.time(), status_id=1, allow_comment=True,
+                summarized=text.text(quantity=3), publish_time=time.time(),
+                status_id=1, allow_comment=True,
                 category_id=Category.query.order_by(func.random()).first().id,                
             )
             db.session.add(p)
@@ -149,9 +154,6 @@ class Post(db.Model, AbstractModelWithPermission):
     def get_status(self):
         pass
 
-    def summarized(self, length=256):
-        return "%s ..." % self.content[:length]
-
     def dict(self, summarized=True, admin=False):
         obj = {
             'id': self.id, 'title':self.title, 'allow_comment': self.allow_comment,
@@ -160,28 +162,26 @@ class Post(db.Model, AbstractModelWithPermission):
             'image':self.image, 'comments_count': self.comments_count
         }
         if summarized:
-            obj['summarized'] = self.summarized()
+            obj['summarized'] = self.summarized
         else:
             obj['content'] = self.content
-            # obj['comments'] = [c.dict() for c in self.get_comments()]
+
         if admin:
-            obj.update({'editted_content':self.editted_content, 'status':self.status})
+            obj['status'] = self.status 
+            
+        if admin and not summarized:
+            obj['editted_content'] = self.editted_content
+
         return obj
 
 
-class Tag(db.Model, AbstractModelWithPermission):
+class Tag(db.Model):
     __tablename__ = "blog_tags"
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(64), index=True)
     frequency = db.Column(db.Integer)
 
     posts = db.relationship('Post', secondary='blog_posts_tags')
-
-    class Meta:
-        permissions = (
-            ('can_create_tags', 'Can create tags'),
-            ('can_edit_tags', 'Can edit tags'),
-        )
 
     @staticmethod
     def _bootstrap(count):
@@ -233,6 +233,7 @@ class Comment(db.Model, AbstractModelWithPermission):
 
     class Meta:
         permissions = (
+            ('can_get_comments', 'Can get comments'),
             ('can_delete_comments', 'Can delete comments'),
             ('can_edit_comments', 'Can edit comments'),
         )
