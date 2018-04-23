@@ -40,8 +40,8 @@ class PostApi(Resource):
 
             return {'post':post.dict(summarized=False)}
 
-        page = request.args.get('page', 1)
-        per_page = request.args.get('page', 16)
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('page', 16, type=int)
         posts = Post.query.outerjoin(PostStatus # Alternatively use filter_by(status_id==1) ?
             ).filter(PostStatus.name=='Publish').order_by(Post.publish_time
             ).paginate(page=page, per_page=per_page, error_out=False).items
@@ -60,8 +60,8 @@ class CommentApi(Resource):
         if not post:
             return {"message":"No post with this id"}, 404
 
-        page = request.args.get('page', 1)
-        per_page = request.args.get('page', 16)
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('page', 16, type=int)
         comments = Comment.query.filter_by(
             post_id=post_id, parent_comment_id=None, approved=True
         ).paginate(page=page, per_page=per_page, error_out=False).items
@@ -120,8 +120,8 @@ class CategoryApi(Resource):
             if not category:
                 return {"message":"No category found with this id"}, 404
                 
-            page = request.args.get('page', 1)
-            per_page = request.args.get('page', 16)
+            page = request.args.get('page', 1, type=int)
+            per_page = request.args.get('page', 16, type=int)
 
             category_dict = category.dict()
             posts = Post.query.outerjoin(PostStatus # Alternatively use filter_by(status_id==1) ?
