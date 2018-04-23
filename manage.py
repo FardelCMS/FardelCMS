@@ -33,8 +33,8 @@ def generate_fake():
 	User._bootstrap(1000)
 	Category._bootstrap(10)
 	Tag._bootstrap(40)
-	Post._bootstrap(2)
-	Comment._bootstrap(2000)
+	Post._bootstrap(50)
+	Comment._bootstrap(1000)
 
 if __name__ == "__main__":
     manager.run()
