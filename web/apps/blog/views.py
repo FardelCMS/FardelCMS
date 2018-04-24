@@ -1,3 +1,5 @@
+import math
+
 from flask import request
 
 from flask_restful import Api, abort, Resource
@@ -41,11 +43,12 @@ class PostApi(Resource):
             return {'post':post.dict(summarized=False)}
 
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('page', 16, type=int)
+        per_page = request.args.get('per_page', 16, type=int)
+        pages = math.ceil(Post.query.count() / per_page)
         posts = Post.query.outerjoin(PostStatus # Alternatively use filter_by(status_id==1) ?
             ).filter(PostStatus.name=='Publish').order_by(Post.publish_time
             ).paginate(page=page, per_page=per_page, error_out=False).items
-        return {'posts':[post.dict() for post in posts]}
+        return {'posts':[post.dict() for post in posts], 'pages':pages}
 
 
 @rest_resource
