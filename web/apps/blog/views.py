@@ -1,3 +1,46 @@
+"""
+Objects
+=======
+
+1. Category
+    :id: ID for the category in database.
+    :name: Name of the category to display.
+    :posts:
+
+
+2. Post
+    :id: ID for the post in database.
+    :title: 
+    :content:
+    :allow_comment:
+    :category:
+    :image:
+    :comments_count:
+    :tags:
+    :create_time:
+    :update_time:
+    :summarized:
+
+
+3. Tag
+    :id: ID for the tag in database.
+    :name:
+    :frequency:
+    :posts:
+
+
+4. Comment
+    :id: ID for the comment in database.
+    :content:
+    :create_time:
+    :user:
+    :author_mail:
+    :author_name:
+    :replies:
+
+
+"""
+
 import math
 
 from flask import request
@@ -33,8 +76,44 @@ def create_permissions():
 
 @rest_resource
 class PostApi(Resource):
+    """
+    :URL: ``/api/blog/posts/`` and ``/api/blog/posts/<post_id>/``
+    """
     endpoints = ['/posts/', '/posts/<post_id>/']
     def get(self, post_id=None):
+        """
+        :optional url parameter:
+            * post_id
+
+        :optional url query string:
+            * page (default: 1)
+            * per_page (default: 16)
+
+        :response:
+            If post_id is provided:
+
+            .. code-block:: python
+
+               { "post": PostObject(with content) }
+
+            If post_id is not provided:
+
+            .. code-block:: python
+
+                {
+                    "posts":[list of PostObjects(without content and with summarized)]
+                    "pages": Number of pages
+                }
+
+        :errors:
+            If post id is not valid:
+
+            :status_code: 404
+            :response:
+                .. code-block:: json
+
+                    {"message":"No post with this id"}
+        """
         if post_id:
             post = get_valid_post(post_id)
             if not post:

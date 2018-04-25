@@ -1,3 +1,11 @@
+"""
+All files are accessible through this url
+
+:URL: ``/uploads/<path_to_file>``
+
+"""
+
+
 from flask import send_file, current_app
 
 from . import mod
