@@ -64,12 +64,14 @@ class CommentApi(Resource):
             return {"message":"No post with this id"}, 404
 
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('page', 16, type=int)
-        comments = Comment.query.filter_by(
+        per_page = request.args.get('per_page', 16, type=int)
+        comment_query = Comment.query.filter_by(
             post_id=post_id, parent_comment_id=None, approved=True
-        ).paginate(page=page, per_page=per_page, error_out=False).items
-
-        return {'comments':[c.dict() for c in comments]}
+        )
+        pages = math.ceil(comment_query.count() / per_page)
+        comments = comment_query.paginate(page=page,
+            per_page=per_page, error_out=False).items
+        return {'comments':[c.dict() for c in comments], 'pages':pages}
 
     def post(self, post_id):
         post = get_valid_post(post_id)
