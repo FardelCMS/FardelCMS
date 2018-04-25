@@ -5,6 +5,7 @@ Where a RatSnake app is created.
 import json
 
 import sqlalchemy
+
 from flask import Flask, request, jsonify, redirect, url_for, render_template
 
 from .ext import  db, jwt
@@ -13,7 +14,6 @@ from .config import DevConfig, ProdConfig
 __all__ = ['create_app']
 
 DEFAULT_APP_NAME = 'boghche'
-
 
 def create_app(develop=False):
     app = Flask(DEFAULT_APP_NAME)
@@ -51,4 +51,6 @@ def configure_errorhandlers(app):
 
 def configure_extentions(app):
     db.init_app(app)
+    with app.app_context():
+        db.configure_mappers()
     jwt.init_app(app)

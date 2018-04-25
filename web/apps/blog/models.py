@@ -3,6 +3,10 @@ import time
 from sqlalchemy.sql.expression import func
 from sqlalchemy.exc import IntegrityError 
 from sqlalchemy import event 
+from sqlalchemy_utils.types import TSVectorType
+from sqlalchemy_searchable import SearchQueryMixin, make_searchable
+
+from flask_sqlalchemy import BaseQuery
 
 from ...core.auth.models import AbstractModelWithPermission
 from ...ext import db
@@ -11,10 +15,16 @@ __all__ = (
     'Category', 'Post', 'Tag', 'Comment', 'PostStatus', 'setup_permissions'
 )
 
+make_searchable()
+
 def setup_permissions():
     Comment.setup_permissions()
     Category.setup_permissions()
     Post.setup_permissions()
+
+
+class SearchQuery(BaseQuery, SearchQueryMixin):
+    pass
 
 
 class PostStatus(db.Model):
@@ -83,6 +93,7 @@ class Category(db.Model, AbstractModelWithPermission):
 
 
 class Post(db.Model, AbstractModelWithPermission):
+    query_class = SearchQuery
     __tablename__ = "blog_posts"
     id = db.Column(db.Integer, primary_key=True, index=True)
     
@@ -103,7 +114,8 @@ class Post(db.Model, AbstractModelWithPermission):
 
     status = db.relationship('PostStatus')
     tags = db.relationship('Tag', secondary='blog_posts_tags')
-    # comments = db.relationship('Comment')
+
+    search_vector = db.Column(TSVectorType('title', 'content'))
 
     class Meta:
         permissions = (
