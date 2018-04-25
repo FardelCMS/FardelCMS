@@ -1,24 +1,6 @@
 # Another But Complete CMS
 
-Implemented features are:
-
-1. [Authentication](https://github.com/Boghche/Boghche/tree/master/web/core/auth)
-	* Group-Permission based Users
-	* Token base authentications
-	* APIs are listed below:
-		* Registeration API
-		* Login API
-		* RefreshToken API
-		* Logout API
-		* LogoutRefresh API
-		* ProfileApi API
-2. [Support for Media](https://github.com/Boghche/Boghche/tree/master/web/core/media)
-3. [A complete Blog](https://github.com/Boghche/Boghche/tree/master/web/apps/blog)
-3. [eCommerce](https://github.com/Boghche/Boghche/tree/master/web/apps/ecommerce)
-3. Admin Panel
-	* [Authentication API for admin](https://github.com/Boghche/Boghche/tree/master/web/core/panel/views/AUTHDOC.md)
-	* [Media API for admin](https://github.com/Boghche/Boghche/tree/master/web/core/panel/views/MEDIADOC.md)
-	* [Blog API for admin](https://github.com/Boghche/Boghche/tree/master/web/core/panel/views/BLOGDOC.md)
+[Documents](http://boghche.readthedocs.io/en/latest/)
 
 ## Installation
 
