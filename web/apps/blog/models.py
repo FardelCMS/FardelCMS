@@ -58,8 +58,8 @@ class Category(db.Model, AbstractModelWithPermission):
 
     class Meta:
         permissions = (
+            ('can_get_categories', 'Can get categories'),
             ('can_create_categories', 'Can create categories'),
-            ('can_edit_categories', 'Can edit categories'),
             ('can_delete_categories', 'Can delete categories'),
         )
 
@@ -115,7 +115,13 @@ class Post(db.Model, AbstractModelWithPermission):
         )
 
     def add_tags(self, tags):
-        pass
+        for tag_name in tags:
+            tag = Tag.query.filter_by(name=tag_name).first()
+            if not tag:
+                tag = Tag(name=tag_name)
+                db.session.add(tag)
+            self.tags.add(tag)
+            db.session.flush()
 
     @staticmethod
     def _bootstrap(count):
@@ -179,7 +185,7 @@ class Tag(db.Model):
     __tablename__ = "blog_tags"
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(64), index=True)
-    frequency = db.Column(db.Integer)
+    frequency = db.Column(db.Integer, default=0)
 
     posts = db.relationship('Post', secondary='blog_posts_tags')
 
