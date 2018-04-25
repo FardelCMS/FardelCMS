@@ -163,7 +163,7 @@ class CommentApi(Resource):
         author_email = data.get('author_email')
         parent_comment_id = data.get('parent_comment_id')
         content = data.get('content')
-        if not user_id and not (not author_email or not author_name):
+        if not user_id and (not author_email or not author_name):
             return {
                 "message":"Author name and Author email are required to\
  post a comment  or you need to sign in"
