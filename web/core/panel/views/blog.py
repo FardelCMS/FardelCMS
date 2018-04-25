@@ -137,16 +137,39 @@ class CategoryApi(Resource):
         '/blog/categories/<category_id>/'
     )
     method_decorators = {
-        'get': [permission_required('can_get_comments')] + panel_decorators,
-        'delete': [permission_required('can_delete_comments')] + panel_decorators,
-        'patch': [permission_required('can_edit_comments')] + panel_decorators,
+        'get': [permission_required('can_get_categories')] + panel_decorators,
+        'post': [permission_required('can_create_categories')] + panel_decorators,
+        'delete': [permission_required('can_delete_categories')] + panel_decorators,
     }
 
+    # Does it really need permission ?
     def get(self, category_id=None):
-        pass
+        if category_id:
+            abort(405)
+
+        categories = Category.query.all()
+        return {'categories':[c.dict() for c in categories]}
 
     def delete(self, category_id=None):
-        pass
+        if not category_id:
+            abort(405)
 
-    def patch(self, category_id=None):
-        pass
+        deleted = Category.query.filter_by(id=category_id).deleted()
+        db.session.commit()
+        if deleted:
+            return {'message':'Category deleted successfuly'}
+        return {"message":"No category with this id"}, 404
+
+    def post(self, category_id=None):
+        if category_id:
+            abort(405)
+
+        data = request.get_json()
+        name = data.get('name')
+        if not name:
+            return {"message":"Field name is required"}, 422
+
+        c = Category(name=name)
+        db.session.add(c)
+        db.session.commit()
+        return {'message':'Category successfuly added', 'category':c.dict()}
