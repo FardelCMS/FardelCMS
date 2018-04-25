@@ -8,6 +8,7 @@ import sqlalchemy
 
 from flask import Flask, request, jsonify, redirect, url_for, render_template
 
+from web import core
 from .ext import  db, jwt
 from .config import DevConfig, ProdConfig
 
@@ -20,6 +21,7 @@ def create_app(develop=False):
 
     configure_app(app, develop)
     configure_addons(app)
+    configure_views(app)
     configure_extentions(app)
     return app
 
@@ -48,6 +50,9 @@ def configure_addons(app):
 
 def configure_errorhandlers(app):
     pass
+
+def configure_views(app):
+    app.add_url_rule('/api/search/', 'search', core.search)
 
 def configure_extentions(app):
     db.init_app(app)
