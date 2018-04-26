@@ -31,5 +31,5 @@ Tag API
 Category API
 ================
 
-.. autoclass:: TagApi
+.. autoclass:: CategoryApi
 	:members: get

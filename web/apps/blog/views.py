@@ -1,4 +1,6 @@
 """
+.. _restapi/auth:
+
 Objects
 =======
 
@@ -24,21 +26,21 @@ Objects
 
 3. Tag
     :id: ID for the tag in database.
-    :name:
-    :frequency:
-    :posts:
+    :name: Name of the tag.
+    :frequency: 
+    :posts: list of PostObjects (conditional).
 
 
 4. Comment
     :id: ID for the comment in database.
-    :content:
-    :create_time:
-    :user:
-    :author_mail:
-    :author_name:
-    :replies:
-
-
+    :content: Content of the comment.
+    :create_time: (Timestamp) create time of the comment.
+    :user: UserObject :ref:`restapi-auth` if user is login.
+    :author_mail: Author email if user is not login.
+    :author_name: Author name if user is not login.
+    :replies: List of Comment Objects.
+    
+    
 """
 
 import math
@@ -132,12 +134,36 @@ class PostApi(Resource):
 
 @rest_resource
 class CommentApi(Resource):
+    """
+    :URL: ``/api/blog/posts/<post_id>/comments/``
+    """
     endpoints = ['/posts/<post_id>/comments/']
     method_decorators = {
         'post':[jwt_optional],
     }
 
     def get(self, post_id):
+        """
+        :optional url query string:
+            * page (default: 1)
+            * per_page (default: 16)
+
+        :response:
+            .. code-block:: python
+
+                {
+                    "comments":[list of CommentObjects]
+                    "pages": Number of pages
+                }
+
+        :errors:
+            If post_id is not in valid ( not a published post or not found ):
+            
+            :status_code: 404
+                .. code-block:: python
+
+                   {"message":"No post with this id"}
+        """
         post = get_valid_post(post_id)
         if not post:
             return {"message":"No post with this id"}, 404
@@ -153,6 +179,39 @@ class CommentApi(Resource):
         return {'comments':[c.dict() for c in comments], 'pages':pages}
 
     def post(self, post_id):
+        """
+        * Authorization token is not required but optional
+
+        :required data:
+            * author_name (if you dont use access_token)
+            * author_email (if you dont use access_token)
+            * content
+
+        :optional data:
+            * parent_comment_id
+        
+        :response:
+            .. code-block:: json
+
+                {"message":"Comment successfuly added"}
+
+        :errors:
+            If post_id is not in valid ( not a published post or not found ):
+            
+            :status_code: 404
+            :response:
+                .. code-block:: python
+
+                   {"message":"No post with this id"}
+
+            If commenter information (user_id or (author_name, author_email) ) is not provided:
+            
+            :status_code: 422
+            :response:
+                .. code-block:: python
+                    
+                   {"message":"Author name and Author email are required to post a comment  or you need to sign in"}
+        """
         post = get_valid_post(post_id)
         if not post:
             return {"message":"No post with this id"}, 404
@@ -183,8 +242,36 @@ class CommentApi(Resource):
 
 @rest_resource
 class TagApi(Resource):
+    """
+    :URL: ``/api/blog/tags/`` or ``/api/blog/tags/<tag_id>/posts/``
+    """
     endpoints = ['/tags/<tag_id>/posts/', '/tags/']
     def get(self, tag_id=None):
+        """
+        If tag_id is provided:
+            :response:
+                .. code-block:: python
+
+                    {
+                        "tag": TagObject(with posts)
+                    }
+
+            :errors:
+                If tag_id is not in valid:
+                
+                :status_code: 404
+                    .. code-block:: python
+
+                       {"message":"No tag found with this id"}
+
+        Without tag_id:
+            :response:
+                .. code-block:: python
+
+                    {
+                        "tags": [list of TagObjects(without posts)]
+                    }
+        """
         if tag_id:
             tag = Tag.query.filter_by(id=tag_id).first()
             if not tag:
@@ -197,15 +284,47 @@ class TagApi(Resource):
 
 @rest_resource
 class CategoryApi(Resource):
+    """
+    :URL: ``/api/blog/categories/`` or ``/api/blog/categories/<category_id>/posts/``
+    """
     endpoints = ['/categories/<category_id>/posts/', '/categories/']
     def get(self, category_id=None):
+        """
+        If category_id is provided:        
+            :optional url query string:
+                * page (default: 1)
+                * per_page (default: 16)
+
+            :response:
+                .. code-block:: python
+
+                    {
+                        "category": CategoryObject(with posts)
+                    }
+
+            :errors:
+                If category_id is not in valid:
+                
+                :status_code: 404
+                    .. code-block:: python
+
+                       {"message":"No category found with this id"}
+
+        Without category_id:
+            :response:
+                .. code-block:: python
+
+                    {
+                        "categories": [list of CategoryObject(without posts)]
+                    }
+        """
         if category_id:
             category = Category.query.filter_by(id=category_id).first()
             if not category:
                 return {"message":"No category found with this id"}, 404
                 
             page = request.args.get('page', 1, type=int)
-            per_page = request.args.get('page', 16, type=int)
+            per_page = request.args.get('per_page', 16, type=int)
 
             category_dict = category.dict()
             posts = Post.query.outerjoin(PostStatus # Alternatively use filter_by(status_id==1) ?
