@@ -52,6 +52,7 @@ from flask_jwt_extended import current_user, jwt_optional
 
 from . import mod
 from .models import *
+from web.ext import db
 
 
 blog_api = Api(mod)
