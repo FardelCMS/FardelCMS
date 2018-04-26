@@ -14,6 +14,20 @@ Boghche is another but complete cms. Its server is written in python and has Vue
 
 -------------
 
+============
+Installation
+============
+
+.. toctree::
+   :maxdepth: 2
+
+   server_install
+   web_install
+
+|  
+
+-------------
+
 To use Boghche server you can use Restful APIs documentation listed below.
 
 ============
@@ -29,6 +43,8 @@ Restful APIs
    restapi/admin/auth
    restapi/admin/blog
    restapi/admin/media
+
+|
 
 ------------
 
