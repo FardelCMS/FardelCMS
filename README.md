@@ -1,5 +1,10 @@
 # Another But Complete CMS
 
+![docs badge](https://readthedocs.org/projects/boghche/badge/?version=latest)
+
+
+Boghche is another but complete cms. Its server is written in python and has Vue + Nuxt, iOS and Android clients. Currently it has a complete blog and a complete eCommerce. Its goal is to make costumization very easy and simple.
+
 [Documents](http://boghche.readthedocs.io/en/latest/)
 
 ## Installation
