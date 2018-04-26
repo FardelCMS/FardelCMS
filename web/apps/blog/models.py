@@ -295,6 +295,10 @@ class Comment(db.Model, AbstractModelWithPermission):
             except IntegrityError:
                 db.session.rollback()
 
+    @property
+    def create_timestamp(self):
+        return convert_timestamp(self.create_time)
+
     def dict(self):
         obj = {
             'author_email':self.author_email, 'author_name':self.author_name,
