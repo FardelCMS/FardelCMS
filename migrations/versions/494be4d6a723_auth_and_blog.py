@@ -164,4 +164,3 @@ def downgrade():
     op.drop_index(op.f('ix_auth_groups_id'), table_name='auth_groups')
     op.drop_table('auth_groups')
     # ### end Alembic commands ###
-    sync_trigger(conn, 'blog_posts', 'search_vector', ['title', 'content'])
