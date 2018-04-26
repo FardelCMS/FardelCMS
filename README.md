@@ -1,5 +1,7 @@
 # Another But Complete CMS
 
+![docs badge](https://readthedocs.org/projects/boghche/badge/?version=latest)
+
 [Documents](http://boghche.readthedocs.io/en/latest/)
 
 ## Installation
