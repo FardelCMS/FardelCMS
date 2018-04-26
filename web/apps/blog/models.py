@@ -1,8 +1,7 @@
 import time
 
 from sqlalchemy.sql.expression import func
-from sqlalchemy.exc import IntegrityError 
-from sqlalchemy import event 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy_utils.types import TSVectorType
 from sqlalchemy_searchable import SearchQueryMixin, make_searchable
 
@@ -102,8 +101,9 @@ class Post(db.Model, AbstractModelWithPermission):
     content = db.Column(db.Text)
     summarized = db.Column(db.Text)
     edited_content = db.Column(db.Text)
-    create_time = db.Column(db.TIMESTAMP, default=time.time)
-    update_time = db.Column(db.TIMESTAMP, default=time.time, onupdate=time.time)
+    create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
+    update_time = db.Column(db.TIMESTAMP,
+        default=func.current_timestamp(), onupdate=func.current_timestamp())
     publish_time = db.Column(db.TIMESTAMP)
 
     status_id = db.Column(db.Integer, db.ForeignKey('blog_post_statuses.id'))
@@ -143,7 +143,7 @@ class Post(db.Model, AbstractModelWithPermission):
         for _ in range(count):
             p = Post(
                 title=text.title(), content=text.text(quantity=100),
-                summarized=text.text(quantity=3), publish_time=time.time(),
+                summarized=text.text(quantity=3), publish_time=func.current_timestamp(),
                 status_id=1, allow_comment=True,
                 category_id=Category.query.order_by(func.random()).first().id,                
             )
@@ -239,7 +239,7 @@ class Comment(db.Model, AbstractModelWithPermission):
     author_email = db.Column(db.String(128))
 
     content = db.Column(db.Text)
-    create_time = db.Column(db.TIMESTAMP, default=time.time)
+    create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
     approved = db.Column(db.Boolean, default=True)
 
     parent_comment_id = db.Column(db.Integer, db.ForeignKey('blog_comments.id'))
