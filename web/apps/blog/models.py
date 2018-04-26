@@ -107,14 +107,14 @@ class Post(db.Model, AbstractModelWithPermission):
         default=func.current_timestamp(), onupdate=func.current_timestamp())
     publish_time = db.Column(db.TIMESTAMP)
 
-    status_id = db.Column(db.Integer, db.ForeignKey('blog_post_statuses.id'))
+    status_id = db.Column(db.Integer, db.ForeignKey('blog_post_statuses.id'), index=True)
     allow_comment = db.Column(db.Boolean, default=True)
 
-    category_id = db.Column(db.Integer, db.ForeignKey('blog_categories.id'))
-    category = db.relationship('Category', backref='posts')
+    category_id = db.Column(db.Integer, db.ForeignKey('blog_categories.id'), index=True)
+    category = db.relationship('Category', lazy="selectin")
 
     status = db.relationship('PostStatus')
-    tags = db.relationship('Tag', secondary='blog_posts_tags')
+    tags = db.relationship('Tag', secondary='blog_posts_tags', lazy="selectin")
 
     search_vector = db.Column(TSVectorType('title', 'content'))
 
@@ -213,7 +213,7 @@ class Tag(db.Model):
     name = db.Column(db.String(64), index=True)
     frequency = db.Column(db.Integer, default=0)
 
-    posts = db.relationship('Post', secondary='blog_posts_tags')
+    posts = db.relationship('Post', secondary='blog_posts_tags', lazy='select')
 
     @staticmethod
     def _bootstrap(count):
@@ -241,8 +241,8 @@ class Tag(db.Model):
 class PostTag(db.Model):
     __tablename__ = "blog_posts_tags"
     id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'))
-    tag_id = db.Column(db.Integer, db.ForeignKey('blog_tags.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), index=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('blog_tags.id'), index=True)
 
 
 class Comment(db.Model, AbstractModelWithPermission):
@@ -256,12 +256,13 @@ class Comment(db.Model, AbstractModelWithPermission):
     create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
     approved = db.Column(db.Boolean, default=True)
 
-    parent_comment_id = db.Column(db.Integer, db.ForeignKey('blog_comments.id'))
+    parent_comment_id = db.Column(db.Integer, db.ForeignKey('blog_comments.id'), index=True)
     post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
 
     user = db.relationship("User")
-    parent_comment = db.relationship('Comment', remote_side=[id], backref='replies')
+    parent_comment = db.relationship('Comment',
+        remote_side=[id], backref='replies', lazy="selectin")
 
     class Meta:
         permissions = (
@@ -302,7 +303,7 @@ class Comment(db.Model, AbstractModelWithPermission):
     def dict(self):
         obj = {
             'author_email':self.author_email, 'author_name':self.author_name,
-            'id':self.id, "content":self.content, 'create_time':self.create_time,
+            'id':self.id, "content":self.content, 'create_time':self.create_timestamp,
             'replies': [c.dict() for c in self.replies]
         }
         if self.user:
