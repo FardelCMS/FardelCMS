@@ -1,4 +1,4 @@
-"""empty message
+"""Auth and Blog
 
 Revision ID: 494be4d6a723
 Revises: 
@@ -93,9 +93,9 @@ def upgrade():
     sa.Column('content', sa.Text(), nullable=True),
     sa.Column('summarized', sa.Text(), nullable=True),
     sa.Column('edited_content', sa.Text(), nullable=True),
-    sa.Column('create_time', sa.Integer(), nullable=True),
-    sa.Column('update_time', sa.Integer(), nullable=True),
-    sa.Column('publish_time', sa.Integer(), nullable=True),
+    sa.Column('create_time', sa.TIMESTAMP(), nullable=True),
+    sa.Column('update_time', sa.TIMESTAMP(), nullable=True),
+    sa.Column('publish_time', sa.TIMESTAMP(), nullable=True),
     sa.Column('status_id', sa.Integer(), nullable=True),
     sa.Column('allow_comment', sa.Boolean(), nullable=True),
     sa.Column('category_id', sa.Integer(), nullable=True),
@@ -111,7 +111,7 @@ def upgrade():
     sa.Column('author_name', sa.String(length=32), nullable=True),
     sa.Column('author_email', sa.String(length=128), nullable=True),
     sa.Column('content', sa.Text(), nullable=True),
-    sa.Column('create_time', sa.Integer(), nullable=True),
+    sa.Column('create_time', sa.TIMESTAMP(), nullable=True),
     sa.Column('approved', sa.Boolean(), nullable=True),
     sa.Column('parent_comment_id', sa.Integer(), nullable=True),
     sa.Column('post_id', sa.Integer(), nullable=True),

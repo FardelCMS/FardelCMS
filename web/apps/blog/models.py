@@ -102,9 +102,9 @@ class Post(db.Model, AbstractModelWithPermission):
     content = db.Column(db.Text)
     summarized = db.Column(db.Text)
     edited_content = db.Column(db.Text)
-    create_time = db.Column(db.Integer, default=time.time)
-    update_time = db.Column(db.Integer, default=time.time, onupdate=time.time)
-    publish_time = db.Column(db.Integer)
+    create_time = db.Column(db.TIMESTAMP, default=time.time)
+    update_time = db.Column(db.TIMESTAMP, default=time.time, onupdate=time.time)
+    publish_time = db.Column(db.TIMESTAMP)
 
     status_id = db.Column(db.Integer, db.ForeignKey('blog_post_statuses.id'))
     allow_comment = db.Column(db.Boolean, default=True)
@@ -239,7 +239,7 @@ class Comment(db.Model, AbstractModelWithPermission):
     author_email = db.Column(db.String(128))
 
     content = db.Column(db.Text)
-    create_time = db.Column(db.Integer, default=time.time)
+    create_time = db.Column(db.TIMESTAMP, default=time.time)
     approved = db.Column(db.Boolean, default=True)
 
     parent_comment_id = db.Column(db.Integer, db.ForeignKey('blog_comments.id'))
