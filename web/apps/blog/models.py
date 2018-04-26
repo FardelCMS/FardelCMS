@@ -9,6 +9,7 @@ from flask_sqlalchemy import BaseQuery
 
 from ...core.auth.models import AbstractModelWithPermission
 from ...ext import db
+from web.core.utils import convert_timestamp
 
 __all__ = (
     'Category', 'Post', 'Tag', 'Comment', 'PostStatus', 'setup_permissions'
@@ -160,6 +161,18 @@ class Post(db.Model, AbstractModelWithPermission):
             except IntegrityError:
                 db.session.rollback()
 
+    @property
+    def create_timestamp(self):
+        return convert_timestamp(self.create_time)
+
+    @property
+    def update_timestamp(self):
+        return convert_timestamp(self.update_time)
+
+    @property
+    def publish_timestamp(self):
+        return convert_timestamp(self.publish_time)
+
     def get_comments(self, page=1):
         """ What is use of this function? """
         return Comment.query.filter_by(post_id=self.id, parent_comment_id=None
@@ -175,7 +188,8 @@ class Post(db.Model, AbstractModelWithPermission):
     def dict(self, summarized=True, admin=False):
         obj = {
             'id': self.id, 'title':self.title, 'allow_comment': self.allow_comment,
-            'create_time':self.create_time, 'update_time':self.update_time,
+            'create_time':self.create_timestamp, 'update_time':self.update_timestamp,
+            'publish_time':self.publish_timestamp,
             'category':self.category.dict(), 'tags':[tag.dict() for tag in self.tags],
             'image':self.image, 'comments_count': self.comments_count
         }
