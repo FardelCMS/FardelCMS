@@ -7,6 +7,7 @@ from sqlalchemy_searchable import SearchQueryMixin, make_searchable
 
 from flask_sqlalchemy import BaseQuery
 
+from ...core.seo import SeoModel
 from ...core.auth.models import AbstractModelWithPermission
 from ...ext import db
 from web.core.utils import convert_timestamp
@@ -61,7 +62,7 @@ class PostStatus(db.Model):
                 db.session.commit()
 
 
-class Category(db.Model, AbstractModelWithPermission):
+class Category(db.Model, SeoModel, AbstractModelWithPermission):
     __tablename__ = "blog_categories"
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(64), unique=True)
@@ -92,7 +93,7 @@ class Category(db.Model, AbstractModelWithPermission):
         return obj
 
 
-class Post(db.Model, AbstractModelWithPermission):
+class Post(db.Model, SeoModel, AbstractModelWithPermission):
     query_class = SearchQuery
     __tablename__ = "blog_posts"
     id = db.Column(db.Integer, primary_key=True, index=True)
@@ -113,7 +114,7 @@ class Post(db.Model, AbstractModelWithPermission):
     category_id = db.Column(db.Integer, db.ForeignKey('blog_categories.id'), index=True)
     category = db.relationship('Category', lazy="selectin")
 
-    status = db.relationship('PostStatus')
+    status = db.relationship('PostStatus', lazy="joined")
     tags = db.relationship('Tag', secondary='blog_posts_tags', lazy="selectin")
 
     search_vector = db.Column(TSVectorType('title', 'content'))
@@ -145,7 +146,8 @@ class Post(db.Model, AbstractModelWithPermission):
             p = Post(
                 title=text.title(), content=text.text(quantity=100),
                 summarized=text.text(quantity=3), publish_time=func.current_timestamp(),
-                status_id=1, allow_comment=True,
+                status_id=PostStatus.query.filter_by(name="Draft").first().id,
+                allow_comment=True,
                 category_id=Category.query.order_by(func.random()).first().id,                
             )
             db.session.add(p)
@@ -262,7 +264,8 @@ class Comment(db.Model, AbstractModelWithPermission):
 
     user = db.relationship("User")
     parent_comment = db.relationship('Comment',
-        remote_side=[id], backref='replies', lazy="selectin")
+        remote_side=[id], lazy="select")
+    replies = db.relationship('Comment', lazy="joined")
 
     class Meta:
         permissions = (
