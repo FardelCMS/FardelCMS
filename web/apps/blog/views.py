@@ -42,7 +42,6 @@ Objects
     
     
 """
-
 import math
 
 from flask import request
@@ -126,10 +125,11 @@ class PostApi(Resource):
 
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 16, type=int)
-        pages = math.ceil(Post.query.count() / per_page)
-        posts = Post.query.outerjoin(PostStatus # Alternatively use filter_by(status_id==1) ?
-            ).filter(PostStatus.name=='Publish').order_by(Post.publish_time
-            ).paginate(page=page, per_page=per_page, error_out=False).items
+        query = Post.query.filter(PostStatus.name=="Publish").join(
+            PostStatus, Post.status_id==PostStatus.id)
+        pages = math.ceil(query.count() / per_page)
+        posts = query.order_by(Post.publish_time).paginate(page=page,
+                    per_page=per_page, error_out=False).items
         return {'posts':[post.dict() for post in posts], 'pages':pages}
 
 
