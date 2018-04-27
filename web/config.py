@@ -18,7 +18,10 @@ class BaseConfig(object):
 
     ACTIVE_APPS = (
         "blog",
+        "ecommerce"
     )
+
+
 
     # MAIL_SERVER = ""
     # MAIL_USERNAME = ""
@@ -48,5 +51,5 @@ class DevConfig(BaseConfig):
 
 
 class ProdConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = ''
+    SQLALCHEMY_DATABASE_URI = 'postgresql://dev_shop:123@localhost/dev_shop'
     DEBUG = False
