@@ -1,14 +1,5 @@
-.. Boghche documentation master file, created by
-   sphinx-quickstart on Wed Apr 25 20:12:09 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Boghche another but complete CMS
-===================================
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Boghche another but complete RESTful CMS
+========================================
 
 Boghche is another but complete cms. Its server is written in python and has Vue + Nuxt, iOS and Android clients. Currently it has a complete blog and a complete eCommerce. Its goal is to make costumization very easy and simple.
 
