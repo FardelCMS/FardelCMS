@@ -1,14 +1,19 @@
+"""
+Objects
+=======
+"""
+
 from flask import request
-from flask_restful import Api, abort
 from flask_jwt_extended import current_user, jwt_required
 
+from web.core.rest import create_api, abort, Resource
 from web.core.auth.models import User, Group, Permission
 from web.ext import db
 
 from .. import mod, staff_required_rest, admin_required_rest, permission_required
 from ...base import BaseResource, GetBaseResource, PostBaseResource, DeleteBaseResource
 
-panel_auth_api = Api(mod)
+panel_auth_api = create_api(mod)
 
 panel_decorators = [staff_required_rest, jwt_required]
 
@@ -42,7 +47,7 @@ class UserApi(PostBaseResource, DeleteBaseResource):
 
         return super(UserApi, self).delete(obj_id=obj_id)
 
-    def put(self, obj_id=None):
+    def patch(self, obj_id=None):
         if not obj_id:
             return self.obj_id_required()
 

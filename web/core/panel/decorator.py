@@ -16,7 +16,7 @@ def permission_required(permission):
         def decorated_function(*args, **kwargs):
             if current_user and current_user.can(permission):
                 return f(*args, **kwargs)
-            rest_abort(403)
+            return rest_abort(403)
         return decorated_function
     return decorator
 

@@ -1,22 +1,32 @@
+"""
+Objects
+=======
+
+1. Post
+    :id:
+    :title:
+"""
+
 from flask import request
-from flask_restful import Api, Resource, abort
 from flask_jwt_extended import jwt_required
 
+from web.core.rest import create_api, abort, Resource
 from web.apps.blog.models import Post, Category, Tag, Comment
 from web.ext import db
 
 from .. import mod, staff_required_rest, admin_required_rest, permission_required
 
-panel_blog_api = Api(mod)
+panel_blog_api = create_api(mod)
 
 panel_decorators = [staff_required_rest, jwt_required]
 
 def rest_resource(resource_cls):
     """ Decorator for adding resources to Api App """
-    panel_auth_api.add_resource(resource_cls, *resource_cls.endpoints)
+    panel_blog_api.add_resource(resource_cls, *resource_cls.endpoints)
     return resource_cls
 
 
+@rest_resource
 class PostApi(Resource):
     endpoints = ('/blog/posts/', '/blog/posts/<post_id>/')
     method_decorators = {
@@ -95,6 +105,7 @@ class PostApi(Resource):
             pass
 
 
+@rest_resource
 class CommentApi(Resource):
     endpoints = (
         '/blog/posts/<post_id>/comments/', # To get
@@ -116,6 +127,7 @@ class CommentApi(Resource):
         pass
 
 
+@rest_resource
 class TagApi(Resource):
     endpoints = (
         '/blog/tags/',

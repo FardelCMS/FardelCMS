@@ -46,15 +46,15 @@ import math
 
 from flask import request
 
-from flask_restful import Api, abort, Resource
 from flask_jwt_extended import current_user, jwt_optional
 
+from web.core.rest import create_api, abort, Resource
 from . import mod
 from .models import *
 from web.ext import db
 
 
-blog_api = Api(mod)
+blog_api = create_api(mod)
     
 
 def rest_resource(resource_cls):

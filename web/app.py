@@ -48,9 +48,6 @@ def configure_addons(app):
         except:
             print("[WARNING] : %s app doesn't have blueprint." % app_name)
 
-def configure_errorhandlers(app):
-    pass
-
 def configure_views(app):
     app.add_url_rule('/api/search/', 'search', core.search)
 

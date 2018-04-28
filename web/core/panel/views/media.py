@@ -1,19 +1,37 @@
+"""
+
+Objects
+=======
+
+1. File
+    :name: 
+    :url:
+    :path:
+
+
+2. Directory
+    :name: Name of the directory
+    :path: Path of the folder
+
+
+"""
+
 import os
 
 from flask import request, current_app
-from flask_restful import Api, abort
 from flask_jwt_extended import jwt_required
 
+from web.core.rest import create_api, abort, Resource
 from web.ext import db
 
 from .. import mod, staff_required_rest, permission_required
 from ...base import BaseResource
 from ...media.models import File
 
-panel_media_api = Api(mod)
+
+panel_media_api = create_api(mod)
 
 panel_decorators = [staff_required_rest, jwt_required]
-
 
 def rest_resource(resource_cls):
     """ Decorator for adding resources to Api App """
@@ -29,7 +47,10 @@ def is_safe_path(basedir, path, follow_symlinks=True):
 
 
 @rest_resource
-class FileApi(BaseResource):
+class FileApi(Resource):
+    """
+    :URL: ``/api/panel/files/``
+    """
     endpoints = ['/files/']
     method_decorators = {
         'get': [permission_required('can_see_directory')] + panel_decorators,
@@ -37,18 +58,30 @@ class FileApi(BaseResource):
         'delete': [permission_required('can_delete_files')] + panel_decorators,
     }
     def get(self):
-        """ Directory listing of upload folder """
+        """
+        Directory listing of upload folder
+        
+        :user permission required: can_see_directory
+
+        """
         uploads_folder = current_app.config['UPLOAD_FOLDER']
         path = request.args.get('path', '')
         lookup_folder = uploads_folder / path
+        if not os.path.exists(str(os.getcwd() / lookup_folder)):
+            return {"message": "No such a folder"}, 404
+
         if is_safe_path(str(os.getcwd() / uploads_folder), str(lookup_folder)):
             response = {'files': [], 'directories':[]}
             for obj in os.listdir(lookup_folder):
                 if os.path.isdir(lookup_folder / obj):
-                    response['directories'].append(obj)
+                    response['directories'].append({'name':obj, 'path':os.path.join(path, obj)})
                 else:
                     file = File(path, file_name=obj)
-                    file = {'name':obj, 'url':file.url}
+                    file = {
+                        'name':obj,
+                        'url':file.url,
+                        'path':os.path.join(path, obj)
+                    }
                     response['files'].append(file)
             return response
         return {"message":"Invalid path"}, 422
@@ -93,6 +126,9 @@ class FileApi(BaseResource):
 
 @rest_resource
 class ImageAlbumApi(BaseResource):
+    """
+    :URL: ``/api/panel/image_album/``    
+    """
     endpoints = ['/image_album/']
     method_decorators = {
         'get': [permission_required('can_see_directory')] + panel_decorators,

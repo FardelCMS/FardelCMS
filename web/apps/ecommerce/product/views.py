@@ -17,15 +17,15 @@ Objects
 """
 
 from flask import request
-from flask_restful import Api, abort, Resource
 
+from web.core.rest import create_api, abort, Resource
 from .models import *
 from .. import mod
 from web.ext import db
 
 
-ecommerce_product_api = Api(mod)
-    
+ecommerce_product_api = create_api(mod)
+
 
 def rest_resource(resource_cls):
     """ Decorator for adding resources to Api App """
