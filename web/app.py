@@ -9,7 +9,7 @@ import sqlalchemy
 from flask import Flask, request, jsonify, redirect, url_for, render_template
 
 from web import core
-from .ext import  db, jwt
+from .ext import  db, jwt, cache
 from .config import DevConfig, ProdConfig
 
 __all__ = ['create_app']
@@ -56,3 +56,4 @@ def configure_extentions(app):
     with app.app_context():
         db.configure_mappers()
     jwt.init_app(app)
+    cache.init_app(app)

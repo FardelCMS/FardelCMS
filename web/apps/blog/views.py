@@ -51,7 +51,7 @@ from flask_jwt_extended import current_user, jwt_optional
 from web.core.rest import create_api, abort, Resource
 from . import mod
 from .models import *
-from web.ext import db
+from web.ext import db, cache
 
 
 blog_api = create_api(mod)
@@ -82,6 +82,8 @@ class PostApi(Resource):
     :URL: ``/api/blog/posts/`` and ``/api/blog/posts/<post_id>/``
     """
     endpoints = ['/posts/', '/posts/<post_id>/']
+
+    @cache.cached(timeout=50)
     def get(self, post_id=None):
         """
         :optional url parameter:
@@ -140,9 +142,9 @@ class CommentApi(Resource):
     """
     endpoints = ['/posts/<post_id>/comments/']
     method_decorators = {
+        'get': [cache.cached(timeout=20)],
         'post':[jwt_optional],
     }
-
     def get(self, post_id):
         """
         :optional url query string:
@@ -247,6 +249,8 @@ class TagApi(Resource):
     :URL: ``/api/blog/tags/`` or ``/api/blog/tags/<tag_id>/posts/``
     """
     endpoints = ['/tags/<tag_id>/posts/', '/tags/']
+
+    @cache.cached(timeout=50)
     def get(self, tag_id=None):
         """
         If tag_id is provided:
@@ -289,6 +293,8 @@ class CategoryApi(Resource):
     :URL: ``/api/blog/categories/`` or ``/api/blog/categories/<category_id>/posts/``
     """
     endpoints = ['/categories/<category_id>/posts/', '/categories/']
+    
+    @cache.cached(timeout=50)
     def get(self, category_id=None):
         """
         If category_id is provided:        

@@ -21,7 +21,7 @@ class BaseConfig(object):
         "ecommerce"
     )
 
-
+    CACHE_TYPE = 'simple'
 
     # MAIL_SERVER = ""
     # MAIL_USERNAME = ""
