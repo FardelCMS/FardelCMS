@@ -153,6 +153,13 @@ class Post(db.Model, SeoModel, AbstractModelWithPermission):
                 allow_comment=True,
                 category_id=Category.query.order_by(func.random()).first().id,                
             )
+            p = Post(
+                title=text.title(), content=text.text(quantity=100),
+                summarized=text.text(quantity=3), publish_time=func.current_timestamp(),
+                status_id=PostStatus.query.filter_by(name="Publish").first().id,
+                allow_comment=True,
+                category_id=Category.query.order_by(func.random()).first().id,                
+            )
             db.session.add(p)
 
             for i in range(3):
@@ -161,10 +168,10 @@ class Post(db.Model, SeoModel, AbstractModelWithPermission):
 
             db.session.flush()
 
-            try:
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
+            # try:
+            db.session.commit()
+            # except IntegrityError:
+            #     db.session.rollback()
 
     @property
     def create_timestamp(self):
