@@ -61,6 +61,9 @@ class PostStatus(db.Model):
                 db.session.add(ps)
                 db.session.commit()
 
+    def dict(self):
+        return dict(id=self.id, name=self.name)
+
 
 class Category(db.Model, SeoModel, AbstractModelWithPermission):
     __tablename__ = "blog_categories"
@@ -201,7 +204,7 @@ class Post(db.Model, SeoModel, AbstractModelWithPermission):
             obj['content'] = self.content
 
         if admin:
-            obj['status'] = self.status 
+            obj['status'] = self.status.dict()
             
         if admin and not summarized:
             obj['editted_content'] = self.editted_content
