@@ -49,6 +49,7 @@ from flask import request
 from flask_jwt_extended import current_user, jwt_optional
 
 from web.core.rest import create_api, abort, Resource
+from web.core.utils import cache_get_key
 from . import mod
 from .models import *
 from web.ext import db, cache
@@ -77,6 +78,7 @@ def create_permissions():
 
 
 @rest_resource
+@cache_get_key
 class PostApi(Resource):
     """
     :URL: ``/api/blog/posts/`` and ``/api/blog/posts/<post_id>/``
@@ -136,6 +138,7 @@ class PostApi(Resource):
 
 
 @rest_resource
+@cache_get_key
 class CommentApi(Resource):
     """
     :URL: ``/api/blog/posts/<post_id>/comments/``
@@ -288,6 +291,7 @@ class TagApi(Resource):
 
 
 @rest_resource
+@cache_get_key
 class CategoryApi(Resource):
     """
     :URL: ``/api/blog/categories/`` or ``/api/blog/categories/<category_id>/posts/``
