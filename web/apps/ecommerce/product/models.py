@@ -1,9 +1,16 @@
+import math
 import time
 
 from sqlalchemy.dialects.postgresql import JSONB
 
 from web.core.seo import SeoModel
 from web.ext import db
+
+__all__ = (
+    "ProductCategory", "Collection", "ProductType",
+    "Product", "ProductVariant", "ProductAttribute",
+    "AttributeChoiceValue",
+)
 
 
 class ProductCategory(db.Model, SeoModel):
@@ -18,17 +25,19 @@ class ProductCategory(db.Model, SeoModel):
     parent = db.relationship('ProductCategory', remote_side=[id])
     children = db.relationship('ProductCategory')
 
-    def dict(self):
-        return {
-        
-        }.update(self.seo_dict())
-
-
-class ProductCategories(db.Model):
-    __tablename__ = "product_products_categories"
-    id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product_products.id'))
-    category_id = db.Column(db.Integer, db.ForeignKey('product_categories.id'))
+    def dict(self, products=False, page=None, per_page=None):
+        obj = dict(
+            id=self.id,
+            name=self.name,
+            subcategories=[cat.dict() for cat in self.children]
+        )
+        if products:
+            query = Product.query.filter_by(category_id=self.id, is_published=True)
+            pages = math.ceil(query.count() / per_page)
+            products = query.paginate(page=page, per_page=per_page, error_out=False).items
+            obj.update(pages=pages, products=[p.dict() for p in products])
+            obj.update(self.seo_dict())
+        return obj
 
 
 class ProductType(db.Model):
@@ -76,6 +85,7 @@ class Product(db.Model, SeoModel):
 
     updated_at = db.Column(db.Integer, default=time.time, onupdate=time.time)
 
+    images = db.Column(JSONB(), default={})
     attributes = db.Column(JSONB(), default={})
 
     is_published = db.Column(db.Boolean, default=True)
@@ -85,11 +95,17 @@ class Product(db.Model, SeoModel):
     product_type_id = db.Column(db.Integer, db.ForeignKey('product_product_types.id'))
 
     product_type = db.relationship('ProductType')
+    product_variants = db.relationship('ProductVariant')
 
-    def dict(self):
-        return {
-        
-        }.update(self.seo_dict())
+    def dict(self, detailed=False):
+        obj = dict(name=self.name, price=self.price)
+        if detailed:
+            obj.update(variants=[v.dict() for v in self.product_variants])
+            obj.update(description=self.description, images=self.images)
+            obj.update(self.seo_dict())
+        else:
+            obj.update(image=self.images[0])
+        return obj
 
 
 class ProductVariant(db.Model):
@@ -102,7 +118,6 @@ class ProductVariant(db.Model):
 
     product_id = db.Column(db.Integer, db.ForeignKey('product_products.id'))
     attributes = db.Column(JSONB(), default={})
-    images = db.Column(JSONB())
     quantity = db.Column(db.Integer, default=1)
     quantity_allocated = db.Column(db.Integer, default=0)
 
@@ -131,9 +146,8 @@ class ProductVariant(db.Model):
         return self.product.images[0]
 
     def dict(self):
-        return {
-
-        }
+        obj = dict(sku=self.sku, name=self.name,
+            price_override=self.price_override,)
 
 
 class ProductAttribute(db.Model):
