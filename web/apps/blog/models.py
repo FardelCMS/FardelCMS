@@ -146,25 +146,31 @@ class Post(db.Model, SeoModel, AbstractModelWithPermission):
         text = Text(locale='en')
 
         for _ in range(count):
-            p = Post(
+            pd = Post(
                 title=text.title(), content=text.text(quantity=100),
                 summarized=text.text(quantity=3), publish_time=func.current_timestamp(),
                 status_id=PostStatus.query.filter_by(name="Draft").first().id,
                 allow_comment=True,
                 category_id=Category.query.order_by(func.random()).first().id,                
             )
-            p = Post(
+            db.session.add(pd)
+
+            for i in range(3):
+                t = Tag.query.order_by(func.random()).first()
+                pd.tags.append(t)
+                
+            pp = Post(
                 title=text.title(), content=text.text(quantity=100),
                 summarized=text.text(quantity=3), publish_time=func.current_timestamp(),
                 status_id=PostStatus.query.filter_by(name="Publish").first().id,
                 allow_comment=True,
                 category_id=Category.query.order_by(func.random()).first().id,                
             )
-            db.session.add(p)
+            db.session.add(pp)
 
             for i in range(3):
                 t = Tag.query.order_by(func.random()).first()
-                p.tags.append(t)
+                pp.tags.append(t)
 
             db.session.flush()
 
