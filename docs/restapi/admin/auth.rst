@@ -1,4 +1,4 @@
-Admin Blog Management
+Admin User Management
 =====================
 
 .. automodule:: web.core.panel.views.auth
