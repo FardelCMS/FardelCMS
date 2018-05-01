@@ -14,7 +14,7 @@ from web.core.rest import create_api, abort, Resource
 from web.apps.blog.models import Post, Category, Tag, Comment
 from web.ext import db
 
-from .. import mod, staff_required_rest, admin_required_rest, permission_required
+from web.core.panel import mod, staff_required_rest, admin_required_rest, permission_required
 
 panel_blog_api = create_api(mod)
 
