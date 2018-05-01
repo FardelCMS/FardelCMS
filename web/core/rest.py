@@ -8,6 +8,10 @@ errors = {
     'NoAuthorizationError': {
         'message': "Missing Authorization header",
         'status': 403,
+    },
+    'ExpiredSignatureError': {
+    	'message': "Token is already expired",
+    	'status': 401
     }
 }
 
