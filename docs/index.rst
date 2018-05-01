@@ -31,6 +31,7 @@ Restful APIs
    restapi/auth
    restapi/blog
    restapi/media
+   restapi/ecommerce/product
    restapi/admin/auth
    restapi/admin/blog
    restapi/admin/media

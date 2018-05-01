@@ -1,7 +1,7 @@
 Admin Blog Management
 =====================
 
-.. automodule:: web.core.panel.views.blog
+.. automodule:: web.apps.blog.admin
 
 |
 

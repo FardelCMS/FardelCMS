@@ -10,7 +10,7 @@ User API
 ================
 
 .. autoclass:: UserApi
-	:members: get, delete, post, patch
+	:members: get, delete, patch
 
 =================
 PermissionApi API
@@ -24,4 +24,4 @@ Group API
 =========
 
 .. autoclass:: GroupApi
-	:members: get, post, delete
+	:members: get
