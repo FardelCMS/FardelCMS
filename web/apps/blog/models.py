@@ -302,7 +302,8 @@ class Comment(db.Model, AbstractModelWithPermission):
             c = Comment(
                 content=text.text(quantity=10),
                 user_id=User.query.order_by(func.random()).first().id,
-                post_id=Post.query.order_by(func.random()).first().id,                
+                post_id=Post.query.filter_by(status_id=1
+                    ).order_by(func.random()).first().id,                
             )
             db.session.add(c)
 
