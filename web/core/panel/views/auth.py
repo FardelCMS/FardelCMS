@@ -63,6 +63,8 @@ class UserApi(BaseResource):
 
     def get(self, user_id=None):
         """
+        To get user/users we use this:
+
         * Authorization header with access token required
         * permssion can_get_users is required
 
@@ -106,6 +108,8 @@ class UserApi(BaseResource):
 
     def delete(self, user_id=None):
         """
+        To delete a user we use this:
+
         * Authorization header with access token required
         * Being admin is required
         * Deleting the current user is not possible
@@ -145,6 +149,8 @@ class UserApi(BaseResource):
 
     def patch(self, user_id=None):
         """
+        For update a user we use this:
+
         * Authorization header with access token required
         * Being admin is required
 
@@ -206,6 +212,8 @@ class PermissionApi(BaseResource):
 
     def get(self):
         """
+        To get all permissions we use this:
+
         * Authorization header with access token required
         * permssion can_get_permissions is required
 
@@ -245,6 +253,8 @@ class GroupApi(BaseResource):
 
     def get(self, group_id=None):
         """
+        To get all groups we use this:
+        
         * Authorization header with access token required
         * permssion can_get_groups is required
 
