@@ -7,10 +7,10 @@ from sqlalchemy_searchable import SearchQueryMixin, make_searchable
 
 from flask_sqlalchemy import BaseQuery
 
-from ...core.seo import SeoModel
-from ...core.auth.models import AbstractModelWithPermission
-from ...ext import db
-from web.core.utils import convert_timestamp
+from fardel.core.seo import SeoModel
+from fardel.core.auth.models import AbstractModelWithPermission
+from fardel.ext import db
+from fardel.core.utils import convert_timestamp
 
 __all__ = (
     'Category', 'Post', 'Tag', 'Comment', 'PostStatus', 'setup_permissions'

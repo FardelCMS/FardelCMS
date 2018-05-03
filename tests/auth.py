@@ -1,5 +1,5 @@
-from web.ext import db
-from web.core.auth.models import User
+from fardel.ext import db
+from fardel.core.auth.models import User
 
 from .base import BaseTestCase
 

@@ -18,10 +18,10 @@ Objects
 
 from flask import request
 
-from web.core.rest import create_api, abort, Resource
+from fardel.core.rest import create_api, abort, Resource
 from .models import *
 from .. import mod
-from web.ext import db, cache
+from fardel.ext import db, cache
 
 
 ecommerce_product_api = create_api(mod)

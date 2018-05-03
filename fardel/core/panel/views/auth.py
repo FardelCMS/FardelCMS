@@ -22,9 +22,9 @@ Objects
 from flask import request
 from flask_jwt_extended import current_user, jwt_required
 
-from web.core.rest import create_api, abort, Resource
-from web.core.auth.models import User, Group, Permission
-from web.ext import db
+from fardel.core.rest import create_api, abort, Resource
+from fardel.core.auth.models import User, Group, Permission
+from fardel.ext import db
 
 from .. import mod, staff_required_rest, admin_required_rest, permission_required
 from ...base import BaseResource, GetBaseResource, PostBaseResource, DeleteBaseResource

@@ -1,6 +1,6 @@
-from web.ext import db
+from fardel.ext import db
 
-from web.core.auth.models import User, Group
+from fardel.core.auth.models import User, Group
 
 from ..base import BasePanelTestCase
 

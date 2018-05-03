@@ -1,7 +1,7 @@
 import sys
 
-from web.ext import db
-from web.core.auth.models import User
+from fardel.ext import db
+from fardel.core.auth.models import User
 from ..base import BasePanelTestCase
 
 if sys.version_info <= (2, 7):

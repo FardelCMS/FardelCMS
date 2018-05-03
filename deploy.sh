@@ -1,1 +1,1 @@
-gunicorn --workers=9 --worker-class="egg:meinheld#gunicorn_worker" wsgi:app
+gunicorn --workers=4 --worker-class="egg:meinheld#gunicorn_worker" wsgi:app --bind localhost:5000

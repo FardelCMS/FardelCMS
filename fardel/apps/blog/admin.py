@@ -10,11 +10,11 @@ Objects
 from flask import request
 from flask_jwt_extended import jwt_required
 
-from web.core.rest import create_api, abort, Resource
-from web.apps.blog.models import Post, Category, Tag, Comment
-from web.ext import db
+from fardel.core.rest import create_api, abort, Resource
+from fardel.apps.blog.models import Post, Category, Tag, Comment
+from fardel.ext import db
 
-from web.core.panel import mod, staff_required_rest, admin_required_rest, permission_required
+from fardel.core.panel import mod, staff_required_rest, admin_required_rest, permission_required
 
 panel_blog_api = create_api(mod)
 

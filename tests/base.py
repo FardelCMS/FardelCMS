@@ -1,9 +1,9 @@
 import json
 import unittest
 
-from web.app import create_app
-from web.ext import db
-from web.core.auth.models import User, Group
+from fardel.app import create_app
+from fardel.ext import db
+from fardel.core.auth.models import User, Group
 
 class BaseTestCase(unittest.TestCase):
     access_token = None

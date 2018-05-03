@@ -3,8 +3,8 @@ import time
 
 from sqlalchemy.dialects.postgresql import JSONB
 
-from web.core.seo import SeoModel
-from web.ext import db
+from fardel.core.seo import SeoModel
+from fardel.ext import db
 
 __all__ = (
     "ProductCategory", "Collection", "ProductType",
@@ -51,6 +51,9 @@ class ProductType(db.Model):
     variant_attributes = db.relationship('ProductVariant',
         secondary="product_product_types_variants")
     is_shipping_required = db.Column(db.Boolean, default=False)
+
+    def dict(self):
+        pass
 
 
 class ProductTypeAttributes(db.Model):
@@ -157,8 +160,8 @@ class ProductAttribute(db.Model):
 
     choices = db.relationship('AttributeChoiceValue', lazy="joined")
 
-    def __str__(self):
-        return self.name    
+    def dict(self):
+        pass
 
 
 class AttributeChoiceValue(db.Model):
@@ -168,9 +171,9 @@ class AttributeChoiceValue(db.Model):
     attribute_id = db.Column(db.Integer, db.ForeignKey("product_products_attributes.id"))
 
     attribute = db.relationship('ProductAttribute')
-
-    def __str__(self):
-        return self.name
+    
+    def dict(self):
+        pass
 
 
 class Collection(db.Model, SeoModel):

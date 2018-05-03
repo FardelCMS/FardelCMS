@@ -68,7 +68,7 @@ Revoked token:
 from sqlalchemy import or_
 from flask import render_template, redirect, url_for, jsonify, request, make_response
 
-from web.core.rest import create_api, abort, Resource
+from fardel.core.rest import create_api, abort, Resource
 from flask_jwt_extended import (
     create_access_token, create_refresh_token,
     jwt_required, jwt_refresh_token_required,
@@ -76,8 +76,8 @@ from flask_jwt_extended import (
     jwt_optional
 )
 
-from web.ext import jwt, db
-from web.core.base import BaseResource
+from fardel.ext import jwt, db
+from fardel.core.base import BaseResource
 
 from . import mod
 from .models import *

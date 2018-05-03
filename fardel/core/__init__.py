@@ -1,6 +1,6 @@
 from flask import request, jsonify
 
-from web.apps.blog.models import Post
+from fardel.apps.blog.models import Post
 
 __all__ = ('search')
 

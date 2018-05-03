@@ -5,7 +5,7 @@ import bcrypt
 from sqlalchemy.exc import IntegrityError 
 from flask import current_app, jsonify
 
-from web.ext import db, jwt
+from fardel.ext import db, jwt
 
 __all__ = ['User', 'Permission', 'Group', 'RevokedToken', 'setup_permissions']
 

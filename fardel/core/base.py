@@ -3,7 +3,7 @@ from flask import jsonify, request
 
 from flask_restful import Resource, abort
 
-from web.ext import db
+from fardel.ext import db
 
 __all__ = (
     'BaseResource', 'GetBaseResource'
@@ -31,7 +31,7 @@ class GetBaseResource(BaseResource):
             raise NotImplementedError("resource_class have to be assigned")
 
     def obj_id_required(self):
-        return {"message":"obj_id must be provided"}, 422        
+        return {"message":"obj_id must be provided"}, 422
 
     def get(self, obj_id=None):
         self.check_implemented()

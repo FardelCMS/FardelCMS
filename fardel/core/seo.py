@@ -1,4 +1,4 @@
-from ..ext import db
+from fardel.ext import db
 
 
 class SeoModel(object):

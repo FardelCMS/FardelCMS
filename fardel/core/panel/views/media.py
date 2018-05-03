@@ -21,8 +21,8 @@ import os
 from flask import request, current_app
 from flask_jwt_extended import jwt_required
 
-from web.core.rest import create_api, abort, Resource
-from web.ext import db
+from fardel.core.rest import create_api, abort, Resource
+from fardel.ext import db
 
 from .. import mod, staff_required_rest, permission_required
 from ...base import BaseResource

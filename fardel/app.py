@@ -8,9 +8,9 @@ import sqlalchemy
 
 from flask import Flask, request, jsonify, redirect, url_for, render_template
 
-from web import core
-from .ext import  db, jwt, cache
-from .config import DevConfig, ProdConfig
+from fardel import core
+from fardel.ext import  db, jwt, cache
+from fardel.config import DevConfig, ProdConfig
 
 __all__ = ['create_app']
 
@@ -32,16 +32,16 @@ def configure_app(app, develop):
         app.config.from_object(ProdConfig)
 
 def configure_addons(app):
-    from web.core.auth.views import mod as auth
-    from web.core.panel.views import mod as panel
-    from web.core.media.views import mod as media
+    from fardel.core.auth.views import mod as auth
+    from fardel.core.panel.views import mod as panel
+    from fardel.core.media.views import mod as media
     app.register_blueprint(auth)
     app.register_blueprint(panel)
     app.register_blueprint(media)
 
     for app_name in app.config['ACTIVE_APPS']:
 
-        bp = __import__('web.apps.%s' % app_name, fromlist=['views'])
+        bp = __import__('fardel.apps.%s' % app_name, fromlist=['views'])
         
         try:
             app.register_blueprint(bp.views.mod)

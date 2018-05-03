@@ -48,11 +48,11 @@ from flask import request
 
 from flask_jwt_extended import current_user, jwt_optional
 
-from web.core.rest import create_api, abort, Resource
-from web.core.utils import cache_get_key
+from fardel.core.rest import create_api, abort, Resource
+from fardel.core.utils import cache_get_key
 from . import mod
 from .models import *
-from web.ext import db, cache
+from fardel.ext import db, cache
 
 
 blog_api = create_api(mod)
