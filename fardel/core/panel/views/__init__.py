@@ -32,6 +32,17 @@ def add_auth_section():
 	panel_sidebar.add_section(section)
 
 
+@mod.before_app_first_request
+def add_media_section():
+	section = Section("فایل های بارگذاری شده")
+	link = Link("fa fa-file", "فایل ها")
+	link.add_child(ChildLink("فایل ها", "#"))
+	# link.add_child(ChildLink("آلبوم عکس", "#"))
+	section.add_link(link)
+
+	panel_sidebar.add_section(section)
+
+
 @mod.route('/login/', methods=['POST', 'GET'])
 def login():
 	if request.method == "POST":
@@ -56,7 +67,7 @@ def logout():
 def index():
 	if not current_user.is_authenticated:
 		abort(404)
-	return redirect(url_for('panel.dashboard'))
+	return redirect(url_for('panel.home'))
 
 @mod.route('/home/')
 @login_required

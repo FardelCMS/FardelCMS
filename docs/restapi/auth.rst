@@ -4,7 +4,7 @@ Authentication
 ==============
 
 
-.. automodule:: web.core.auth.views
+.. automodule:: fardel.core.auth.views
 
 |
 | All of the listed APIs are restfull and content-type is ``application/json``

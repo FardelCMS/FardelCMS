@@ -1,7 +1,7 @@
 Blog
 ====
 
-.. automodule:: web.apps.blog.views
+.. automodule:: fardel.apps.blog.views
 
 |
 | All of the listed APIs are restfull and content-type is ``application/json``

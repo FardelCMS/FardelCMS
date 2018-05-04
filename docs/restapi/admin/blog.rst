@@ -1,7 +1,7 @@
 Admin Blog Management
 =====================
 
-.. automodule:: web.apps.blog.admin
+.. automodule:: fardel.apps.blog.admin
 
 |
 

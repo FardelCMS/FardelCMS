@@ -4259,3 +4259,11 @@ table thead .checkbox.radio { margin-top:-7px;margin-top:-21px; }
 .dropdown-menu {
     text-align:right;
 }
+.pagination > li > a, .pagination > li > span {
+    float: right;
+}
+.pagination > li:first-child > a, .pagination > li:first-child > span {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+}

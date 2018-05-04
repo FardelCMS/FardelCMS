@@ -1,7 +1,7 @@
 Products
 ========
 
-.. automodule:: web.apps.ecommerce.product.views
+.. automodule:: fardel.apps.ecommerce.product.views
 
 |
 

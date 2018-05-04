@@ -12,8 +12,7 @@
     <link href="{{url_for('panel.static', filename='css/font-awesome.min.css')}}" rel="stylesheet">
     <link href="{{url_for('panel.static', filename='css/nprogress.css')}}" rel="stylesheet">
     <link href="{{url_for('panel.static', filename='css/custom.css')}}" rel="stylesheet">
-    {% block css_block %}
-    {% endblock %}
+    {% block css_block %}{% endblock %}
   </head>
 
   <body class="nav-md">
@@ -82,7 +81,6 @@
     <script src="{{url_for('panel.static', filename='js/fastclick.js')}}"></script>
     <script src="{{url_for('panel.static', filename='js/nprogress.js')}}"></script>
     <script src="{{url_for('panel.static', filename='js/custom.js')}}"></script>
-    {% block js_block %}
-    {% endblock %}
+    {% block js_block %}{% endblock %}
   </body>
 </html>

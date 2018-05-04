@@ -1,4 +1,4 @@
 Media
 =====
 
-.. automodule:: web.core.media.views
+.. automodule:: fardel.core.media.views

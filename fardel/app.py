@@ -2,6 +2,7 @@
 Where a RatSnake app is created.
 """
 
+import logging
 import json
 
 import sqlalchemy
@@ -14,7 +15,7 @@ from fardel.config import DevConfig, ProdConfig
 
 __all__ = ['create_app']
 
-DEFAULT_APP_NAME = 'boghche'
+DEFAULT_APP_NAME = 'fardel'
 
 def create_app(develop=False):
     app = Flask(DEFAULT_APP_NAME)
@@ -23,6 +24,7 @@ def create_app(develop=False):
     configure_addons(app)
     configure_views(app)
     configure_extentions(app)
+    configure_logger(app)
     init_jinja_globals(app)
     return app
 
@@ -48,15 +50,18 @@ def configure_addons(app):
             app.register_blueprint(bp.panel.mod)
             # print("Admin panel for %s registered" % app_name)
         except:
-            print("No admin panel for %s" % app_name)
+            app.logger.info("No admin panel for %s" % app_name)
 
         try:
             app.register_blueprint(bp.views.mod)
         except:
-            print("[WARNING] : %s app doesn't have blueprint." % app_name)
+            app.logger.warning("%s app doesn't have blueprint." % app_name)
 
 def configure_views(app):
     app.add_url_rule('/api/search/', 'search', core.search)
+
+def configure_logger(app):
+    app.logger = logging.getLogger("fardel")
 
 def configure_extentions(app):
     db.init_app(app)

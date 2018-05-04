@@ -1,7 +1,7 @@
 Admin User Management
 =====================
 
-.. automodule:: web.core.panel.views.auth
+.. automodule:: fardel.core.panel.views.auth
 
 |
 

@@ -26,3 +26,65 @@
   </div>
 </div>
 {%- endmacro %}
+
+{% macro paginate(page, pages, endpoint) %}
+<nav aria-label="...">
+  <ul class="pagination">
+    <li class="page-item {% if page < 2 %}disabled{% endif %}">
+      <a class="page-link" href="{{url_for(endpoint, page=page-1)}}">قبلی</a>
+    </li>
+    {% if page < 5 %}
+      {% for i in range(1, page + 4) %}
+      <li class="page-item {% if i == page %}active{% endif %}">
+        {% if i != page %}
+        <a class="page-link" href="{{url_for(endpoint, page=i)}}">
+        {{i}}
+        </a>
+        {% else %}
+        <span class="page-link">
+          {{i}}
+          <span class="sr-only">(current)</span>
+        </span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    {% elif page >= 4 and page < pages - 4 %}
+      <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+      {% for i in range(page - 4, page + 4) %}
+      <li class="page-item {% if i == page %}active{% endif %}">
+        {% if i != page %}
+        <a class="page-link" href="{{url_for(endpoint, page=i)}}">
+        {{i}}
+        </a>
+        {% else %}
+        <span class="page-link">
+          {{i}}
+          <span class="sr-only">(current)</span>
+        </span>
+        {% endif %}
+      </li>
+      {% endfor %}
+      <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+    {% elif page >= 4 and page >= pages - 3 %}
+      <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+      {% for i in range(page - 3, pages + 1) %}
+      <li class="page-item {% if i == page %}active{% endif %}">
+        {% if i != page %}
+        <a class="page-link" href="{{url_for(endpoint, page=i)}}">
+        {{i}}
+        </a>
+        {% else %}
+        <span class="page-link">
+          {{i}}
+          <span class="sr-only">(current)</span>
+        </span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    {% endif %}
+    <li class="page-item {% if page == pages %}disabled{% endif %}">
+      <a class="page-link" href="{{url_for(endpoint, page=page+1)}}">بعدی</a>
+    </li>
+  </ul>
+</nav>
+{% endmacro %}

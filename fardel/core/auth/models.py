@@ -149,6 +149,21 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
         self.is_staff = True
         db.session.commit()
 
+    def get_confirmed(self):
+        if self.confirmed:
+            return "بله"
+        return "نه"
+
+    def get_first_name(self):
+        if self.first_name:
+            return self.first_name
+        return ""
+
+    def get_last_name(self):
+        if self.last_name:
+            return self.last_name
+        return ""
+
     def can(self, permission):
         if self.is_admin:
             return True

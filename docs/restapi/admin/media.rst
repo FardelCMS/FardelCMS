@@ -1,7 +1,7 @@
 Media Management
 ================
 
-.. automodule:: web.core.panel.views.media
+.. automodule:: fardel.core.panel.views.media
 
 |
 
