@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block header_title %}{% endblock %}</title>
+
+    <link href="{{url_for('panel.static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+    <link href="{{url_for('panel.static', filename='css/font-awesome.min.css')}}" rel="stylesheet">
+    <link href="{{url_for('panel.static', filename='css/nprogress.css')}}" rel="stylesheet">
+    <link href="{{url_for('panel.static', filename='css/custom.css')}}" rel="stylesheet">
+    {% block css_block %}
+    {% endblock %}
+  </head>
+
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        {% include "panel_sidebar.html" %}
+
+        <!-- top navigation -->
+        <div class="top_nav">
+          <div class="nav_menu">
+            <nav>
+              <div class="nav navbar-right toggle">
+                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+              </div>
+
+              <ul class="nav navbar-nav navbar-left">
+                <li class="">
+                  <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <img src="images/img.jpg" alt="">{{current_user.email}}
+                    <span class=" fa fa-angle-down"></span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-usermenu pull-right">
+                    {# <li><a href="javascript:;"> Profile</a></li> #}
+                    {# <li><a href="javascript:;">Help</a></li> #}
+                    <li><a href="{{url_for('panel.logout')}}"><i class="fa fa-sign-out pull-right"></i> خروج </a></li>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <!-- /top navigation -->
+
+        <!-- page content -->
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_right">
+                <h3>{% block title %}{% endblock %}</h3>
+              </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            {% block content %}{% endblock %}
+          </div>
+        </div>
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+
+    <script src="{{url_for('panel.static', filename='js/jquery.min.js')}}"></script>
+    <script src="{{url_for('panel.static', filename='js/moment.min.js')}}"></script>
+    <script src="{{url_for('panel.static', filename='js/popper.min.js')}}"></script>
+    <script src="{{url_for('panel.static', filename='js/tooltip.min.js')}}"></script>
+    <script src="{{url_for('panel.static', filename='js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('panel.static', filename='js/fastclick.js')}}"></script>
+    <script src="{{url_for('panel.static', filename='js/nprogress.js')}}"></script>
+    <script src="{{url_for('panel.static', filename='js/custom.js')}}"></script>
+    {% block js_block %}
+    {% endblock %}
+  </body>
+</html>

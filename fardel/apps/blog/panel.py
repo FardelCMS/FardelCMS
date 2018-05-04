@@ -7,7 +7,7 @@ Objects
     :title:
 """
 
-from flask import request
+from flask import request, Blueprint
 from flask_jwt_extended import jwt_required
 
 from fardel.core.rest import create_api, abort, Resource
@@ -16,9 +16,13 @@ from fardel.ext import db
 
 from fardel.core.panel import mod, staff_required_rest, admin_required_rest, permission_required
 
+mod = Blueprint('blog_panel', __name__, url_prefix="/panel/blog")
+
 panel_blog_api = create_api(mod)
 
 panel_decorators = [staff_required_rest, jwt_required]
+
+
 
 def rest_resource(resource_cls):
     """ Decorator for adding resources to Api App """

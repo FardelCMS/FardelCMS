@@ -15,7 +15,7 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def create_admin(email, password):
-	u = User(email, password)
+	u = User(email=email, password=password, is_admin=True)
 	db.session.add(u)
 	try:
 		db.session.commit()

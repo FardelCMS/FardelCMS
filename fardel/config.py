@@ -21,6 +21,8 @@ class BaseConfig(object):
         "ecommerce"
     )
 
+    SITE_NAME = "خورجین"
+
     CACHE_TYPE = 'simple'
 
     # MAIL_SERVER = ""

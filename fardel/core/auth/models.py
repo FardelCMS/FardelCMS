@@ -4,8 +4,9 @@ import bcrypt
 
 from sqlalchemy.exc import IntegrityError 
 from flask import current_app, jsonify
+from flask_login import UserMixin
 
-from fardel.ext import db, jwt
+from fardel.ext import db, jwt, login_manager
 
 __all__ = ['User', 'Permission', 'Group', 'RevokedToken', 'setup_permissions']
 
@@ -79,7 +80,7 @@ class GroupPermission(db.Model):
     permission_id = db.Column(db.Integer, db.ForeignKey('auth_permissions.id'))
 
 
-class User(db.Model, AbstractModelWithPermission):
+class User(db.Model, AbstractModelWithPermission, UserMixin):
     __tablename__ = 'auth_users'
     id = db.Column(db.Integer, primary_key=True, index=True)
 
@@ -214,3 +215,7 @@ def invalid_token_loader(reason):
 @jwt.needs_fresh_token_loader
 def needs_fresh_token_loader():
     return jsonify({"message": "Fresh token required"}), 401
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter_by(id=user_id).first()
