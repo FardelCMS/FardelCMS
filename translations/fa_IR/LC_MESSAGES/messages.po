@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-05-06 02:09+0430\n"
+"POT-Creation-Date: 2018-05-06 02:41+0430\n"
 "PO-Revision-Date: 2018-05-05 17:12+0430\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fa_IR\n"
@@ -74,7 +74,15 @@ msgstr "افزودن نوشت"
 msgid "Categories"
 msgstr "دسته ها"
 
-#: fardel/apps/blog/panel.py:48 fardel/apps/blog/templates/posts_form.html:75
+#: fardel/apps/blog/panel.py:45
+msgid "All Categories"
+msgstr "همه دسته بندی ها"
+
+#: fardel/apps/blog/panel.py:47
+msgid "Create Category"
+msgstr "اضافه کردن دسته بندی"
+
+#: fardel/apps/blog/panel.py:52 fardel/apps/blog/templates/posts_form.html:75
 #: fardel/apps/blog/templates/tags_list.html:4
 #: fardel/apps/blog/templates/tags_list.html:5
 #: fardel/apps/blog/templates/tags_list.html:12

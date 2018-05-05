@@ -39,10 +39,14 @@ def add_blog_section():
         url_for('blog_panel.posts_create'), permission="can_create_posts"))
 
     section.add_link(blog_link)
-    section.add_link(
-        Link('fa fa-clipboard', gettext('Categories'), url_for('blog_panel.categories_list'),
+
+    cat_link = Link('fa fa-clipboard', gettext('Categories'),
             permission="can_get_categories")
-    )
+    cat_link.add_child(ChildLink(gettext("All Categories"),
+        url_for('blog_panel.categories_list'), permission="can_get_categories"))
+    cat_link.add_child(ChildLink(gettext("Create Category"),
+        url_for('blog_panel.categories_create'), permission="can_create_categories"))
+    section.add_link(cat_link)
 
     section.add_link(
         Link('fa fa-tags', gettext('Tags'), url_for('blog_panel.tags_list'),
@@ -92,6 +96,7 @@ def posts_create():
     if request.method == "POST":
         data = request.form
         image = request.files.get('image')
+        file = None
         if image:
             path = "images/%s" % datetime.datetime.now().year
             file = File(path, file=image)
@@ -105,10 +110,12 @@ def posts_create():
         tags = data.getlist('tags')
 
         p = Post(
-            image=file.url, title=title, edited_content=content,
+            title=title, edited_content=content,
             allow_comment=allow_comment, category_id=category_id,
             summarized=summarized
         )
+        if file:
+            p.image = file.url
 
         ps = PostStatus.query.filter_by(name="Draft").first()
         p.status_id = ps.id
@@ -236,15 +243,18 @@ def categories_delete(cat_id):
     return redirect(url_for('blog_panel.categories_list'))
 
 @staff_required
-@mod.route('/categories/create/')
+@mod.route('/categories/create/', methods=["POST", "GET"])
 @login_required
 def categories_create():
-    data = request.get_json()
-    name = data.get('name')
-    if not name:
-        return {"message":"Field name is required"}, 422
+    if request.method == "POST":
+        data = request.form
+        name = data.get('name')
+        if not name:
+            flash(gettext('Name is required'))
+            return redirect(url_for('blog_panel.categories_create'))
 
-    c = Category(name=name)
-    db.session.add(c)
-    db.session.commit()
-    return {'message':'Category successfuly added', 'category':c.dict()}
+        c = Category(name=name)
+        db.session.add(c)
+        db.session.commit()
+        return redirect(url_for("blog_panel.categories_list"))
+    return render_template("categories_form.html")

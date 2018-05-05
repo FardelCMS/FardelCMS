@@ -1,0 +1,44 @@
+{% extends "panel_base.html" %}
+
+{% block header_title %}{{gettext("New Category")}} | {{get_sitename()}}{% endblock %}
+{% block title %}{{gettext("New Category")}}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>{{gettext("New Post")}}</h2>
+        <ul class="nav navbar-left panel_toolbox">
+          {% if close %}
+          <li><a class="close-link"><i class="fa fa-close"></i></a>
+          </li>            
+          {% endif %}
+          {% if collapse %}
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+          </li>            
+          {% endif %}
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <form method="POST" enctype="multipart/form-data">
+        	<div class="col-md-6 col-xs-12">
+              <div class="form-group">
+                <div class="col-xs-12">
+                	<label>{{gettext("name")}}</label>
+                	<input class="form-control col-xs-12" type="text" name="name" placeholder="{{gettext('name')}}">
+                </div>
+	            </div>
+	            <div class="form-group">
+	            	<div class="col-md-12">
+					        <button class="btn btn-success" type="submit">{{gettext("Save")}}</button>
+				        </div>
+	            </div>
+	        </div>
+		    </form>
+		  </div>
+		</div>
+	</div>
+</div>
+{% endblock %}
