@@ -71,7 +71,6 @@ def configure_extentions(app):
     cache.init_app(app)
     login_manager.init_app(app)
     babel.init_app(app)
-    import fardel.core.babel
 
 def init_jinja_globals(app):
     from fardel.core.panel.template_tags import add_globals
