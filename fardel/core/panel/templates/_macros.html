@@ -36,7 +36,22 @@
     {% if page >= 6 %}      
     <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
     {% endif %}
-    {% if page < 6 %}
+    {% if page < 6 and pages < 5 %}
+      {% for i in range(1, pages) %}
+      <li class="page-item {% if i == page %}active{% endif %}">
+        {% if i != page %}
+        <a class="page-link" href="{{url_for(endpoint, page=i)}}">
+        {{i}}
+        </a>
+        {% else %}
+        <span class="page-link">
+          {{i}}
+          <span class="sr-only">(current)</span>
+        </span>
+        {% endif %}
+      </li>        
+      {% endfor %}
+    {% elif page < 6 %}
       {% for i in range(1, page + 4) %}
       <li class="page-item {% if i == page %}active{% endif %}">
         {% if i != page %}
@@ -82,7 +97,7 @@
       </li>
       {% endfor %}
     {% endif %}
-    {% if page < pages - 4 %}      
+    {% if page < pages - 4 %}
     <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
     {% endif %}
     <li class="page-item {% if page == pages %}disabled{% endif %}">
