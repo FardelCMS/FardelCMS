@@ -6,6 +6,7 @@ from sqlalchemy_utils.types import TSVectorType
 from sqlalchemy_searchable import SearchQueryMixin, make_searchable
 
 from flask_sqlalchemy import BaseQuery
+from flask_babel import lazy_gettext, gettext
 
 from fardel.core.seo import SeoModel
 from fardel.core.auth.models import AbstractModelWithPermission
@@ -61,6 +62,18 @@ class PostStatus(db.Model):
                 db.session.add(ps)
                 db.session.commit()
 
+    @property
+    def tranlations(self):
+        return {
+            "Publish": gettext('Publish'), "Future": gettext('Future'),
+            "Draft": gettext('Draft'), "Pending": gettext('Pending'),
+            "Private": gettext('Private'), "Trash": gettext('Trash'),
+            "Auto-Draft": gettext('Auto-Draft')
+        }
+
+    def get_name(self):
+        return self.tranlations[self.name]
+
     def dict(self):
         return dict(id=self.id, name=self.name)
 
@@ -114,9 +127,15 @@ class Post(db.Model, SeoModel, AbstractModelWithPermission):
     status_id = db.Column(db.Integer, db.ForeignKey('blog_post_statuses.id'), index=True)
     allow_comment = db.Column(db.Boolean, default=True)
 
-    category_id = db.Column(db.Integer, db.ForeignKey('blog_categories.id'), index=True)
+    category_id = db.Column(db.Integer,
+        db.ForeignKey('blog_categories.id', ondelete="SET NULL"), index=True)
     category = db.relationship('Category', lazy="selectin")
 
+    user_id = db.Column(db.Integer,
+        db.ForeignKey("auth_users.id", ondelete="SET NULL"))
+    user = db.relationship("User")
+
+    comments = db.relationship("Comment", cascade="all,delete")
     status = db.relationship('PostStatus', lazy="joined")
     tags = db.relationship('Tag', secondary='blog_posts_tags', lazy="selectin")
 
@@ -131,14 +150,28 @@ class Post(db.Model, SeoModel, AbstractModelWithPermission):
             ('can_delete_posts', 'Can delete posts'),
         )
 
-    def add_tags(self, tags):
+    @property
+    def tags_ids(self):
+        if not self._tags_ids:
+            self._tags_ids = [c.id for c in self.tags]
+        return self._tags_ids
+
+    def set_tags(self, tags):
+        for tag in self.tags:
+            if tag.name not in tags:
+                self.tags.remove(tag)
+                
         for tag_name in tags:
+            tag_name = tag_name.strip()
             tag = Tag.query.filter_by(name=tag_name).first()
             if not tag:
                 tag = Tag(name=tag_name)
                 db.session.add(tag)
-            self.tags.add(tag)
+            self.tags.append(tag)
             db.session.flush()
+
+    def get_tags(self):
+        return " ".join([tag.name for tag in self.tags])
 
     @staticmethod
     def _bootstrap(count):
@@ -249,7 +282,7 @@ class Tag(db.Model):
 
     def dict(self, posts=False):
         obj = {
-            'id':self.id, 'name':self.name, 'frequency':self.frequency
+            'id':self.id, 'text':self.name
         }
         if posts:
             obj.update({"posts":[p.dict() for p in self.posts]})
@@ -259,8 +292,10 @@ class Tag(db.Model):
 class PostTag(db.Model):
     __tablename__ = "blog_posts_tags"
     id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), index=True)
-    tag_id = db.Column(db.Integer, db.ForeignKey('blog_tags.id'), index=True)
+    post_id = db.Column(db.Integer,
+        db.ForeignKey('blog_posts.id'), index=True)
+    tag_id = db.Column(db.Integer,
+        db.ForeignKey('blog_tags.id'), index=True)
 
 
 class Comment(db.Model, AbstractModelWithPermission):
@@ -274,9 +309,12 @@ class Comment(db.Model, AbstractModelWithPermission):
     create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
     approved = db.Column(db.Boolean, default=True)
 
-    parent_comment_id = db.Column(db.Integer, db.ForeignKey('blog_comments.id'), index=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), index=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
+    parent_comment_id = db.Column(db.Integer,
+        db.ForeignKey('blog_comments.id', ondelete="SET NULL"), index=True)
+    post_id = db.Column(db.Integer,
+        db.ForeignKey('blog_posts.id'), index=True)
+    user_id = db.Column(db.Integer,
+        db.ForeignKey('auth_users.id', ondelete="SET NULL"))
 
     user = db.relationship("User")
     parent_comment = db.relationship('Comment',

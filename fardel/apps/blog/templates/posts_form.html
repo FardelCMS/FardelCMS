@@ -1,0 +1,125 @@
+{% extends "panel_base.html" %}
+
+{% block header_title %}{{gettext("New Post")}} | {{get_sitename()}}{% endblock %}
+{% block title %}{{gettext("New Post")}}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>{{gettext("New Post")}}</h2>
+        <ul class="nav navbar-left panel_toolbox">
+          {% if close %}
+          <li><a class="close-link"><i class="fa fa-close"></i></a>
+          </li>            
+          {% endif %}
+          {% if collapse %}
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+          </li>            
+          {% endif %}
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <form method="POST" enctype="multipart/form-data">
+        	<div class="col-md-9">
+              <div class="form-group">
+                <div class="col-xs-12">
+                  <input placeholder="{{gettext('Title goes here ...')}}" type="text" id="title" name="title" required="required" class="form-control col-xs-12" {% if post %}value="{{post.title}}"{% endif %}>
+                </div>
+              </div><br><br><br>
+              <div class="form-group">
+                <textarea name="content" id="content">{% if post %}{{post.content or post.edited_content}}{% endif %}</textarea>
+              </div>
+              <div class="form-group">
+                <label for="summarized">چکیده مطلب</label>
+                <textarea class="col-md-12" name="summarized" id="summarized">{% if post %}{{post.summarized}}{% endif %}</textarea>
+              </div>
+              <div class="divider-dashed"></div>
+              <div class="form-group">
+                <div class="col-lg-12">
+                  <button class="btn btn-success" type="submit">{{gettext("Save Draft")}}</button>
+                </div>
+              </div>
+          </div>
+        	<div class="col-md-3">
+            <div class="form-group">
+              <label for="image" class="control-label">
+                {{gettext("Image Header")}}
+              </label>
+              <input id="image" type="file" name="image">
+            </div>
+            <div class="divider-dashed"></div>
+            <div class="form-group">
+              <label for="allow_comment" class="control-label">
+                {{gettext("Allow Comment")}}
+              </label>
+              <input id="allow_comment" type="checkbox" name="allow_comment" checked>
+            </div>
+            <div class="divider-dashed"></div>
+            <div class="form-group">
+              <label for="category" class="control-label">
+                {{gettext("Category")}}
+              </label>
+              <select id="category" name="category_id" class="form-control">
+                <option value="">---</option>
+                {% for c in categories %}
+                <option value="{{c.id}}" {% if post and post.category_id == c.id %}selected="selected"{% endif %}>{{c.name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="divider-dashed"></div>
+            <div class="form-group">
+              <label for="tags" class="control-label">
+                {{gettext("Tags")}}
+              </label>
+              <select id="tags" name="tags" class="form-control"></select>
+            </div>
+        	</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js_block %}
+<script type="text/javascript" src="{{url_for('blog_panel.static', filename='tinymce.min.js')}}"></script>
+<script>
+{% if post %}
+var data = [
+  {% for tag in post.tags %}
+  {text: "{{tag.name}}", selected: true},
+  {% endfor %}
+]
+{% else %}
+var data = []
+{% endif %}
+$(function(){
+  tinymce.init({
+    selector: '#content',
+    height: 800,
+    plugins: [
+          "advlist autolink lists link image charmap print preview anchor",
+          "searchreplace visualblocks code fullscreen",
+          "insertdatetime media table contextmenu paste imagetools wordcount"
+      ],
+    toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+    
+    images_upload_url: "/panel/blog/upload/images/",
+  });
+
+  $('#category').select2();
+  $('#tags').select2({
+    ajax: {      
+      url: '/panel/blog/tags/',
+      dataType: 'json'
+    },
+    multiple: true,
+    tags: true,
+    data: data
+  });
+});
+</script>
+{% endblock %}

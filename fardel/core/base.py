@@ -2,6 +2,7 @@ import sqlalchemy
 from flask import jsonify, request
 
 from flask_restful import Resource, abort
+from flask_babel import gettext
 
 from fardel.ext import db
 
@@ -12,7 +13,7 @@ __all__ = (
 class BaseResource(Resource):
 
     def bad_request(self):
-        return {'message':'Unvalid form submitted'}, 400
+        return {'message':gettext('Unvalid form submitted')}, 400
 
     def check_data(self, data, requires):
         for r in requires:
@@ -31,7 +32,7 @@ class GetBaseResource(BaseResource):
             raise NotImplementedError("resource_class have to be assigned")
 
     def obj_id_required(self):
-        return {"message":"obj_id must be provided"}, 422
+        return {"message":gettext("obj_id must be provided")}, 422
 
     def get(self, obj_id=None):
         self.check_implemented()

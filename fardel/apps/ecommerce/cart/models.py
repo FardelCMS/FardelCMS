@@ -3,26 +3,26 @@ from fardel.ext import db
 
 
 class CartStatus(db.Model):
-	__tablename__ = "cart_carts_statuses"
+    __tablename__ = "cart_carts_statuses"
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(32))
 
     @staticmethod
     def generate_default():
-    	statuses = [
-    		{'name':'open'},
-    		{'name':'canceled'},
-    	]
-    	for status in statuses:
-    		s = CartStatus.query.filter_by(name=status['name']).first()
-    		if not s:    			
-	    		s = CartStatus(name=status['name'])
-	    		db.session.add(s)
-	    		db.session.commit()
+        statuses = [
+            {'name':'open'},
+            {'name':'canceled'},
+        ]
+        for status in statuses:
+            s = CartStatus.query.filter_by(name=status['name']).first()
+            if not s:               
+                s = CartStatus(name=status['name'])
+                db.session.add(s)
+                db.session.commit()
 
 
 class Cart(db.Model):
-	__tablename__ = "cart_carts"
+    __tablename__ = "cart_carts"
     id = db.Column(db.Integer, primary_key=True, index=True)
     
     status = db.Column(db.Integer, db.ForeignKey("cart_carts_statuses.id"))
@@ -152,7 +152,7 @@ class Cart(db.Model):
 
 
 class CartLine(db.Model):
-	__tablename__ = "cart_carts_lines"
+    __tablename__ = "cart_carts_lines"
     id = db.Column(db.Integer, primary_key=True, index=True)
 
     cart = db.Column(db.Integer, db.ForeignKey('cart_carts.id')) # delete cascade

@@ -1,191 +1,250 @@
-"""
-Objects
-=======
+import os
+import pathlib
+import math
+import datetime
 
-1. Post
-    :id:
-    :title:
-"""
+from sqlalchemy import and_
 
-from flask import request, Blueprint
-from flask_jwt_extended import jwt_required
+from flask import (request, Blueprint, render_template,
+    request, redirect, url_for, abort, current_app, jsonify)
+from flask_login import current_user, login_required
+from flask_babel import gettext
 
-from fardel.core.rest import create_api, abort, Resource
-from fardel.apps.blog.models import Post, Category, Tag, Comment
+from fardel.apps.blog.models import Post, Category, Tag, Comment, PostStatus
 from fardel.ext import db
 
-from fardel.core.panel import mod, staff_required_rest, admin_required_rest, permission_required
+from fardel.core.media.models import File
+from fardel.core.panel import staff_required, admin_required, permission_required
+from fardel.core.panel.sidebar import panel_sidebar, Section, Link, ChildLink
+from fardel.core.panel.views.media import is_safe_path
 
-mod = Blueprint('blog_panel', __name__, url_prefix="/panel/blog")
+PATH_TO_BLOG_APP = pathlib.Path(__file__).parent
 
-panel_blog_api = create_api(mod)
+mod = Blueprint(
+    'blog_panel',
+    'blog_panel',
+    url_prefix="/panel/blog",
+    static_folder=str(PATH_TO_BLOG_APP / "static"),
+    template_folder=str(PATH_TO_BLOG_APP / "templates"),
+)
 
-panel_decorators = [staff_required_rest, jwt_required]
+@mod.before_app_first_request
+def add_blog_section():
+    section = Section(gettext('Weblog/Magazine'))
+    blog_link = Link('fa fa-pencil', gettext('Posts'),
+            permission="can_get_posts")
+    blog_link.add_child(ChildLink(gettext("All Posts"),
+        url_for('blog_panel.posts_list'), permission="can_get_posts"))
+    blog_link.add_child(ChildLink(gettext("Create Post"),
+        url_for('blog_panel.posts_create'), permission="can_create_posts"))
 
+    section.add_link(blog_link)
+    section.add_link(
+        Link('fa fa-clipboard', gettext('Categories'), url_for('blog_panel.categories_list'),
+            permission="can_get_categories")
+    )
 
+    section.add_link(
+        Link('fa fa-tags', gettext('Tags'), url_for('blog_panel.tags_list'),
+            permission="can_get_tags")
+    )
+    panel_sidebar.add_section(section)
 
-def rest_resource(resource_cls):
-    """ Decorator for adding resources to Api App """
-    panel_blog_api.add_resource(resource_cls, *resource_cls.endpoints)
-    return resource_cls
+@permission_required('can_upload_files')
+@staff_required
+@mod.route('/upload/images/', methods=['POST'])
+@login_required
+def upload_images():
+    file = request.files.get('file')
+    path = "images/%s" % datetime.datetime.now().year
+    if not file:
+        return jsonify({"message":"No file to upload"}), 422
 
+    uploads_folder = current_app.config['UPLOAD_FOLDER']
+    lookup_folder = uploads_folder / path
+    if is_safe_path(str(os.getcwd() / lookup_folder), str(lookup_folder)):
+        file = File(path, file=file)
+        file.save()
+        return jsonify(
+            {'message':'File saved successfully',
+             'location':file.url})
+    return jsonify({"message":"Invalid path"}), 422
 
-@rest_resource
-class PostApi(Resource):
-    endpoints = ('/blog/posts/', '/blog/posts/<post_id>/')
-    method_decorators = {
-        'get': [permission_required('can_get_posts')] + panel_decorators,
-        'post': [permission_required('can_create_posts')] + panel_decorators,
-        'delete': [permission_required('can_delete_posts')] + panel_decorators,
-        'patch': [permission_required('can_publish_posts')] + panel_decorators,
-        'put': [permission_required('can_edit_posts')] + panel_decorators,
-    }
+@permission_required('can_get_posts')
+@staff_required
+@mod.route('/posts/list/')
+@login_required
+def posts_list():
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get('per_page', default=20, type=int)
+    query = Post.query.filter(and_(PostStatus.name!="Trash",
+        PostStatus.name!=None)).outerjoin(PostStatus)
+    pages = math.ceil(query.count() / per_page)
+    posts = query.order_by(Post.id.desc()).paginate(page=page, per_page=per_page, error_out=False).items
+    return render_template('posts_list.html', posts=posts, page=page, pages=pages)
 
-    def get(self, post_id=None):
-        """ To get posts details """
-        if post_id:
-            p = Post.query.filter_by(id=post_id).first()
-            return p.dict(summarized=False, admin=True)
+@permission_required('can_create_posts')
+@staff_required
+@mod.route('/posts/create/', methods=["POST", "GET"])
+@login_required
+def posts_create():
+    """ To create Post without publish for the first time """
+    if request.method == "POST":
+        data = request.form
+        image = request.files.get('image')
+        if image:
+            path = "images/%s" % datetime.datetime.now().year
+            file = File(path, file=image)
+            file.save()
 
-        page = request.args.get('page', default=16, type=int)
-        per_page = request.args.get('page', default=16, type=int)
-        posts = Post.query.order_by(Post.id
-            ).paginate(page=page, per_page=per_page, error_out=False).items
-        return {'posts':[p.dict(admin=True) for p in posts]}
-
-    def post(self, post_id=None):
-        """ To create Post without publish for the first time """
-        if post_id:
-            abort(403)
-
-        data = request.get_json()
-        image = data.get('image')
         title = data.get('title')
         content = data.get('content')
-        allow_comment = data.get('allow_comment')
-        category_id = data.get('category_id')
-        tags = data.get('tags')
+        summarized = data.get('summarized')
+        allow_comment = data.get('allow_comment', type=bool)
+        category_id = data.get('category_id', type=int)
+        tags = data.getlist('tags')
 
         p = Post(
-            image=image, title=title, edited_content=content,
-            allow_comment=allow_comment, category_id=category_id
+            image=file.url, title=title, edited_content=content,
+            allow_comment=allow_comment, category_id=category_id,
+            summarized=summarized
         )
 
+        ps = PostStatus.query.filter_by(name="Draft").first()
+        p.status_id = ps.id
+        p.user_id = current_user.id
+
         db.session.add(p)
-        p.add_tags(tags)
+        p.set_tags(tags)
         db.session.commit()
-        return {'message':'Post successfuly saved'}
+        return redirect(url_for('blog_panel.posts_list'))
+    categories = Category.query.all()
+    return render_template('posts_form.html', categories=categories)
 
-    def delete(self, post_id=None):
-        """ To delete Post """
-        if not post_id:
-            abort(403)
+@permission_required('can_create_posts')
+@staff_required
+@mod.route('/posts/edit/<int:post_id>/', methods=["POST", "GET"])
+@login_required
+def posts_edit(post_id):
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    if request.method == "POST":
+        data = request.form
+        image = request.files.get('image')
+        if image:
+            path = "images/%s" % datetime.datetime.now().year
+            file = File(path, file=image)
+            file.save()
 
-        deleted = Post.query.filter_by(post_id).delete()
-        db.session.commit()
-        if deleted:
-            return {'message':'successfuly deleted the post'}
-        else:
-            return {'message':'Post id is not valid or its already deleted'}, 404
-
-    def patch(self, post_id=None):
-        """ To edit Posts whenever it is changed in the panel """
-        if not post_id:
-            abort(403)
-
-        data = request.get_json()
+        title = data.get('title')
         content = data.get('content')
+        summarized = data.get('summarized')
+        allow_comment = data.get('allow_comment', type=bool)
+        category_id = data.get('category_id', type=int)
+        tags = data.getlist('tags')
 
-        p = Post.query.filter_by(id=post_id).first()
-        if p:
-            p.edited_content = content
-            db.session.commit()
-            return {}
-        return {"message":"No post with id"}, 404
-
-    def put(self, post_id=None):
-        """ To save and publish Posts """
-        if post_id:
-            pass
-
-
-@rest_resource
-class CommentApi(Resource):
-    endpoints = (
-        '/blog/posts/<post_id>/comments/', # To get
-        '/blog/posts/<post_id>/comments/<comment_id>/' # To delete and edit
-    )
-    method_decorators = {
-        'get': [permission_required('can_get_comments')] + panel_decorators,
-        'delete': [permission_required('can_delete_comments')] + panel_decorators,
-        'patch': [permission_required('can_edit_comments')] + panel_decorators,
-    }
-
-    def get(self, post_id, comment_id=None):
-        pass
-
-    def delete(self, post_id, comment_id=None):
-        pass
-
-    def patch(self, post_id, comment_id=None):
-        pass
-
-
-@rest_resource
-class TagApi(Resource):
-    endpoints = (
-        '/blog/tags/',
-    )
-    # Does it really need permission ?
-    def get(self):
-        """ Get closest tags to the string """
-        like = request.args.get('like')
-        if not like:
-            return {"message":"provide a like string"}, 422
-            
-        tags = Tag.query.filter(Tag.name.like('%' + like +'%')).all()
-        return {'tags':[tag.dict() for tag in tags]}
-
-
-class CategoryApi(Resource):
-    endpoints = (
-        '/blog/categories/',
-        '/blog/categories/<category_id>/'
-    )
-    method_decorators = {
-        'get': [permission_required('can_get_categories')] + panel_decorators,
-        'post': [permission_required('can_create_categories')] + panel_decorators,
-        'delete': [permission_required('can_delete_categories')] + panel_decorators,
-    }
-
-    # Does it really need permission ?
-    def get(self, category_id=None):
-        if category_id:
-            abort(405)
-
-        categories = Category.query.all()
-        return {'categories':[c.dict() for c in categories]}
-
-    def delete(self, category_id=None):
-        if not category_id:
-            abort(405)
-
-        deleted = Category.query.filter_by(id=category_id).deleted()
+        post.title = title
+        post.edited_content = content
+        post.summarized = summarized
+        post.allow_comment = allow_comment
+        post.category_id = category_id
+        post.set_tags(tags)
         db.session.commit()
-        if deleted:
-            return {'message':'Category deleted successfuly'}
-        return {"message":"No category with this id"}, 404
 
-    def post(self, category_id=None):
-        if category_id:
-            abort(405)
+        return redirect(url_for('blog_panel.posts_list'))
 
-        data = request.get_json()
-        name = data.get('name')
-        if not name:
-            return {"message":"Field name is required"}, 422
+    categories = Category.query.all()
+    return render_template("posts_form.html", categories=categories, post=post)
 
-        c = Category(name=name)
-        db.session.add(c)
-        db.session.commit()
-        return {'message':'Category successfuly added', 'category':c.dict()}
+@permission_required('can_publish_posts')
+@staff_required
+@mod.route('/posts/publish/<int:post_id>/')
+@login_required
+def posts_publish(post_id):
+    p = Post.query.filter_by(id=post_id).first_or_404()
+    status = PostStatus.query.filter_by(name="Publish").first()
+    p.status_id = status.id
+    db.session.commit()
+    return redirect(url_for('blog_panel.posts_list'))
+
+@permission_required('can_publish_posts')
+@staff_required
+@mod.route('/posts/draft/<int:post_id>/')
+@login_required
+def posts_draft(post_id):
+    p = Post.query.filter_by(id=post_id).first_or_404()
+    status = PostStatus.query.filter_by(name="Draft").first()
+    p.status_id = status.id
+    db.session.commit()
+    return redirect(url_for('blog_panel.posts_list'))
+
+@permission_required('can_delete_posts')
+@staff_required
+@login_required
+@mod.route('/posts/trash/<int:post_id>/')
+def posts_trash(post_id):
+    """ To delete Post """
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    status = PostStatus.query.filter_by(name="Trash").first()
+    post.status_id = status.id
+    db.session.commit()
+    return redirect(url_for('blog_panel.posts_list'))
+
+@staff_required
+@mod.route('/tags/')
+@login_required
+def tags_api():
+    """ Get closest tags to the string """
+    like = request.args.get('term')        
+    tags = Tag.query.filter(Tag.name.like('%' + like +'%')).limit(20)
+    return jsonify({'results':[tag.dict() for tag in tags]})
+
+@staff_required
+@mod.route('/tags/list/')
+@login_required
+def tags_list():
+    """ Get closest tags to the string """
+    like = request.args.get('term')        
+    tags = Tag.query.all()
+    return render_template('tags_list.html', tags=tags)
+
+@staff_required
+@mod.route('/tags/delete/<int:tag_id>/')
+@login_required
+def tags_delete(tag_id):
+    """ Get closest tags to the string """
+    deleted = Tag.query.filter_by(id=tag_id).delete()
+    db.session.commit()
+    if not deleted:
+        abort(404)
+    return redirect(url_for('blog_panel.tags_list'))
+
+@staff_required
+@mod.route('/categories/list/')
+@login_required
+def categories_list():
+    categories = Category.query.all()
+    return render_template("categories_list.html", categories=categories)
+
+@staff_required
+@mod.route('/categories/delete/<int:cat_id>/')
+@login_required
+def categories_delete(cat_id):
+    deleted = Category.query.filter_by(id=cat_id).delete()
+    db.session.commit()
+    if not deleted:
+        abort(404)
+    return redirect(url_for('blog_panel.categories_list'))
+
+@staff_required
+@mod.route('/categories/create/')
+@login_required
+def categories_create():
+    data = request.get_json()
+    name = data.get('name')
+    if not name:
+        return {"message":"Field name is required"}, 422
+
+    c = Category(name=name)
+    db.session.add(c)
+    db.session.commit()
+    return {'message':'Category successfuly added', 'category':c.dict()}

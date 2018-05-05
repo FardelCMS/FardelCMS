@@ -1,0 +1,252 @@
+# Persian (Iran) translations for PROJECT.
+# Copyright (C) 2018 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2018-05-06 02:09+0430\n"
+"PO-Revision-Date: 2018-05-05 17:12+0430\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fa_IR\n"
+"Language-Team: fa_IR <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.5.3\n"
+
+#: fardel/config.py:27
+msgid "Fardel"
+msgstr "خورجین"
+
+#: fardel/apps/blog/models.py:68 fardel/apps/blog/templates/posts_list.html:55
+msgid "Publish"
+msgstr "انتشار"
+
+#: fardel/apps/blog/models.py:68
+msgid "Future"
+msgstr "آینده"
+
+#: fardel/apps/blog/models.py:69 fardel/apps/blog/templates/posts_list.html:53
+msgid "Draft"
+msgstr "پیش نویس"
+
+#: fardel/apps/blog/models.py:69
+msgid "Pending"
+msgstr "در انتظار"
+
+#: fardel/apps/blog/models.py:70
+msgid "Private"
+msgstr "خصوصی"
+
+#: fardel/apps/blog/models.py:70
+msgid "Trash"
+msgstr "حذف شده"
+
+#: fardel/apps/blog/models.py:71
+msgid "Auto-Draft"
+msgstr "پیش نویس اتوماتیک"
+
+#: fardel/apps/blog/panel.py:33
+msgid "Weblog/Magazine"
+msgstr "وبلاگ/مجله"
+
+#: fardel/apps/blog/panel.py:34 fardel/apps/blog/templates/posts_list.html:12
+msgid "Posts"
+msgstr "نوشته ها"
+
+#: fardel/apps/blog/panel.py:36 fardel/apps/blog/templates/posts_list.html:4
+#: fardel/apps/blog/templates/posts_list.html:5
+msgid "All Posts"
+msgstr "همه نوشته ها"
+
+#: fardel/apps/blog/panel.py:38
+msgid "Create Post"
+msgstr "افزودن نوشت"
+
+#: fardel/apps/blog/panel.py:43
+#: fardel/apps/blog/templates/categories_list.html:4
+#: fardel/apps/blog/templates/categories_list.html:5
+#: fardel/apps/blog/templates/categories_list.html:12
+msgid "Categories"
+msgstr "دسته ها"
+
+#: fardel/apps/blog/panel.py:48 fardel/apps/blog/templates/posts_form.html:75
+#: fardel/apps/blog/templates/tags_list.html:4
+#: fardel/apps/blog/templates/tags_list.html:5
+#: fardel/apps/blog/templates/tags_list.html:12
+msgid "Tags"
+msgstr "برچسب ها"
+
+#: fardel/apps/blog/templates/categories_list.html:27
+#: fardel/apps/blog/templates/posts_list.html:28
+#: fardel/apps/blog/templates/tags_list.html:27
+#: fardel/core/panel/templates/auth/users_list.html:25
+msgid "ID"
+msgstr "شناسه یکتا"
+
+#: fardel/apps/blog/templates/categories_list.html:28
+#: fardel/apps/blog/templates/tags_list.html:28
+msgid "name"
+msgstr "نام"
+
+#: fardel/apps/blog/templates/categories_list.html:37
+#: fardel/apps/blog/templates/posts_list.html:57
+#: fardel/apps/blog/templates/tags_list.html:39
+msgid "Delete"
+msgstr "حذف"
+
+#: fardel/apps/blog/templates/posts_form.html:3
+#: fardel/apps/blog/templates/posts_form.html:4
+#: fardel/apps/blog/templates/posts_form.html:11
+msgid "New Post"
+msgstr "پست جدید"
+
+#: fardel/apps/blog/templates/posts_form.html:29
+msgid "Title goes here ..."
+msgstr "عنوان را اینجا وارد کنید"
+
+#: fardel/apps/blog/templates/posts_form.html:42
+msgid "Save Draft"
+msgstr "ذخیره پیش نویس"
+
+#: fardel/apps/blog/templates/posts_form.html:49
+msgid "Image Header"
+msgstr "عکس اصلی مطلب"
+
+#: fardel/apps/blog/templates/posts_form.html:56
+msgid "Allow Comment"
+msgstr "نظر دادن"
+
+#: fardel/apps/blog/templates/posts_form.html:63
+msgid "Category"
+msgstr "دسته بندی"
+
+#: fardel/apps/blog/templates/posts_list.html:29
+msgid "title"
+msgstr "عنوان"
+
+#: fardel/apps/blog/templates/posts_list.html:30
+msgid "writer"
+msgstr "نویسنده"
+
+#: fardel/apps/blog/templates/posts_list.html:31
+msgid "category"
+msgstr "دسته بندی"
+
+#: fardel/apps/blog/templates/posts_list.html:32
+msgid "tags"
+msgstr "برچسب ها"
+
+#: fardel/apps/blog/templates/posts_list.html:33
+msgid "last update"
+msgstr "آخرین بروز رسانی"
+
+#: fardel/apps/blog/templates/posts_list.html:34
+msgid "views"
+msgstr "تعداد مشاهده"
+
+#: fardel/apps/blog/templates/posts_list.html:35
+msgid "status"
+msgstr "وضعیت"
+
+#: fardel/apps/blog/templates/posts_list.html:36
+#: fardel/core/panel/templates/auth/users_list.html:33
+msgid "settings"
+msgstr "تنظیمات"
+
+#: fardel/apps/blog/templates/posts_list.html:51
+#: fardel/core/panel/templates/auth/users_list.html:47
+msgid "Edit"
+msgstr "ویرایش"
+
+#: fardel/apps/blog/templates/tags_list.html:29
+msgid "frequency"
+msgstr "تکرار"
+
+#: fardel/core/base.py:16
+msgid "Unvalid form submitted"
+msgstr ""
+
+#: fardel/core/base.py:35
+msgid "obj_id must be provided"
+msgstr ""
+
+#: fardel/core/rest.py:10
+msgid "Missing Authorization header"
+msgstr ""
+
+#: fardel/core/rest.py:14
+msgid "Token is already expired"
+msgstr ""
+
+#: fardel/core/panel/templates/panel_base.html:39
+msgid "logout"
+msgstr "خروج"
+
+#: fardel/core/panel/templates/panel_sidebar.html:12
+msgid "Welcome"
+msgstr "خوش آمدید"
+
+#: fardel/core/panel/templates/auth/users_list.html:9
+#: fardel/core/panel/views/__init__.py:26
+#: fardel/core/panel/views/__init__.py:27
+msgid "Users"
+msgstr "کاربران"
+
+#: fardel/core/panel/templates/auth/users_list.html:26
+msgid "email"
+msgstr "ایمیل"
+
+#: fardel/core/panel/templates/auth/users_list.html:27
+msgid "first name"
+msgstr "نام"
+
+#: fardel/core/panel/templates/auth/users_list.html:28
+msgid "last name"
+msgstr "نام خانوادگی"
+
+#: fardel/core/panel/templates/auth/users_list.html:29
+msgid "is admin"
+msgstr "مدیریت"
+
+#: fardel/core/panel/templates/auth/users_list.html:30
+msgid "is staffmember"
+msgstr "کارمند"
+
+#: fardel/core/panel/templates/auth/users_list.html:31
+msgid "group"
+msgstr "گروه"
+
+#: fardel/core/panel/templates/auth/users_list.html:32
+msgid "is confirmed"
+msgstr "تایید شده"
+
+#: fardel/core/panel/views/__init__.py:19
+msgid "home"
+msgstr "خانه"
+
+#: fardel/core/panel/views/__init__.py:25
+msgid "Authentication"
+msgstr "احراز هویت"
+
+#: fardel/core/panel/views/__init__.py:28
+msgid "Staffmembers"
+msgstr "کارمندان"
+
+#: fardel/core/panel/views/__init__.py:38
+msgid "Uploads"
+msgstr "بارگذاری شده ها"
+
+#: fardel/core/panel/views/__init__.py:39
+#: fardel/core/panel/views/__init__.py:40
+msgid "Files"
+msgstr "فایل ها"
+
+#: fardel/core/panel/views/__init__.py:58
+msgid "Email or password is wrong..."
+msgstr "ایمیل یا پسورد اشتباه است ..."
+

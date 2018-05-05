@@ -12,6 +12,7 @@
     <link href="{{url_for('panel.static', filename='css/font-awesome.min.css')}}" rel="stylesheet">
     <link href="{{url_for('panel.static', filename='css/nprogress.css')}}" rel="stylesheet">
     <link href="{{url_for('panel.static', filename='css/custom.css')}}" rel="stylesheet">
+    <link href="{{url_for('panel.static', filename='css/select2.min.css')}}" rel="stylesheet">
     {% block css_block %}{% endblock %}
   </head>
 
@@ -35,9 +36,7 @@
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
-                    {# <li><a href="javascript:;"> Profile</a></li> #}
-                    {# <li><a href="javascript:;">Help</a></li> #}
-                    <li><a href="{{url_for('panel.logout')}}"><i class="fa fa-sign-out pull-right"></i> خروج </a></li>
+                    <li><a href="{{url_for('panel.logout')}}"><i class="fa fa-sign-out pull-right"></i> {{gettext("logout")}} </a></li>
                   </ul>
                 </li>
               </ul>
@@ -78,6 +77,7 @@
     <script src="{{url_for('panel.static', filename='js/popper.min.js')}}"></script>
     <script src="{{url_for('panel.static', filename='js/tooltip.min.js')}}"></script>
     <script src="{{url_for('panel.static', filename='js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('panel.static', filename='js/select2.min.js')}}"></script>
     <script src="{{url_for('panel.static', filename='js/fastclick.js')}}"></script>
     <script src="{{url_for('panel.static', filename='js/nprogress.js')}}"></script>
     <script src="{{url_for('panel.static', filename='js/custom.js')}}"></script>

@@ -1,13 +1,22 @@
+from flask_login import current_user
+
 class Section():
-	def __init__(self, title):
+	def __init__(self, title, permission=None):
 		self.title = title
 		self.links = []
 
 	def add_link(self, link):
 		self.links.append(link)
 
+	@property
+	def permissions(self):
+		return [link.permission for link in self.links]
+
 	def render_links(self):
-		return "".join([link.render() for link in self.links])
+		return "".join(
+			[link.render() for link in self.links
+			 if current_user.can(link.permission)]
+		)
 
 	def render(self):
 		return """<div class="menu_section">
@@ -19,11 +28,12 @@ class Section():
 
 
 class Link():
-	def __init__(self, icon, title, href="#"):
+	def __init__(self, icon, title, href="#", permission=None):
 		self.children = []
 		self.title = title
 		self.href = href
 		self.icon = icon
+		self.permission = permission
 
 	def add_child(self, child):
 		self.children.append(child)
@@ -34,7 +44,8 @@ class Link():
 		return ''
 
 	def render_children(self):
-		return "".join([child.render() for child in self.children])
+		return "".join([child.render() for child in self.children
+						if current_user.can(child.permission)])
 
 	def render(self):
 		return """<li><a href="{href}"><i class="{icon}"></i> {title} {chevron}</a>
@@ -46,9 +57,10 @@ class Link():
 
 
 class ChildLink():
-	def __init__(self, name, href):
+	def __init__(self, name, href, permission=None):
 		self.name = name
 		self.href = href
+		self.permission = permission
 
 	def render(self):
 		return '<li><a href="{href}">{name}</a></li>'.format(
@@ -65,7 +77,15 @@ class PanelSidebar():
 		self.sections.append(section)
 
 	def render(self):
-		return "".join([section.render() for section in self.sections])
+		sections = []
+		for section in self.sections:
+			found = False
+			for perm in section.permissions:
+				if current_user.can(perm):
+					sections.append(section)
+					break
+
+		return "".join([section.render() for section in sections])
 
 
 panel_sidebar = PanelSidebar()

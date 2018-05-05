@@ -1,4 +1,5 @@
 from flask_restful import Api, abort, Resource
+from flask_babel import gettext
 
 __all__ = (
 	'create_api', 'abort'
@@ -6,11 +7,11 @@ __all__ = (
 
 errors = {
     'NoAuthorizationError': {
-        'message': "Missing Authorization header",
+        'message': gettext("Missing Authorization header"),
         'status': 403,
     },
     'ExpiredSignatureError': {
-    	'message': "Token is already expired",
+    	'message': gettext("Token is already expired"),
     	'status': 401
     }
 }

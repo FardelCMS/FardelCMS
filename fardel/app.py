@@ -10,7 +10,7 @@ import sqlalchemy
 from flask import Flask, request, jsonify, redirect, url_for, render_template
 
 from fardel import core
-from fardel.ext import  db, jwt, cache, login_manager
+from fardel.ext import  db, jwt, cache, login_manager, babel
 from fardel.config import DevConfig, ProdConfig
 
 __all__ = ['create_app']
@@ -70,6 +70,8 @@ def configure_extentions(app):
     jwt.init_app(app)
     cache.init_app(app)
     login_manager.init_app(app)
+    babel.init_app(app)
+    import fardel.core.babel
 
 def init_jinja_globals(app):
     from fardel.core.panel.template_tags import add_globals

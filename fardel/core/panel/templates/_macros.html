@@ -33,7 +33,10 @@
     <li class="page-item {% if page < 2 %}disabled{% endif %}">
       <a class="page-link" href="{{url_for(endpoint, page=page-1)}}">قبلی</a>
     </li>
-    {% if page < 5 %}
+    {% if page >= 6 %}      
+    <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+    {% endif %}
+    {% if page < 6 %}
       {% for i in range(1, page + 4) %}
       <li class="page-item {% if i == page %}active{% endif %}">
         {% if i != page %}
@@ -48,8 +51,7 @@
         {% endif %}
       </li>
       {% endfor %}
-    {% elif page >= 4 and page < pages - 4 %}
-      <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+    {% elif page >= 6 and page < pages - 4 %}
       {% for i in range(page - 4, page + 4) %}
       <li class="page-item {% if i == page %}active{% endif %}">
         {% if i != page %}
@@ -64,10 +66,8 @@
         {% endif %}
       </li>
       {% endfor %}
-      <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
-    {% elif page >= 4 and page >= pages - 3 %}
-      <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
-      {% for i in range(page - 3, pages + 1) %}
+    {% elif page >= 6 and page >= pages - 4 %}
+      {% for i in range(page - 4, pages + 1) %}
       <li class="page-item {% if i == page %}active{% endif %}">
         {% if i != page %}
         <a class="page-link" href="{{url_for(endpoint, page=i)}}">
@@ -81,6 +81,9 @@
         {% endif %}
       </li>
       {% endfor %}
+    {% endif %}
+    {% if page < pages - 4 %}      
+    <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
     {% endif %}
     <li class="page-item {% if page == pages %}disabled{% endif %}">
       <a class="page-link" href="{{url_for(endpoint, page=page+1)}}">بعدی</a>

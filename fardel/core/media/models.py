@@ -2,7 +2,7 @@ import os
 import uuid
 
 from pathlib import Path
-from flask import current_app
+from flask import current_app, url_for
 from werkzeug.utils import secure_filename
 
 from ..auth.models import AbstractModelWithPermission
@@ -54,11 +54,15 @@ class File(AbstractModelWithPermission):
     @property
     def url(self):
         if self._url is None:
-            path_format = '/uploads/%s/%s'
+            path_format = '%s/%s'
             if self.file:
-                self._url = str(Path(path_format % (self.location, self.name)))
+                path = path_format % (self.location, self.name)
+                self._url = url_for('media.file_loader',
+                    path_to_file=path, _external=True)
             else:
-                self._url = str(Path(path_format % (self.location, self.file_name)))
+                path = path_format % (self.location, self.file_name)
+                self._url = url_for('media.file_loader',
+                    path_to_file=path, _external=True)
             return self._url
         return self._url
 

@@ -1,7 +1,10 @@
 import os 
 
 from pathlib import Path
+from flask_babel import lazy_gettext
 
+
+PATH_TO_ROOT = Path(__file__).parent.parent
 
 class BaseConfig(object):
     VERSION = "0.1.0"
@@ -21,9 +24,12 @@ class BaseConfig(object):
         "ecommerce"
     )
 
-    SITE_NAME = "خورجین"
+    SITE_NAME = lazy_gettext("Fardel")
 
     CACHE_TYPE = 'simple'
+
+    BABEL_DEFAULT_LOCALE = "fa"
+    BABEL_TRANSLATION_DIRECTORIES = str(PATH_TO_ROOT / "translations")
 
     # MAIL_SERVER = ""
     # MAIL_USERNAME = ""
