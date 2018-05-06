@@ -22,44 +22,46 @@
         <p class="text-muted font-13 m-b-30">
         </p>
         {{macros.paginate(page, pages, 'blog_panel.posts_list')}}
-        <table id="datatable" class="table table-striped table-bordered">
-          <thead>
-            <tr>
-              <td>{{gettext("ID")}}</td>
-              <td>{{gettext("title")}}</td>
-              <td>{{gettext("writer")}}</td>
-              <td>{{gettext("category")}}</td>
-              <td>{{gettext("tags")}}</td>
-              <td>{{gettext("last update")}}</td>
-              <td>{{gettext("views")}}</td>
-              <td>{{gettext("status")}}</td>
-              <td>{{gettext("settings")}}</td>
-            </tr>
-          </thead>
-          <tbody>
-            {% for p in posts %}             
-            <tr>
-              <td>{{p.id}}</td>
-              <td>{{p.title}}</td>
-              <td>{{p.user.email}}</td>
-              <td>{{p.category.name}}</td>
-              <td>{{p.get_tags()}}</td>
-              <td>{{p.update_time}}</td>
-              <td>0</td>
-              <td>{{p.status.get_name()}}</td>
-              <td>
-                <a class="btn btn-warning" href="{{url_for('blog_panel.posts_edit', post_id=p.id)}}">{{gettext("Edit")}}</a>
-                {% if p.status.name == "Publish" %}
-                <a class="btn btn-info" href="{{url_for('blog_panel.posts_draft', post_id=p.id)}}">{{gettext("Draft")}}</a>
-                {% elif p.status.name == "Draft" %}
-                <a class="btn btn-success" href="{{url_for('blog_panel.posts_publish', post_id=p.id)}}">{{gettext("Publish")}}</a>
-                {% endif %}
-                <a class="btn btn-danger" href="{{url_for('blog_panel.posts_trash', post_id=p.id)}}">{{gettext("Delete")}}</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-striped jambo_table bulk_action">
+            <thead>
+              <tr>
+                <td>{{gettext("ID")}}</td>
+                <td>{{gettext("title")}}</td>
+                <td>{{gettext("writer")}}</td>
+                <td>{{gettext("category")}}</td>
+                <td>{{gettext("tags")}}</td>
+                <td>{{gettext("last update")}}</td>
+                <td>{{gettext("views")}}</td>
+                <td>{{gettext("status")}}</td>
+                <td>{{gettext("settings")}}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in posts %}             
+              <tr>
+                <td>{{p.id}}</td>
+                <td>{{p.title}}</td>
+                <td>{{p.user.email}}</td>
+                <td>{{p.category.name}}</td>
+                <td>{{p.get_tags()}}</td>
+                <td>{{p.update_time}}</td>
+                <td>0</td>
+                <td>{{p.status.get_name()}}</td>
+                <td>
+                  <a class="btn btn-warning" href="{{url_for('blog_panel.posts_edit', post_id=p.id)}}">{{gettext("Edit")}}</a>
+                  {% if p.status.name == "Publish" %}
+                  <a class="btn btn-info" href="{{url_for('blog_panel.posts_draft', post_id=p.id)}}">{{gettext("Draft")}}</a>
+                  {% elif p.status.name == "Draft" %}
+                  <a class="btn btn-success" href="{{url_for('blog_panel.posts_publish', post_id=p.id)}}">{{gettext("Publish")}}</a>
+                  {% endif %}
+                  <a class="btn btn-danger" href="{{url_for('blog_panel.posts_trash', post_id=p.id)}}">{{gettext("Delete")}}</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

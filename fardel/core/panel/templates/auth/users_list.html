@@ -19,36 +19,38 @@
         <p class="text-muted font-13 m-b-30">
         </p>
         {{macros.paginate(page, pages, 'panel.users_list')}}
-        <table id="datatable" class="table table-striped table-bordered">
-          <thead>
-            <tr>
-              <td>{{gettext("ID")}}</td>
-              <td>{{gettext("email")}}</td>
-              <td>{{gettext("first name")}}</td>
-              <td>{{gettext("last name")}}</td>
-              <td>{{gettext("is admin")}}</td>
-              <td>{{gettext("is staffmember")}}</td>
-              <td>{{gettext("group")}}</td>
-              <td>{{gettext("is confirmed")}}</td>
-              <td>{{gettext("settings")}}</td>
-            </tr>
-          </thead>
-          <tbody>
-            {% for u in users %}             
-            <tr>
-              <td>{{u.id}}</td>
-              <td>{{u.email}}</td>
-              <td>{{u.get_first_name()}}</td>
-              <td>{{u.get_last_name()}}</td>
-              <td>{{u.is_admin}}</td>
-              <td>{{u.is_staff}}</td>
-              <td>{{u.group.name}}</td>
-              <td>{{u.get_confirmed()}}</td>
-              <td><a class="btn btn-warning" href="{{url_for('panel.users_edit', user_id=u.id)}}">{{gettext("Edit")}}</a></td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-striped jambo_table bulk_action">
+            <thead>
+              <tr>
+                <td>{{gettext("ID")}}</td>
+                <td>{{gettext("email")}}</td>
+                <td>{{gettext("first name")}}</td>
+                <td>{{gettext("last name")}}</td>
+                <td>{{gettext("is admin")}}</td>
+                <td>{{gettext("is staffmember")}}</td>
+                <td>{{gettext("group")}}</td>
+                <td>{{gettext("is confirmed")}}</td>
+                <td>{{gettext("settings")}}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in users %}             
+              <tr>
+                <td>{{u.id}}</td>
+                <td>{{u.email}}</td>
+                <td>{{u.get_first_name()}}</td>
+                <td>{{u.get_last_name()}}</td>
+                <td>{{u.is_admin}}</td>
+                <td>{{u.is_staff}}</td>
+                <td>{{u.group.name}}</td>
+                <td>{{u.get_confirmed()}}</td>
+                <td><a class="btn btn-warning" href="{{url_for('panel.users_edit', user_id=u.id)}}">{{gettext("Edit")}}</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

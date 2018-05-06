@@ -21,27 +21,30 @@
       <div class="x_content">
         <p class="text-muted font-13 m-b-30">
         </p>
-        <table id="datatable" class="table table-striped table-bordered">
-          <thead>
-            <tr>
-              <td>{{gettext("ID")}}</td>
-              <td>{{gettext("name")}}</td>
-              <td>{{gettext("frequency")}}</td>
-            </tr>
-          </thead>
-          <tbody>
-            {% for t in tags %}             
-            <tr>
-              <td>{{t.id}}</td>
-              <td>{{t.name}}</td>
-              <td>{{t.frequency}}</td>
-              <td>
-                <a class="btn btn-danger" href="{{url_for('blog_panel.categories_delete', cat_id=t.id)}}">{{gettext("Delete")}}</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-striped jambo_table bulk_action">
+            <thead>
+              <tr>
+                <td>{{gettext("ID")}}</td>
+                <td>{{gettext("name")}}</td>
+                <td>{{gettext("frequency")}}</td>
+                <td>{{gettext("settings")}}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in tags %}             
+              <tr>
+                <td>{{t.id}}</td>
+                <td>{{t.name}}</td>
+                <td>{{t.frequency}}</td>
+                <td>
+                  <a class="btn btn-danger" href="{{url_for('blog_panel.categories_delete', cat_id=t.id)}}">{{gettext("Delete")}}</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
