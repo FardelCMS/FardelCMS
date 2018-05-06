@@ -46,6 +46,9 @@ def add_media_section():
 
 @mod.route('/login/', methods=['POST', 'GET'])
 def login():
+	if current_user.is_authenticated:
+		return redirect(url_for('panel.home'))
+		
 	if request.method == "POST":
 		email = request.form.get('email')
 		password = request.form.get('password')
