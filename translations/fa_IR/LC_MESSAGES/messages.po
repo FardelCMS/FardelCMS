@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-05-06 02:41+0430\n"
+"POT-Creation-Date: 2018-05-06 15:19+0430\n"
 "PO-Revision-Date: 2018-05-05 17:12+0430\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fa_IR\n"
@@ -74,7 +74,7 @@ msgstr "افزودن نوشت"
 msgid "Categories"
 msgstr "دسته ها"
 
-#: fardel/apps/blog/panel.py:45
+#: fardel/apps/blog/panel.py:45 fardel/apps/ecommerce/panel.py:30
 msgid "All Categories"
 msgstr "همه دسته بندی ها"
 
@@ -89,6 +89,34 @@ msgstr "اضافه کردن دسته بندی"
 msgid "Tags"
 msgstr "برچسب ها"
 
+#: fardel/apps/blog/panel.py:253
+msgid "Name is required"
+msgstr "اسم الزامی است"
+
+#: fardel/apps/blog/templates/categories_form.html:3
+#: fardel/apps/blog/templates/categories_form.html:4
+#: fardel/apps/ecommerce/panel.py:32
+msgid "New Category"
+msgstr "دسته بندی جدید"
+
+#: fardel/apps/blog/templates/categories_form.html:11
+#: fardel/apps/blog/templates/posts_form.html:3
+#: fardel/apps/blog/templates/posts_form.html:4
+#: fardel/apps/blog/templates/posts_form.html:11
+msgid "New Post"
+msgstr "پست جدید"
+
+#: fardel/apps/blog/templates/categories_form.html:29
+#: fardel/apps/blog/templates/categories_form.html:30
+#: fardel/apps/blog/templates/categories_list.html:28
+#: fardel/apps/blog/templates/tags_list.html:28
+msgid "name"
+msgstr "نام"
+
+#: fardel/apps/blog/templates/categories_form.html:35
+msgid "Save"
+msgstr "ذخیره سازی"
+
 #: fardel/apps/blog/templates/categories_list.html:27
 #: fardel/apps/blog/templates/posts_list.html:28
 #: fardel/apps/blog/templates/tags_list.html:27
@@ -96,22 +124,11 @@ msgstr "برچسب ها"
 msgid "ID"
 msgstr "شناسه یکتا"
 
-#: fardel/apps/blog/templates/categories_list.html:28
-#: fardel/apps/blog/templates/tags_list.html:28
-msgid "name"
-msgstr "نام"
-
 #: fardel/apps/blog/templates/categories_list.html:37
 #: fardel/apps/blog/templates/posts_list.html:57
 #: fardel/apps/blog/templates/tags_list.html:39
 msgid "Delete"
 msgstr "حذف"
-
-#: fardel/apps/blog/templates/posts_form.html:3
-#: fardel/apps/blog/templates/posts_form.html:4
-#: fardel/apps/blog/templates/posts_form.html:11
-msgid "New Post"
-msgstr "پست جدید"
 
 #: fardel/apps/blog/templates/posts_form.html:29
 msgid "Title goes here ..."
@@ -174,6 +191,64 @@ msgstr "ویرایش"
 #: fardel/apps/blog/templates/tags_list.html:29
 msgid "frequency"
 msgstr "تکرار"
+
+#: fardel/apps/ecommerce/panel.py:22
+msgid "Online Shop"
+msgstr "فروشگاه آنلاین"
+
+#: fardel/apps/ecommerce/panel.py:23
+msgid "Products"
+msgstr "محصولات"
+
+#: fardel/apps/ecommerce/panel.py:25
+msgid "All Products"
+msgstr "همه محصولات"
+
+#: fardel/apps/ecommerce/panel.py:27
+msgid "New Product"
+msgstr "محصول جدید"
+
+#: fardel/apps/ecommerce/panel.py:35
+msgid "All Product Types"
+msgstr "همه انواع محصولات"
+
+#: fardel/apps/ecommerce/panel.py:37
+msgid "New Product Type"
+msgstr "نوع محصول جدید"
+
+#: fardel/apps/ecommerce/panel.py:42
+msgid "Discounts"
+msgstr "تخفیف ها"
+
+#: fardel/apps/ecommerce/panel.py:44
+msgctxt "Discounts section"
+msgid "All Sales"
+msgstr "همه حراج ها"
+
+#: fardel/apps/ecommerce/panel.py:46
+msgctxt "Discounts section"
+msgid "Create Sales"
+msgstr "حراج جدید"
+
+#: fardel/apps/ecommerce/panel.py:49
+msgctxt "Discounts section"
+msgid "All Vouchers"
+msgstr "همه کد تخفیف ها"
+
+#: fardel/apps/ecommerce/panel.py:51
+msgctxt "Discounts section"
+msgid "Create Voucher"
+msgstr "کد تخفیف جدید"
+
+#: fardel/apps/ecommerce/panel.py:55
+msgctxt "Sales sections"
+msgid "Sales"
+msgstr "فروش"
+
+#: fardel/apps/ecommerce/panel.py:57
+msgctxt "Sales sections"
+msgid "Orders"
+msgstr "سفارشات"
 
 #: fardel/core/base.py:16
 msgid "Unvalid form submitted"
