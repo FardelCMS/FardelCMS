@@ -64,7 +64,7 @@
         <!-- footer content -->
         <footer>
           <div class="pull-right">
-            Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
+            Copy right 2018 - {{gettext("Fardel")}} + Gentelella(<a href="https://colorlib.com">Colorlib</a>)
           </div>
           <div class="clearfix"></div>
         </footer>
@@ -81,6 +81,7 @@
     <script src="{{url_for('panel.static', filename='js/fastclick.js')}}"></script>
     <script src="{{url_for('panel.static', filename='js/nprogress.js')}}"></script>
     <script src="{{url_for('panel.static', filename='js/custom.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('panel.static', filename='tinymce.min.js')}}"></script>
     {% block js_block %}{% endblock %}
   </body>
 </html>
