@@ -222,7 +222,7 @@ class Post(db.Model, SeoModel, AbstractModelWithPermission):
 
     @property
     def publish_timestamp(self):
-        return convert_timestamp(self.publish_time)
+        return convert_timestamp(self.publish_time) if self.publish_time else 0
 
     def get_comments(self, page=1):
         """ What is use of this function? """
