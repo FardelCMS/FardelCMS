@@ -1,6 +1,6 @@
 import math
 
-from flask import request, render_template, redirect, url_for
+from flask import request, render_template, redirect, url_for, jsonify
 from flask_login import login_required
 
 from fardel.ext import db
@@ -19,7 +19,8 @@ def products_list():
     query = Product.query.order_by(Product.id.desc())
     pages = math.ceil(query.count() / per_page)
     posts = query.paginate(page=page, per_page=per_page, error_out=False).items
-    return render_template('product/products_list.html')
+    products_types = ProductType.query.all()
+    return render_template('product/products_list.html', products_types=products_types)
 
 @staff_required
 @mod.route('/products/edit/<int:product_id>/', methods=["POST", "GET"])
@@ -34,36 +35,196 @@ def products_delete(product_id):
     pass
 
 @staff_required
-@mod.route('/products/create/', methods=["POST", "GET"])
+@mod.route('/products/create/type_<int:pt_id>/', methods=["POST", "GET"])
 @login_required
-def products_create():
+def products_create(pt_id):
     if request.method == "POST":
-        pass
-    return render_template("product/products_form.html")
+        name = request.form.get("name")
+        description = request.form.get("description", default="")
+        seo_title = request.form.get("seo-title", default="")
+        seo_description = request.form.get("seo-description", default="")
+        price = request.form.get("price", type=int)
+
+
+        return redirect(url_for('ecommerce_panel.products_list'))
+    categories = ProductCategory.query.all()
+    product_type = ProductType.query.filter_by(id=pt_id).first_or_404()
+    return render_template("product/products_form.html",
+        categories=categories, product_type=product_type)
 
 @staff_required
 @mod.route('/products/types/list/')
 @login_required
 def products_types_list():
-    pass
-
-@staff_required
-@mod.route('/products/types/edit/<int:pt_id>/', methods=["POST", "GET"])
-@login_required
-def products_types_edit(pt_id):
-    pass
-
-@staff_required
-@mod.route('/products/types/delete/<int:pt_id>/')
-@login_required
-def products_types_delete(pt_id):
-    pass
+    pts = ProductType.query.all()
+    return render_template('product/products_types_list.html', products_types=pts)
 
 @staff_required
 @mod.route('/products/types/create/', methods=["POST", "GET"])
 @login_required
 def products_types_create():
-    pass
+    if request.method == "POST":
+        name = request.form.get("name")
+        has_variants = request.form.get("has_variants", type=bool, default=True)
+        product_attributes = request.form.getlist('product_attributes', type=int)
+        product_variants = request.form.getlist('product_variants', type=int)
+        is_shipping_required = request.form.get('is_shipping_required',
+            type=bool, default=True)
+
+        if not name:
+            flash(gettext('Name is required'))
+            return redirect(url_for('ecommerce_panel.products_types_create'))
+
+        pt = ProductType(name=name, has_variants=has_variants,
+                         is_shipping_required=is_shipping_required)
+        db.session.add(pt)
+        db.session.flush()
+        pt.set_attributes(product_attributes)
+        pt.set_variants(product_variants)
+        db.session.commit()
+        return redirect(url_for('ecommerce_panel.products_types_list'))
+    attributes = ProductAttribute.query.all()
+    return render_template('product/products_types_form.html', attributes=attributes)
+
+@staff_required
+@mod.route('/products/types/edit/<int:pt_id>/', methods=["POST", "GET"])
+@login_required
+def products_types_edit(pt_id):
+    pt = ProductType.query.filter_by(id=pt_id).first()
+    if request.method == "POST":
+        name = request.form.get("name")
+        has_variants = request.form.get("has_variants", type=bool)
+        product_attributes = request.form.getlist('product_attributes', type=int)
+        variant_attributes = request.form.getlist('product_variants', type=int)
+        is_shipping_required = request.form.get('is_shipping_required', type=bool)
+        
+        if not name:
+            flash(gettext('Name is required'))
+            return redirect(url_for('ecommerce_panel.products_types_create'))
+
+        pt.name = name
+        pt.has_variants = has_variants
+        pt.is_shipping_required = is_shipping_required
+        pt.set_attributes(product_attributes)
+        pt.set_variants(variant_attributes)
+        db.session.commit()
+        return redirect(url_for('ecommerce_panel.products_types_list'))
+    attributes = ProductAttribute.query.all()        
+    return render_template('product/products_types_form.html',
+        product_type=pt, attributes=attributes)
+
+@staff_required
+@mod.route('/products/types/delete/<int:pt_id>/')
+@login_required
+def products_types_delete(pt_id):
+    pt = ProductType.query.filter_by(id=pt_id).first_or_404()
+    db.session.delete(pt)
+    db.session.commit()
+    return redirect(url_for('ecommerce_panel.products_types_list'))
+
+@staff_required
+@mod.route('/api/products/attributes/')
+@login_required
+def products_attributes_api():
+    pas = ProductAttribute.query.all()
+    _type = request.args.get('type')
+    product_type_id = request.args.get('product_type_id', type=int)
+    if product_type_id and _type:
+        results = []
+        pt = ProductType.query.filter_by(id=product_type_id).first_or_404()
+        for pa in pas:
+            _dict = pa.dict()
+            if _type == "variant" and pa.id in pt.variant_ids:
+                _dict['selected'] = True
+            elif _type == "attribute" and pa.id in pt.attr_ids:
+                _dict['selected'] = True
+            results.append(_dict)
+        return jsonify({"results":results})
+    else:
+        return jsonify({"results":[pa.dict() for pa in pas]})
+
+@staff_required
+@mod.route('/products/attributes/list/')
+@login_required
+def products_attributes_list():
+    pas = ProductAttribute.query.all()
+    return render_template('product/products_attributes_list.html', attributes=pas)
+
+@staff_required
+@mod.route('/products/attributes/create/', methods=["POST", "GET"])
+@login_required
+def products_attributes_create():
+    if request.method == "POST":
+        name = request.form.get('name')
+        if not name:
+            flash(gettext('Name is required'))
+            return redirect(url_for('ecommerce_panel.products_attributes_create'))
+        pa = ProductAttribute(name=name)
+        db.session.add(pa)
+        db.session.commit()
+        return redirect(url_for('ecommerce_panel.products_attributes_info',
+            attr_id=pa.id))
+    return render_template('product/products_attributes_form.html')
+
+@staff_required
+@mod.route('/products/attributes/info/<int:attr_id>/')
+@login_required
+def products_attributes_info(attr_id):
+    pa = ProductAttribute.query.filter_by(id=attr_id).first_or_404()
+    return render_template('product/products_attributes_info.html', attribute=pa)
+
+@staff_required
+@mod.route('/products/attributes/edit/<int:attr_id>/', methods=["POST", "GET"])
+@login_required
+def products_attributes_edit(attr_id):
+    pa = ProductAttribute.query.filter_by(id=attr_id).first_or_404()
+    if request.method == "POST":
+        name = request.form.get('name')
+        if not name:
+            flash(gettext('Name is required'))
+            return redirect(url_for('ecommerce_panel.products_attributes_create'))
+        pa.name = name
+        db.session.commit()
+        return redirect(url_for('ecommerce_panel.products_attributes_list'))
+    return render_template('product/products_attributes_form.html', attribute=pa)
+
+@staff_required
+@mod.route('/products/attributes/delete/<int:attr_id>/')
+@login_required
+def products_attributes_delete(attr_id):
+    pa = ProductAttribute.query.filter_by(id=attr_id).first_or_404()
+    db.session.delete(pa)
+    db.session.commit()
+    return redirect(url_for('ecommerce_panel.products_attributes_list'))
+
+@staff_required
+@mod.route('/products/attributes/<int:attr_id>/add_value/', methods=["POST", "GET"])
+@login_required
+def products_attributes_add_value(attr_id):
+    pa = ProductAttribute.query.filter_by(id=attr_id).first_or_404()
+    if request.method == "POST":
+        name = request.form.get('name')
+        if not name:
+            flash(gettext('Name is required'))
+            return redirect(url_for('ecommerce_panel.products_attributes_add_value',
+                attr_id=attr_id))
+
+        acv = AttributeChoiceValue(name=name, attribute_id=attr_id)
+        db.session.add(acv)
+        db.session.commit()
+        return redirect(url_for('ecommerce_panel.products_attributes_info',
+            attr_id=attr_id))
+    return render_template('product/products_attributes_add_value_form.html')
+
+@staff_required
+@mod.route('/products/attributes/delete_value/<int:val_id>/')
+@login_required
+def products_attributes_delete_value(val_id):
+    pa = AttributeChoiceValue.query.filter_by(id=val_id).first_or_404()
+    db.session.delete(pa)
+    db.session.commit()
+    return redirect(url_for('ecommerce_panel.products_attributes_info',
+        attr_id=pa.attribute_id))
 
 @staff_required
 @mod.route('/categories/list/')

@@ -11,7 +11,7 @@ PATH_TO_ECOMMERCE_APP = pathlib.Path(__file__).parent
 mod = Blueprint(
     'ecommerce_panel',
     'ecommerce_panel',
-    url_prefix="/panel/ecommrece/",
+    url_prefix="/panel/ecommerce/",
     static_folder=str(PATH_TO_ECOMMERCE_APP / "media/static"),
     template_folder=str(PATH_TO_ECOMMERCE_APP / "media/templates"),
 )
@@ -24,8 +24,6 @@ def add_blog_section():
             permission="can_get_products")
     product_link.add_child(ChildLink(gettext("All Products"),
         url_for('ecommerce_panel.products_list'), permission="can_get_products"))
-    product_link.add_child(ChildLink(gettext("New Product"),
-        url_for('ecommerce_panel.products_create'), permission="can_create_products"))
 
     product_link.add_child(ChildLink(gettext("All Categories"),
         url_for('ecommerce_panel.categories_list'), permission="can_get_categories"))
@@ -36,6 +34,16 @@ def add_blog_section():
         url_for('ecommerce_panel.products_types_list'), permission="can_get_products_types"))
     product_link.add_child(ChildLink(gettext("New Product Type"),
         url_for('ecommerce_panel.products_types_create'), permission="can_create_products_types"))
+
+    product_link.add_child(ChildLink(gettext("All Attributes"),
+        url_for('ecommerce_panel.products_attributes_list'), permission="can_get_products_types"))
+    product_link.add_child(ChildLink(gettext("New Attribute"),
+        url_for('ecommerce_panel.products_attributes_create'), permission="can_create_products_types"))
+
+    # product_link.add_child(ChildLink(gettext("All Collections"),
+    #     url_for('ecommerce_panel.categories_create'), permission="can_get_collections"))
+    # product_link.add_child(ChildLink(gettext("Create Collection"),
+    #     url_for('ecommerce_panel.categories_create'), permission="can_create_collections"))
 
     section.add_link(product_link)
 
@@ -50,11 +58,6 @@ def add_blog_section():
         url_for('ecommerce_panel.categories_create'), permission="can_get_vouchers"))
     discount_link.add_child(ChildLink(pgettext("Discounts section", "Create Voucher"),
         url_for('ecommerce_panel.categories_create'), permission="can_create_vouchers"))
-
-    discount_link.add_child(ChildLink(pgettext("Discounts section", "All Collections"),
-        url_for('ecommerce_panel.categories_create'), permission="can_get_collections"))
-    discount_link.add_child(ChildLink(pgettext("Discounts section", "Create Collection"),
-        url_for('ecommerce_panel.categories_create'), permission="can_create_collections"))
     section.add_link(discount_link)
 
     sales_link = Link('fa fa-clipboard', pgettext('Sales sections', 'Sales'),

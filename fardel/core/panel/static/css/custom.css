@@ -1,19 +1,36 @@
+@font-face {
+    font-family: byekan;
+    src: url(../fonts/BYekan.ttf);
+}
+
+* {
+    font-family: byekan;
+    font-size:102%;
+}
+
+.modal-backdrop {
+    background-color: #000;
+    opacity: 0.5;
+}
+.select2-results__option {
+    text-align: right;
+}
+.select2-selection__rendered {
+    text-align: right;
+}
 
 html , body{
     direction: rtl;
- height:100%;
- 
+    height:100%;
 }
  
 .full-width {
-	
- width:100%;
- 
- }
+    width:100%;
+}
  
 .full-height{
- height:100%;
- }
+    height:100%;
+}
 
 .daterangepicker .ranges li {
     color: #73879C

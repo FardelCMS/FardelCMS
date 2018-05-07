@@ -1,0 +1,96 @@
+{% extends "panel_base.html" %}
+
+{% block header_title %}{{gettext("Attribute Info")}} | {{get_sitename()}}{% endblock %}
+{% block title %}{{gettext("Attribute Info")}}{% endblock %}
+
+{% block content %}
+<div class="row"> 
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>{{gettext("Attribute Info")}}</h2>
+        <ul class="nav navbar-left panel_toolbox">
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+          </li>
+          <li><a class="close-link"><i class="fa fa-close"></i></a>
+          </li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+      	<h2 class="page-title">{{gettext("Name")}} : {{attribute.name}}</h2>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row"> 
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>{{gettext("Attribute Values")}}</h2>
+        <ul class="nav navbar-left panel_toolbox">
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+          </li>
+          <li><a class="close-link"><i class="fa fa-close"></i></a>
+          </li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <a class="btn btn-success" href="{{url_for('ecommerce_panel.products_attributes_add_value', attr_id=attribute.id)}}">{{gettext("Add Value")}}</a>
+        <div class="table-responsive">
+          <table class="table table-striped jambo_table bulk_action">
+            <thead>
+              <tr class="headings">
+                <td>{{gettext("ID")}}</td>
+                <td>{{gettext("name")}}</td>
+                <td>{{gettext("settings")}}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for v in attribute.choices %}             
+              <tr>
+                <td>{{v.id}}</td>
+                <td>{{v.name}}</td>
+                <td>
+                	<button class="btn btn-danger" data-href="{{url_for('ecommerce_panel.products_attributes_delete_value', val_id=v.id)}}" data-toggle="modal" data-target=".confirm-delete">{{gettext("Delete")}}</button>
+                </td>
+              </tr>
+              <div class="modal confirm-delete" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                      </button>
+                      <h4 class="modal-title">{{gettext("Are you sure")}}</h4>
+                    </div>
+                    <div class="modal-body">
+                      <h4>{{gettext("Are you sure you want to delete the category?")}}</h4>
+                      <p>{{gettext("Value name")}} : {{v.name}}</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">{{gettext("Close")}}</button>
+                      <a type="button" class="btn btn-danger btn-ok">{{gettext("Delete")}}</a>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js_block %}
+<script type="text/javascript">
+$('.confirm-delete').on('show.bs.modal', function(e) {
+  $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+});
+</script>
+{% endblock %}

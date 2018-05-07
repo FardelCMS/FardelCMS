@@ -139,7 +139,15 @@ class Post(db.Model, SeoModel, AbstractModelWithPermission):
     status = db.relationship('PostStatus', lazy="joined")
     tags = db.relationship('Tag', secondary='blog_posts_tags', lazy="selectin")
 
-    search_vector = db.Column(TSVectorType('title', 'content'))
+    # To enable search uncomment following line
+    # search_vector = db.Column(TSVectorType('title', 'content'))
+
+    # And add these lines to alembic migrations
+    # import sqlalchemy_utils
+    # from sqlalchemy_searchable import sync_trigger
+    # conn = op.get_bind()
+    # sync_trigger(conn, 'blog_posts', 'search_vector', ['title', 'content'])
+
 
     class Meta:
         permissions = (

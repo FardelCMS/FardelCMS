@@ -21,6 +21,7 @@
       <div class="x_content">
         <p class="text-muted font-13 m-b-30">
         </p>
+        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#new_product">{{gettext("Add Product")}}</button>
         <div class="table-responsive">
           <table class="table table-striped jambo_table bulk_action">
             <thead>
@@ -45,6 +46,26 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="new_product" class="modal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{{gettext("Product Type")}}</h4>
+      </div>
+      <div class="modal-body">
+        <ul>
+          {% for pt in products_types %}
+          <li><a class="btn btn-info" href="{{url_for('ecommerce_panel.products_create', pt_id=pt.id)}}">{{pt.name}}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{gettext("Close")}}</button>
       </div>
     </div>
   </div>

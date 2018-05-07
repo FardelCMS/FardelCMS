@@ -1,0 +1,38 @@
+{% extends "panel_base.html" %}
+
+{% block header_title %}{{gettext("Add Attribute Value")}} | {{get_sitename()}}{% endblock %}
+{% block title %}{{gettext("Add Attribute Value")}}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-7 col-md-9 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>{{gettext("New Attribute Value")}}</h2>
+        <ul class="nav navbar-left panel_toolbox">
+          <li><a class="close-link"><i class="fa fa-close"></i></a>
+          </li>
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+          </li>            
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <form method="POST" enctype="multipart/form-data">
+          <div class="col-xs-12">
+              <div class="form-group col-xs-12">
+                  <label for="name">{{gettext("value name")}}</label>
+                  <input placeholder="{{gettext('value name')}}" type="text" id="name" name="name" required="required" class="form-control col-xs-12">
+              </div>
+              <div class="form-group">
+                <div class="col-lg-12">
+                  <button class="btn btn-success" type="submit">{{gettext("Save")}}</button>
+                </div>
+              </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>  
+{% endblock %}

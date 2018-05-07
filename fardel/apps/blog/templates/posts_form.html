@@ -32,16 +32,6 @@
               <div class="form-group">
                 <textarea name="content" id="content">{% if post %}{{post.content or post.edited_content}}{% endif %}</textarea>
               </div>
-              <div class="form-group">
-                <label for="summarized">چکیده مطلب</label>
-                <textarea class="col-md-12" name="summarized" id="summarized">{% if post %}{{post.summarized}}{% endif %}</textarea>
-              </div>
-              <div class="divider-dashed"></div>
-              <div class="form-group">
-                <div class="col-lg-12">
-                  <button class="btn btn-success" type="submit">{{gettext("Save Draft")}}</button>
-                </div>
-              </div>
           </div>
         	<div class="col-md-3">
             <div class="form-group">
@@ -76,6 +66,13 @@
               </label>
               <select id="tags" name="tags" class="form-control"></select>
             </div>
+            <div class="divider-dashed"></div>
+            <div class="form-group">
+              <label for="summarized">چکیده مطلب</label>
+              <textarea rows="6" class="form-control" name="summarized" id="summarized">{% if post %}{{post.summarized}}{% endif %}</textarea>
+            </div>
+            <div class="divider-dashed"></div>
+            <button class="btn btn-success" type="submit">{{gettext("Save Draft")}}</button>
         	</div>
         </form>
       </div>
@@ -111,7 +108,7 @@ $(function(){
 
   $('#category').select2();
   $('#tags').select2({
-    ajax: {      
+    ajax: {
       url: '/panel/blog/tags/',
       dataType: 'json'
     },

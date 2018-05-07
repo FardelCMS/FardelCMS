@@ -25,6 +25,11 @@ class ProductCategory(db.Model, SeoModel):
     parent = db.relationship('ProductCategory', remote_side=[id])
     children = db.relationship('ProductCategory')
 
+    def get_name(self):
+        if self.parent:
+            return "%s > %s" % (self.parent.get_name(), self.name)
+        return self.name
+
     def dict(self, products=False, page=None, per_page=None):
         obj = dict(
             id=self.id,
@@ -38,7 +43,7 @@ class ProductCategory(db.Model, SeoModel):
             obj.update(pages=pages, products=[p.dict() for p in products])
             obj.update(self.seo_dict())
         return obj
-
+        
 
 class ProductType(db.Model):
     __tablename__ = "product_product_types"
@@ -48,9 +53,53 @@ class ProductType(db.Model):
     has_variants = db.Column(db.Boolean, default=True)
     product_attributes = db.relationship('ProductAttribute',
         secondary="product_product_types_attributes")
-    variant_attributes = db.relationship('ProductVariant',
+    variant_attributes = db.relationship('ProductAttribute',
         secondary="product_product_types_variants")
     is_shipping_required = db.Column(db.Boolean, default=False)
+
+    @property
+    def product_attributes_print(self):
+        return " ".join([pa.name for pa in self.product_attributes])
+
+    @property
+    def variant_attributes_print(self):
+        return " ".join([pa.name for pa in self.variant_attributes])
+
+    @property
+    def variant_ids(self):
+        if not hasattr(self, "_variant_ids"):
+            self._variant_ids = [var.id for var in self.variant_attributes]
+        return self._variant_ids
+
+    @property
+    def attr_ids(self):
+        if not hasattr(self, "_attr_ids"):
+            self._attr_ids = [var.id for var in self.product_attributes]
+        return self._attr_ids
+
+    def set_attributes(self, attributes):
+        for pa in self.product_attributes:
+            if pa.id not in attributes:
+                self.product_attributes.remove(pa)
+            else:
+                attributes.remove(pa.id)
+
+        for attr_id in attributes:
+            pa = ProductAttribute.query.filter_by(id=attr_id).first()
+            self.product_attributes.append(pa)
+            db.session.flush()
+
+    def set_variants(self, variants):
+        for pv in self.variant_attributes:
+            if pv.id not in variants:
+                self.variant_attributes.remove(pv)
+            else:
+                variants.remove(pv.id)
+
+        for var_id in variants:
+            pa = ProductAttribute.query.filter_by(id=var_id).first()
+            self.variant_attributes.append(pa)
+            db.session.flush()
 
     def dict(self):
         pass
@@ -73,7 +122,7 @@ class ProductTypeVariants(db.Model):
     product_type_id = db.Column(db.Integer,
         db.ForeignKey('product_product_types.id'))
     product_variants_id = db.Column(db.Integer,
-        db.ForeignKey('product_product_variants.id'))
+        db.ForeignKey('product_products_attributes.id'))
 
 
 class Product(db.Model, SeoModel):
@@ -161,7 +210,7 @@ class ProductAttribute(db.Model):
     choices = db.relationship('AttributeChoiceValue', lazy="joined")
 
     def dict(self):
-        pass
+        return {'id':self.id, 'text':self.name}
 
 
 class AttributeChoiceValue(db.Model):
