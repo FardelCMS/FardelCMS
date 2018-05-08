@@ -18,37 +18,121 @@ def products_list():
     per_page = request.args.get('per_page', default=20, type=int)
     query = Product.query.order_by(Product.id.desc())
     pages = math.ceil(query.count() / per_page)
-    posts = query.paginate(page=page, per_page=per_page, error_out=False).items
+    products = query.paginate(page=page, per_page=per_page, error_out=False).items
     products_types = ProductType.query.all()
-    return render_template('product/products_list.html', products_types=products_types)
+    return render_template('product/products_list.html',
+        products=products, products_types=products_types)
+
+@staff_required
+@mod.route('/products/info/<int:product_id>/')
+@login_required
+def products_info(product_id):
+    p = Product.query.filter_by(id=product_id).first_or_404()
+    return render_template('product/products_info.html', product=p)
+
+@staff_required
+@mod.route('/products/info/<int:product_id>/variants/add/',
+    methods=["POST", "GET"])
+@login_required
+def variants_add():
+    pass
+
+@staff_required
+@mod.route('/products/info/<int:product_id>/variants/edit/<int:var_id>/',
+    methods=["POST", "GET"])
+@login_required
+def variants_edit(product_id, var_id):
+    pass
 
 @staff_required
 @mod.route('/products/edit/<int:product_id>/', methods=["POST", "GET"])
 @login_required
 def products_edit(product_id):
-    pass
-
-@staff_required
-@mod.route('/products/delete/<int:product_id>/')
-@login_required
-def products_delete(product_id):
-    pass
-
-@staff_required
-@mod.route('/products/create/type_<int:pt_id>/', methods=["POST", "GET"])
-@login_required
-def products_create(pt_id):
+    p = Product.query.filter_by(id=product_id).first_or_404()
+    product_type = p.product_type
     if request.method == "POST":
         name = request.form.get("name")
         description = request.form.get("description", default="")
         seo_title = request.form.get("seo-title", default="")
         seo_description = request.form.get("seo-description", default="")
         price = request.form.get("price", type=int)
+        sku = request.form.get("sku")
+        category_id = request.form.get('category_id')
+        publish = request.form.get('publish', type=bool)
+        featured = request.form.get('featured', type=bool)
+        attributes = []
+        for attr in product_type.product_attributes:
+            attributes.append(
+                {"name":attr.name,
+                 "value":request.form.get('attribute-%d' % attr.id)}
+            )
 
+        product.name = name
+        product.description = description
+        product.seo_title = seo_title
+        product.seo_description = seo_description
+        product.price = price
+        product.sku = sku
+        product.category_id = category_id
+        product.is_published = publish
+        product.is_featured = featured
+        product.attributes = attributes
+        if not product_type.has_variants:
+            product.product_variants[0].sku = sku
+        db.session.commit()
 
         return redirect(url_for('ecommerce_panel.products_list'))
     categories = ProductCategory.query.all()
+    return render_template('product/products_form.html',
+        product=p, product_type=product_type, categories=categories)
+
+@staff_required
+@mod.route('/products/delete/<int:product_id>/')
+@login_required
+def products_delete(product_id):
+    pt = Product.query.filter_by(id=product_id).first_or_404()
+    db.session.delete(pt)
+    db.session.commit()
+    return redirect(url_for('ecommerce_panel.products_list'))
+
+@staff_required
+@mod.route('/products/create/type_<int:pt_id>/', methods=["POST", "GET"])
+@login_required
+def products_create(pt_id):
     product_type = ProductType.query.filter_by(id=pt_id).first_or_404()
+    if request.method == "POST":
+        name = request.form.get("name")
+        description = request.form.get("description", default="")
+        seo_title = request.form.get("seo-title", default="")
+        seo_description = request.form.get("seo-description", default="")
+        price = request.form.get("price", type=int)
+        sku = request.form.get("sku")
+        category_id = request.form.get('category_id')
+        publish = request.form.get('publish', type=bool)
+        featured = request.form.get('featured', type=bool)
+        attributes = []
+        for attr in product_type.product_attributes:
+            attributes.append(
+                {"name":attr.name,
+                 "value":request.form.get('attribute-%d' % attr.id)}
+            )
+
+        product = Product(
+            name=name, description=description,
+            seo_title=seo_title, seo_description=seo_description,
+            price=price, category_id=category_id, is_published=publish,
+            is_featured=featured, attributes=attributes,
+            product_type_id=product_type.id
+        )
+        db.session.add(product)
+        db.session.flush()
+        if not product_type.has_variants:
+            pv = ProductVariant(sku=sku, product_id=product.id)
+            db.session.add(pv)
+        db.session.commit()
+
+        return redirect(url_for('ecommerce_panel.products_list'))
+    categories = ProductCategory.query.all()
     return render_template("product/products_form.html",
         categories=categories, product_type=product_type)
 
@@ -80,7 +164,8 @@ def products_types_create():
         db.session.add(pt)
         db.session.flush()
         pt.set_attributes(product_attributes)
-        pt.set_variants(product_variants)
+        if has_variants:
+            pt.set_variants(product_variants)
         db.session.commit()
         return redirect(url_for('ecommerce_panel.products_types_list'))
     attributes = ProductAttribute.query.all()
@@ -106,7 +191,8 @@ def products_types_edit(pt_id):
         pt.has_variants = has_variants
         pt.is_shipping_required = is_shipping_required
         pt.set_attributes(product_attributes)
-        pt.set_variants(variant_attributes)
+        if has_variants:
+            pt.set_variants(product_variants)
         db.session.commit()
         return redirect(url_for('ecommerce_panel.products_types_list'))
     attributes = ProductAttribute.query.all()        

@@ -149,6 +149,15 @@ class Product(db.Model, SeoModel):
     product_type = db.relationship('ProductType')
     product_variants = db.relationship('ProductVariant')
 
+    @property
+    def attr_dict(self):
+        if not hasattr(self, '_attr_dict'):
+            attr_dict = {}
+            for attr in self.attributes:
+                attr_dict[attr['name']] = attr['value']
+            self._attr_dict = attr_dict
+        return self._attr_dict
+
     def dict(self, detailed=False):
         obj = dict(name=self.name, price=self.price)
         if detailed:

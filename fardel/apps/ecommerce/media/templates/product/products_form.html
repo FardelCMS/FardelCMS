@@ -22,7 +22,7 @@
         	<div class="col-md-7 col-xs-12">
               <div class="form-group">
               	<label>{{gettext("name")}}</label>
-              	<input class="form-control" type="text" name="name" placeholder="{{gettext('name')}}" required="required">
+              	<input class="form-control" type="text" name="name" placeholder="{{gettext('name')}}" required="required" {% if product %}value="{{product.name}}"{% endif %}>
 	            </div>
               <div class="divider-dashed"></div>
               <div class="form-group">
@@ -32,42 +32,44 @@
               <div class="divider-dashed"></div>
               <div class="form-group">
                 <label for="seo-title">{{gettext("SEO title")}} {{ngettext("%(num)d character", "%(num)d characters", __num=70)}} ({{gettext("optional")}})</label>
-                <textarea maxlength="70" id="seo-title" name="seo-title" class="form-control">{% if product %}{{product.description or ""}}{% endif %}</textarea>
+                <textarea maxlength="70" id="seo-title" name="seo-title" class="form-control">{% if product %}{{product.seo_title or ""}}{% endif %}</textarea>
               </div>
               <div class="divider-dashed"></div>
               <div class="form-group">
                 <label for="seo-description">{{gettext("SEO Description")}} {{ngettext("%(num)d character", "%(num)d characters", __num=300)}} ({{gettext("optional")}})</label>
-                <textarea maxlength="300" name="seo-description" id="seo-description" class="form-control">{% if product %}{{product.description or ""}}{% endif %}</textarea>
+                <textarea maxlength="300" name="seo-description" id="seo-description" class="form-control">{% if product %}{{product.seo_description or ""}}{% endif %}</textarea>
               </div>
 	        </div>
           <div class="col-md-5 col-xs-12">
             <div class="form-group">
               <label>{{gettext("Price")}}</label>
-              <input type="number" name="price" class="form-control" required="required">
+              <input type="number" name="price" class="form-control" required="required" {% if product %}value="{{product.price}}"{% endif %}>
             </div>
+            {% if not product_type.has_variants %}
             <div class="divider-dashed"></div>
             <div class="form-group">
               <label>{{gettext("SKU")}}</label>
-              <input type="text" name="sku" class="form-control" required="required">
+              <input type="text" name="sku" class="form-control" required="required" {% if product %}value="{{product.product_variants[0].sku}}"{% endif %}>
             </div>
+            {% endif %}
             <div class="divider-dashed"></div>
             <div class="form-group">
               <label>{{gettext("Category")}}</label>
-              <select id="category" class="form-control" required="required">
+              <select id="category" name="category_id" class="form-control" required="required">
                 <option value="">---</option>
                 {% for c in categories %}
-                <option value="{{c.id}}" {% if post and post.category_id == c.id %}selected="selected"{% endif %}>{{c.get_name()}}</option>
+                <option value="{{c.id}}" {% if product and product.category_id == c.id %}selected="selected"{% endif %}>{{c.get_name()}}</option>
                 {% endfor %}
               </select>
             </div>
             <div class="divider-dashed"></div>
             <div class="form-group">
               <label for="publish">{{gettext("Publish")}}</label>
-              <input id="publish" type="checkbox" name="publish" class='fomr-check-input'>
+              <input id="publish" type="checkbox" name="publish" class='fomr-check-input'{% if product and product.is_published%}checked=""{% endif %}>
             </div>
             <div class="form-group">
               <label for="featured">{{gettext("Featured")}}</label>
-              <input id="featured" type="checkbox" name="featured" class='fomr-check-input'>
+              <input id="featured" type="checkbox" name="featured" class='fomr-check-input'{% if product and product.is_featured%}checked=""{% endif %}>
             </div>
             {% if product_type.product_attributes %}              
             <div class="divider-dashed"></div>
@@ -78,7 +80,7 @@
               <select class="form-control" id="attribute-{{attribute.id}}" name="attribute-{{attribute.id}}">
                 <option value="">---</option>
                 {% for choice in attribute.choices %}
-                <option value="{{choice.id}}">{{choice.name}}</option>
+                <option value="{{choice.name}}" {% if product and product.attr_dict[attribute.name] == choice.name %}selected=""{% endif %}>{{choice.name}}</option>
                 {% endfor %}
               </select>
               {% endfor %}

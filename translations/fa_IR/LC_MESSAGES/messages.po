@@ -382,7 +382,7 @@ msgstr "دلبخواهی"
 
 #: fardel/apps/ecommerce/media/templates/product/categories_form.html:40
 msgid "Search engine title"
-msgstr "عنوان برای موتور های حستوجو"
+msgstr "عنوان برای موتور های جستوجو"
 
 #: fardel/apps/ecommerce/media/templates/product/categories_form.html:46
 msgid "Search engine description"
