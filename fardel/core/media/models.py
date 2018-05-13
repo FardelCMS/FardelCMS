@@ -58,7 +58,7 @@ class File(AbstractModelWithPermission):
             if self.file:
                 path = path_format % (self.location, self.name)
                 self._url = url_for('media.file_loader',
-                    path_to_file=path, _external=True)
+                    path_to_file=path)
             else:
                 path = path_format % (self.location, self.file_name)
                 self._url = url_for('media.file_loader',
