@@ -294,14 +294,14 @@ class TagApi(Resource):
 @cache_get_key
 class CategoryApi(Resource):
     """
-    :URL: ``/api/blog/categories/`` or ``/api/blog/categories/<category_id>/posts/``
+    :URL: ``/api/blog/categories/`` or ``/api/blog/categories/<category_name>/posts/``
     """
-    endpoints = ['/categories/<category_id>/posts/', '/categories/']
+    endpoints = ['/categories/<category_name>/posts/', '/categories/']
     
     @cache.cached(timeout=50)
-    def get(self, category_id=None):
+    def get(self, category_name=None):
         """
-        If category_id is provided:        
+        If category_name is provided:        
             :optional url query string:
                 * page (default: 1)
                 * per_page (default: 16)
@@ -329,8 +329,8 @@ class CategoryApi(Resource):
                         "categories": [list of CategoryObject(without posts)]
                     }
         """
-        if category_id:
-            category = Category.query.filter_by(id=category_id).first()
+        if category_name:
+            category = Category.query.filter_by(name=category_name).first()
             if not category:
                 return {"message":"No category found with this id"}, 404
                 
@@ -339,7 +339,7 @@ class CategoryApi(Resource):
 
             category_dict = category.dict()
             posts = Post.query.outerjoin(PostStatus # Alternatively use filter_by(status_id==1) ?
-                ).filter(PostStatus.name=='Publish', Post.category_id==category_id
+                ).filter(PostStatus.name=='Publish', Post.category_id==category.id
                 ).order_by(Post.publish_time
                 ).paginate(page=page, per_page=per_page, error_out=False).items
             category_dict['posts'] = [post.dict() for post in posts]
