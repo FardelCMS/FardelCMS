@@ -291,9 +291,12 @@ class Tag(db.Model):
             except IntegrityError:
                 db.session.rollback()
 
+    def panel_dict(self):
+        return {'id': self.name, 'text': self.name}
+
     def dict(self, posts=False):
         obj = {
-            'id':self.id, 'text':self.name
+            'id':self.id, 'name':self.name
         }
         if posts:
             obj.update({"posts":[p.dict() for p in self.posts]})

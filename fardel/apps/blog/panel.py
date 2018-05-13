@@ -149,6 +149,7 @@ def posts_edit(post_id):
         allow_comment = data.get('allow_comment', type=bool)
         category_id = data.get('category_id', type=int)
         tags = data.getlist('tags')
+        print(tags)
 
         post.title = title
         post.edited_content = content
@@ -206,7 +207,7 @@ def tags_api():
     if not like:
         like = ""
     tags = Tag.query.filter(Tag.name.like('%' + like +'%')).limit(20)
-    return jsonify({'results':[tag.dict() for tag in tags]})
+    return jsonify({'results':[tag.panel_dict() for tag in tags]})
 
 @staff_required
 @mod.route('/tags/list/')

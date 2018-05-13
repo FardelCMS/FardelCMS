@@ -86,7 +86,7 @@
 {% if post %}
 var data = [
   {% for tag in post.tags %}
-  {text: "{{tag.name}}", selected: true},
+  {id: "{{tag.name}}", text: "{{tag.name}}", selected: true},
   {% endfor %}
 ]
 {% else %}
