@@ -49,7 +49,7 @@ class File(AbstractModelWithPermission):
     def save(self):
         self.create_folders()
         filename = secure_filename(self.name)
-        self.file.save(os.path.join(self.abs_folder_path, filename))
+        self.file.save(os.path.join(str(self.abs_folder_path), filename))
 
     @property
     def url(self):
