@@ -88,7 +88,7 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
     last_name = db.Column(db.String(64))
     # username = db.Column(db.String(64), index=True, unique=True)
 
-    email = db.Column(db.String(128), index=True, unique=True)
+    _email = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128))
 
     group_id = db.Column(db.Integer, db.ForeignKey('auth_groups.id'))
@@ -124,6 +124,14 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
+
+    @property
+    def email(self):
+        return self._email
+
+    @email.setter
+    def email(self, email):
+        self._email = email.lower()
 
     @property
     def password(self):
