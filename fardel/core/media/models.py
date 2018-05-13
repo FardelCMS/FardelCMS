@@ -43,8 +43,8 @@ class File(AbstractModelWithPermission):
         return self._name
 
     def create_folders(self):
-        if not os.path.isdir(self.abs_folder_path):
-            os.makedirs(self.abs_folder_path)
+        if not os.path.isdir(str(self.abs_folder_path)):
+            os.makedirs(str(self.abs_folder_path))
 
     def save(self):
         self.create_folders()
