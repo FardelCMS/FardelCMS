@@ -141,6 +141,7 @@ def posts_edit(post_id):
             path = "images/%s" % datetime.datetime.now().year
             file = File(path, file=image)
             file.save()
+            post.image = file.url
 
         title = data.get('title')
         content = data.get('content')
@@ -201,7 +202,9 @@ def posts_trash(post_id):
 @login_required
 def tags_api():
     """ Get closest tags to the string """
-    like = request.args.get('term')        
+    like = request.args.get('term')
+    if not like:
+        like = ""
     tags = Tag.query.filter(Tag.name.like('%' + like +'%')).limit(20)
     return jsonify({'results':[tag.dict() for tag in tags]})
 
