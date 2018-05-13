@@ -249,9 +249,12 @@ class Post(db.Model, SeoModel, AbstractModelWithPermission):
             'id': self.id, 'title':self.title, 'allow_comment': self.allow_comment,
             'create_time':self.create_timestamp, 'update_time':self.update_timestamp,
             'publish_time':self.publish_timestamp,
-            'category':self.category.dict(), 'tags':[tag.dict() for tag in self.tags],
+            'tags':[tag.dict() for tag in self.tags],
             'image':self.image, 'comments_count': self.comments_count
         }
+        if self.category:
+            obj['category'] = self.category.dict()
+            
         if summarized:
             obj['summarized'] = self.summarized
         else:
