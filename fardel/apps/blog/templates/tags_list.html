@@ -38,7 +38,7 @@
                 <td>{{t.name}}</td>
                 <td>{{t.frequency}}</td>
                 <td>
-                  <a class="btn btn-danger" href="{{url_for('blog_panel.categories_delete', cat_id=t.id)}}">{{gettext("Delete")}}</a>
+                  <a class="btn btn-danger" href="{{url_for('blog_panel.tags_delete', tag_id=t.id)}}">{{gettext("Delete")}}</a>
                 </td>
               </tr>
               {% endfor %}
