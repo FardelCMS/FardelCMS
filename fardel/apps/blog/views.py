@@ -144,9 +144,15 @@ class FeaturedPostsApi(Resource):
     """
     :URL:
     """
-    endpoints = ['/featured/posts/']
+    endpoints = ['/featured/posts/', '/featured/posts/<category_name>/']
     @cache.cached(timeout=50)
-    def get(self):
+    def get(self, category_name=None):
+        if category_name:
+            posts = Post.query.filter_by(featured=True
+                ).outerjoin(Category).filter(Category.name==category_name).all()
+            if posts:
+                return {"posts":[post.dict() for post in posts]}
+
         posts = Post.query.filter_by(featured=True).all()
         return {"posts":[post.dict() for post in posts]}
 
