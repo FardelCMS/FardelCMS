@@ -1,4 +1,4 @@
-from flask import redirect, url_for, render_template, abort, request
+from flask import redirect, url_for, render_template, abort, request, flash
 from flask_login import (current_user, login_user,
 	logout_user, login_required, logout_user)
 from flask_babel import gettext
