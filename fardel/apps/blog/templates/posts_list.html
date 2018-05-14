@@ -52,7 +52,7 @@
                   <a class="btn btn-warning" href="{{url_for('blog_panel.posts_edit', post_id=p.id)}}">{{gettext("Edit")}}</a>
                   {% if p.status.name == "Publish" %}
                   <a class="btn btn-info" href="{{url_for('blog_panel.posts_draft', post_id=p.id)}}">{{gettext("Draft")}}</a>
-                  {% elif p.status.name == "Draft" %}
+                  {% else %}
                   <a class="btn btn-success" href="{{url_for('blog_panel.posts_publish', post_id=p.id)}}">{{gettext("Publish")}}</a>
                   {% endif %}
                   <button class="btn btn-danger" data-href="{{url_for('blog_panel.posts_trash', post_id=p.id)}}" data-toggle="modal" data-target=".confirm-delete">{{gettext("Delete")}}</button>

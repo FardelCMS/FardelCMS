@@ -104,6 +104,7 @@ def posts_create():
 
         title = data.get('title')
         content = data.get('content')
+        featured = data.get('featured', type=bool)
         summarized = data.get('summarized')
         allow_comment = data.get('allow_comment', type=bool)
         category_id = data.get('category_id', type=int)
@@ -112,7 +113,7 @@ def posts_create():
         p = Post(
             title=title, edited_content=content,
             allow_comment=allow_comment, category_id=category_id,
-            summarized=summarized
+            summarized=summarized, featured=featured
         )
         if file:
             p.image = file.url
@@ -145,18 +146,22 @@ def posts_edit(post_id):
 
         title = data.get('title')
         content = data.get('content')
+        featured = data.get('featured', type=bool)
         summarized = data.get('summarized')
         allow_comment = data.get('allow_comment', type=bool)
         category_id = data.get('category_id', type=int)
         tags = data.getlist('tags')
-        print(tags)
 
         post.title = title
+        post.featured = featured
         post.edited_content = content
         post.summarized = summarized
         post.allow_comment = allow_comment
         post.category_id = category_id
         post.set_tags(tags)
+        
+        if post.edited_content != post.content:
+            post.status_id = PostStatus.query.filter_by(name="Auto-Draft").first().id
         db.session.commit()
 
         return redirect(url_for('blog_panel.posts_list'))
@@ -170,6 +175,7 @@ def posts_edit(post_id):
 @login_required
 def posts_publish(post_id):
     p = Post.query.filter_by(id=post_id).first_or_404()
+    p.content = p.edited_content
     status = PostStatus.query.filter_by(name="Publish").first()
     p.status_id = status.id
     db.session.commit()

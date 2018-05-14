@@ -45,7 +45,14 @@
               <label for="allow_comment" class="control-label">
                 {{gettext("Allow Comment")}}
               </label>
-              <input id="allow_comment" type="checkbox" name="allow_comment" checked>
+              <input id="allow_comment" type="checkbox" name="allow_comment" {% if post and post.featured %}checked{% elif not post %}checked{% endif %}>
+            </div>
+            <div class="divider-dashed"></div>
+            <div class="form-group">
+              <label for="featured" class="control-label">
+                {{gettext("Featured ?")}}
+              </label>
+              <input id="featured" type="checkbox" name="featured" {% if post and post.featured %}checked{% endif %}>
             </div>
             <div class="divider-dashed"></div>
             <div class="form-group">

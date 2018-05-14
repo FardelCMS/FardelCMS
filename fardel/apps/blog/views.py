@@ -44,6 +44,7 @@ Objects
 """
 import math
 
+from sqlalchemy import and_, or_
 from flask import request
 
 from flask_jwt_extended import current_user, jwt_optional
@@ -129,12 +130,25 @@ class PostApi(Resource):
 
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 16, type=int)
-        query = Post.query.filter(PostStatus.name=="Publish").join(
+        query = Post.query.filter(or_(PostStatus.name=="Publish",
+            PostStatus.name=="Auto-Draft")).join(
             PostStatus, Post.status_id==PostStatus.id)
         pages = math.ceil(query.count() / per_page)
-        posts = query.order_by(Post.publish_time).paginate(page=page,
+        posts = query.order_by(Post.id.desc()).paginate(page=page,
                     per_page=per_page, error_out=False).items
         return {'posts':[post.dict() for post in posts], 'pages':pages}
+
+
+@rest_resource
+class FeaturedPostsApi(Resource):
+    """
+    :URL:
+    """
+    endpoints = ['/featured/posts/']
+    @cache.cached(timeout=50)
+    def get(self):
+        posts = Post.query.filter_by(featured=True).all()
+        return {"posts":[post.dict() for post in posts]}
 
 
 @rest_resource
@@ -338,11 +352,13 @@ class CategoryApi(Resource):
             per_page = request.args.get('per_page', 16, type=int)
 
             category_dict = category.dict()
-            posts = Post.query.outerjoin(PostStatus # Alternatively use filter_by(status_id==1) ?
-                ).filter(PostStatus.name=='Publish', Post.category_id==category.id
-                ).order_by(Post.publish_time
+            query = Post.query.outerjoin(PostStatus
+                ).filter(PostStatus.name=='Publish', Post.category_id==category.id)
+            pages = math.ceil(query.count() / per_page)
+            posts = query.order_by(Post.id.desc()
                 ).paginate(page=page, per_page=per_page, error_out=False).items
             category_dict['posts'] = [post.dict() for post in posts]
+            category_dict['pages'] = pages
             return {'category':category_dict}
 
         categories = Category.query.all()

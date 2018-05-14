@@ -125,6 +125,7 @@ class Post(db.Model, SeoModel, AbstractModelWithPermission):
     publish_time = db.Column(db.TIMESTAMP)
 
     status_id = db.Column(db.Integer, db.ForeignKey('blog_post_statuses.id'), index=True)
+    featured = db.Column(db.Boolean, default=False)
     allow_comment = db.Column(db.Boolean, default=True)
 
     category_id = db.Column(db.Integer,
