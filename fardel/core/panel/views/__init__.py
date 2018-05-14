@@ -53,8 +53,7 @@ def login():
 		email = request.form.get('email')
 		password = request.form.get('password')
 
-		u = User.query.filter_by(email=email).first()
-		print(u)
+		u = User.query.filter_by(_email=email).first()
 		if u and (u.is_staff or u.is_admin) and u.check_password(password):
 			login_user(u)
 			return redirect(url_for('panel.home'))
