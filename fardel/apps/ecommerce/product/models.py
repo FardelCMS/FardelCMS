@@ -165,7 +165,9 @@ class Product(db.Model, SeoModel):
             obj.update(description=self.description, images=self.images)
             obj.update(self.seo_dict())
         else:
-            obj.update(image=self.images[0])
+            obj['image'] = None
+            if self.images:
+                obj.update(image=self.images[0])
         return obj
 
 

@@ -36,21 +36,20 @@ def rest_resource(resource_cls):
 @rest_resource
 class ProductCategoryApi(Resource):
     """
-    :URL: ``/api/ecommerce/categories/`` or ``/api/ecommerce/categories/<category_id>/products/``
+    :URL: ``/api/ecommerce/categories/`` or ``/api/ecommerce/categories/<category_name>/products/``
     """
-    endpoints = ['/categories/', '/categories/<category_id>/products/']
+    endpoints = ['/categories/', '/categories/<category_name>/products/']
 
     @cache.cached(timeout=50)
-    def get(self, category_id=None):
-        data = request.get_json()
-        if category_id:
-            cat = ProductCategory.query.filter_by(id=category_id).first()
-            page = data.get('page', default=1, type=int)
-            per_page = data.get('per_page', default=20, type=int)
+    def get(self, category_name=None):
+        if category_name:
+            cat = ProductCategory.query.filter_by(name=category_name).first()
+            page = request.args.get('page', default=1, type=int)
+            per_page = request.args.get('per_page', default=20, type=int)
             return cat.dict(products=True, page=page, per_page=per_page)
 
         categories = ProductCategory.query.filter_by(hidden=False, parent_id=None).all()
-        return [cat.dict() for cat in categories]
+        return {"categories":cat.dict() for cat in categories}
 
 
 @rest_resource
@@ -68,8 +67,15 @@ class ProductApi(Resource):
     """
     :URL: ``/api/ecommerce/products/<product_id>/``
     """
-    endpoints = ['/products/<product_id>/']
-    def get(self, product_id):
-        p = Product.query.filter_by(id=product_id).first()
+    endpoints = ['/products/', '/products/<product_id>/']
+    def get(self, product_id=None):
+        if product_id:
+            p = Product.query.filter_by(id=product_id).first()
+            return p.dict()
 
-        return p.dict()
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=20, type=int)
+        ps = Product.query.filter_by(is_published=True
+            ).outerjoin(ProductVariant).filter(ProductVariant.quantity>0
+            ).paginate(page=page, per_page=per_page, error_out=False).items
+        return {'products':[p.dict() for p in ps]}
