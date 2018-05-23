@@ -49,7 +49,7 @@ class ProductCategoryApi(Resource):
             return cat.dict(products=True, page=page, per_page=per_page)
 
         categories = ProductCategory.query.filter_by(hidden=False, parent_id=None).all()
-        return {"categories":cat.dict() for cat in categories}
+        return {"categories":[cat.dict() for cat in categories]}
 
 
 @rest_resource
