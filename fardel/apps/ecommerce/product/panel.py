@@ -41,8 +41,8 @@ def variants_add(product_id):
     p = Product.query.filter_by(id=product_id).first_or_404()
     if request.method == "POST":
         sku = request.form.get('sku')
-        price_override = request.form.get('price_override')
-        quantity = request.form.get('quantity')
+        price_override = request.form.get('price_override', type=int)
+        quantity = request.form.get('quantity', type=int)
 
         attributes = {}
         for attr in p.product_type.variant_attributes:
@@ -56,7 +56,7 @@ def variants_add(product_id):
             quantity=quantity
         )
         if price_override and price_override > 0:
-            pv.price_override
+            pv.price_override = price_override
         pv.generate_name()
         db.session.add(pv)
         db.session.commit()
@@ -81,8 +81,8 @@ def variants_edit(product_id, var_id):
         abort(404)
     if request.method == "POST":
         sku = request.form.get('sku')
-        price_override = request.form.get('price_override')
-        quantity = request.form.get('quantity')
+        price_override = request.form.get('price_override', type=int)
+        quantity = request.form.get('quantity', type=int)
 
         attributes = {}
         for attr in p.product_type.variant_attributes:
