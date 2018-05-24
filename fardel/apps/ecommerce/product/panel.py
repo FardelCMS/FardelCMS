@@ -1,6 +1,7 @@
 import math
 
-from flask import request, render_template, redirect, url_for, jsonify
+from flask import (request, render_template, redirect, url_for,
+    jsonify, abort)
 from flask_login import login_required
 
 from fardel.ext import db
@@ -28,20 +29,80 @@ def products_list():
 @login_required
 def products_info(product_id):
     p = Product.query.filter_by(id=product_id).first_or_404()
+    if not p.product_type.has_variants:
+        abort(404)
     return render_template('product/products_info.html', product=p)
 
 @staff_required
 @mod.route('/products/info/<int:product_id>/variants/add/',
     methods=["POST", "GET"])
 @login_required
-def variants_add():
-    pass
+def variants_add(product_id):
+    p = Product.query.filter_by(id=product_id).first_or_404()
+    if request.method == "POST":
+        sku = request.form.get('sku')
+        price_override = request.form.get('price_override')
+        quantity = request.form.get('quantity')
+
+        attributes = {}
+        for attr in p.product_type.variant_attributes:
+            if request.form.get('variant-attr-%d' % attr.id):
+                attributes[attr.id] = request.form.get('variant-attr-%d' % attr.id)
+
+        pv = ProductVariant(
+            product_id=p.id,
+            sku=sku,
+            attributes=attributes,
+            quantity=quantity
+        )
+        if price_override and price_override > 0:
+            pv.price_override
+        pv.generate_name()
+        db.session.add(pv)
+        db.session.commit()
+        return redirect(url_for('ecommerce_panel.products_info', product_id=p.id))
+    return render_template('product/variants_form.html', product=p)
+
+# @staff_required
+# @mod.route('/products/info/<int:product_id>/variants/info/<int:var_id>/',
+#     methods=["POST", "GET"])
+# @login_required
+# def variants_info(product_id, var_id):
+#     pass
 
 @staff_required
 @mod.route('/products/info/<int:product_id>/variants/edit/<int:var_id>/',
     methods=["POST", "GET"])
 @login_required
 def variants_edit(product_id, var_id):
+    p = Product.query.filter_by(id=product_id).join(ProductVariant).first_or_404()
+    pv = ProductVariant.query.filter_by(id=var_id).first_or_404()
+    if pv.product_id != p.id:
+        abort(404)
+    if request.method == "POST":
+        sku = request.form.get('sku')
+        price_override = request.form.get('price_override')
+        quantity = request.form.get('quantity')
+
+        attributes = {}
+        for attr in p.product_type.variant_attributes:
+            if request.form.get('variant-attr-%d' % attr.id):
+                attributes[attr.id] = request.form.get('variant-attr-%d' % attr.id)
+
+        pv.sku = sku
+        if price_override and price_override > 0:
+            pv.price_override = price_override 
+        pv.attributes = attributes
+        pv.quantity = quantity
+        pv.generate_name()
+        db.session.commit()
+        return redirect(url_for('ecommerce_panel.products_info', product_id=p.id))
+    return render_template('product/variants_form.html', variant=pv, product=p)
+
+@staff_required
+@mod.route('/products/info/<int:product_id>/variants/delete/<int:var_id>/')
+@login_required
+def variants_delete(product_id, var_id):
     pass
 
 @staff_required
@@ -60,25 +121,23 @@ def products_edit(product_id):
         category_id = request.form.get('category_id')
         publish = request.form.get('publish', type=bool)
         featured = request.form.get('featured', type=bool)
-        attributes = []
+        attributes = {}
         for attr in product_type.product_attributes:
-            attributes.append(
-                {"name":attr.name,
-                 "value":request.form.get('attribute-%d' % attr.id)}
-            )
+            if request.form.get('attribute-%d' % attr.id):
+                attributes[attr.id] = request.form.get('attribute-%d' % attr.id)
 
-        product.name = name
-        product.description = description
-        product.seo_title = seo_title
-        product.seo_description = seo_description
-        product.price = price
-        product.sku = sku
-        product.category_id = category_id
-        product.is_published = publish
-        product.is_featured = featured
-        product.attributes = attributes
+        p.name = name
+        p.description = description
+        p.seo_title = seo_title
+        p.seo_description = seo_description
+        p.price = price
+        p.sku = sku
+        p.category_id = category_id
+        p.is_published = publish
+        p.is_featured = featured
+        p.attributes = attributes
         if not product_type.has_variants:
-            product.product_variants[0].sku = sku
+            p.variants[0].sku = sku
         db.session.commit()
 
         return redirect(url_for('ecommerce_panel.products_list'))
@@ -110,12 +169,10 @@ def products_create(pt_id):
         category_id = request.form.get('category_id')
         publish = request.form.get('publish', type=bool)
         featured = request.form.get('featured', type=bool)
-        attributes = []
+        attributes = {}
         for attr in product_type.product_attributes:
-            attributes.append(
-                {"name":attr.name,
-                 "value":request.form.get('attribute-%d' % attr.id)}
-            )
+            if request.form.get('attribute-%d' % attr.id):
+                attributes[attr.id] = request.form.get('attribute-%d' % attr.id)
 
         product = Product(
             name=name, description=description,

@@ -49,7 +49,7 @@
             <div class="divider-dashed"></div>
             <div class="form-group">
               <label>{{gettext("SKU")}}</label>
-              <input type="text" name="sku" class="form-control" required="required" {% if product %}value="{{product.product_variants[0].sku}}"{% endif %}>
+              <input type="text" name="sku" class="form-control" required="required" {% if product %}value="{{product.variants[0].sku}}"{% endif %}>
             </div>
             {% endif %}
             <div class="divider-dashed"></div>
@@ -80,7 +80,7 @@
               <select class="form-control" id="attribute-{{attribute.id}}" name="attribute-{{attribute.id}}">
                 <option value="">---</option>
                 {% for choice in attribute.choices %}
-                <option value="{{choice.name}}" {% if product and product.attr_dict[attribute.name] == choice.name %}selected=""{% endif %}>{{choice.name}}</option>
+                <option value="{{choice.id}}" {% if product and product.get_attr_choice_id(attribute.id) == choice.id %}selected=""{% endif %}>{{choice.name}}</option>
                 {% endfor %}
               </select>
               {% endfor %}

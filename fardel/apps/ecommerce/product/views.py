@@ -15,7 +15,7 @@ Objects
     :id: ID for the collection in database.
 
 """
-
+from sqlalchemy import func
 from flask import request
 
 from fardel.core.rest import create_api, abort, Resource
@@ -31,6 +31,16 @@ def rest_resource(resource_cls):
     """ Decorator for adding resources to Api App """
     ecommerce_product_api.add_resource(resource_cls, *resource_cls.endpoints)
     return resource_cls
+        
+
+@rest_resource
+class FeaturedProductApi(Resource):
+    """
+    :URL: ``/api/ecommerce/products/featured/``
+    """
+    endpoints = ['/products/featured/']
+    def get(self):
+        return {}
 
 
 @rest_resource
@@ -78,4 +88,25 @@ class ProductApi(Resource):
         ps = Product.query.filter_by(is_published=True
             ).outerjoin(ProductVariant).filter(ProductVariant.quantity>0
             ).paginate(page=page, per_page=per_page, error_out=False).items
-        return {'products':[p.dict() for p in ps]}
+        return {'products':[p.dict() for p in ps]}    
+
+
+@rest_resource
+class FilterPanelApi(Resource):
+    """
+    :URL: ``/api/ecommerce/filter_panel/`` or ``/api/ecommerce/filter_panel/<category_name>/``
+    """
+    endpoints = ['/filter_panel/', '/filter_panel/<category_name>/']
+    def get(self, category_name=None):        
+        key_query = db.session.query(func.jsonb_object_keys(Product.attributes)).distinct()
+
+        if category_name:
+            key_query = key_query.join(ProductCategory
+                ).filter(ProductCategory.name==category_name)
+
+        keys = {}
+        for key in key_query.all():
+            keys[key[0]] = [v[0] for v in
+                db.session.query(Product.attributes[key[0]]).distinct().all()]
+
+        return {"keys":keys}

@@ -30,6 +30,13 @@ class ProductCategory(db.Model, SeoModel):
             return "%s > %s" % (self.parent.get_name(), self.name)
         return self.name
 
+    def recersive_subcategories_id(self):
+        subc = []
+        for child in self.children:
+            subc = subc + child.recersive_subcategories_id()
+        subc.append(self.id)
+        return subc
+
     def dict(self, products=False, page=None, per_page=None):
         obj = dict(
             id=self.id,
@@ -37,7 +44,11 @@ class ProductCategory(db.Model, SeoModel):
             subcategories=[cat.dict() for cat in self.children]
         )
         if products:
-            query = Product.query.filter_by(category_id=self.id, is_published=True)
+            subcategories = self.recersive_subcategories_id()
+            print(subcategories)
+            query = Product.query.filter(
+                Product.category_id.in_(subcategories), Product.is_published==True
+            ).outerjoin(ProductVariant).filter(ProductVariant.quantity>0)
             pages = math.ceil(query.count() / per_page)
             products = query.paginate(page=page, per_page=per_page, error_out=False).items
             obj.update(pages=pages, products=[p.dict() for p in products])
@@ -147,16 +158,15 @@ class Product(db.Model, SeoModel):
     product_type_id = db.Column(db.Integer, db.ForeignKey('product_product_types.id'))
 
     product_type = db.relationship('ProductType')
-    product_variants = db.relationship('ProductVariant')
+    variants = db.relationship('ProductVariant')
 
     @property
     def attr_dict(self):
-        if not hasattr(self, '_attr_dict'):
-            attr_dict = {}
-            for attr in self.attributes:
-                attr_dict[attr['name']] = attr['value']
-            self._attr_dict = attr_dict
-        return self._attr_dict
+        return self.attributes
+
+    def get_attr_choice_id(self, _id):
+        if self.attributes.get(str(_id)):
+            return int( self.attributes.get(str(_id)) )
 
     def dict(self, detailed=False):
         obj = dict(name=self.name, price=self.price)
@@ -186,6 +196,17 @@ class ProductVariant(db.Model):
 
     product = db.relationship("Product")
 
+    def get_attr_choice_id(self, _id):
+        if self.attributes.get(str(_id)):
+            return int( self.attributes.get(str(_id)) )
+
+    def generate_name(self):
+        names = []
+        for k, v in self.attributes.items():
+            pa = AttributeChoiceValue.query.filter_by(id=v).first()
+            names.append(pa.name)
+        self.name = " / ".join(names)
+
     @property
     def quantity_available(self):
         return max(self.quantity - self.quantity_allocated, 0)
@@ -195,10 +216,8 @@ class ProductVariant(db.Model):
             return False
         return True
 
-    def get_price_per_item(self, discounts=None):
-        price = self.price_override or self.product.price
-        price = calculate_discounted_price(self.product, price, discounts)
-        return price
+    def get_price(self, discounts=None):
+        return self.price_override or self.product.price
 
     @property
     def is_shipping_required(self):

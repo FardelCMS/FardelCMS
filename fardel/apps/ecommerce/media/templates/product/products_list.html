@@ -41,7 +41,9 @@
                 <td>
                   <a class="btn btn-warning" href="{{url_for('ecommerce_panel.products_edit', product_id=p.id)}}">{{gettext("Edit")}}</a>
 
-                  <a class="btn btn-info" href="{{url_for('ecommerce_panel.products_info', product_id=p.id)}}">{{gettext("Info")}}</a>
+                  {% if p.product_type.has_variants %}
+                  <a class="btn btn-info" href="{{url_for('ecommerce_panel.products_info', product_id=p.id)}}">{{gettext("Variants")}}</a>                    
+                  {% endif %}
 
                   <button class="btn btn-danger" data-href="{{url_for('ecommerce_panel.products_delete', product_id=p.id)}}" data-toggle="modal" data-target=".confirm-delete">{{gettext("Delete")}}</button>
                 </td>
