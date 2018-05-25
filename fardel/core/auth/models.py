@@ -216,7 +216,7 @@ class RevokedToken(db.Model):
 
 @jwt.user_loader_callback_loader
 def identify(payload):
-    return User.query.filter(User.email==payload).scalar()
+    return User.query.filter(User._email==payload).scalar()
 
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
