@@ -151,10 +151,10 @@ class RegistrationApi(BaseResource):
         first_name = data.get('first_name')
         last_name = data.get('last_name')
 
-        if User.query.filter_by(email=email).first():
+        if User.query.filter_by(_email=email).first():
             return self.already_exists()
 
-        u = User(password=password, email=email,
+        u = User(password=password, _email=email,
                  first_name=first_name, last_name=last_name)
 
         db.session.add(u)
@@ -213,7 +213,7 @@ class LoginApi(BaseResource):
         password = data['password']
         email = data['email']
 
-        u = User.query.filter_by(email=email).scalar()
+        u = User.query.filter_by(_email=email).scalar()
         if u and u.check_password(password):
             access_token = create_access_token(identity=u.email)
             refresh_token = create_refresh_token(identity=u.email)
