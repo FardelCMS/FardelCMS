@@ -63,13 +63,6 @@ def variants_add(product_id):
         return redirect(url_for('ecommerce_panel.products_info', product_id=p.id))
     return render_template('product/variants_form.html', product=p)
 
-# @staff_required
-# @mod.route('/products/info/<int:product_id>/variants/info/<int:var_id>/',
-#     methods=["POST", "GET"])
-# @login_required
-# def variants_info(product_id, var_id):
-#     pass
-
 @staff_required
 @mod.route('/products/info/<int:product_id>/variants/edit/<int:var_id>/',
     methods=["POST", "GET"])
@@ -103,7 +96,14 @@ def variants_edit(product_id, var_id):
 @mod.route('/products/info/<int:product_id>/variants/delete/<int:var_id>/')
 @login_required
 def variants_delete(product_id, var_id):
-    pass
+    p = Product.query.filter_by(id=product_id).join(ProductVariant).first_or_404()
+    pv = ProductVariant.query.filter_by(id=var_id).first_or_404()
+    if pv.product_id != p.id:
+        abort(404)
+
+    db.session.delete(pv)
+    db.session.commit()
+    return redirect(url_for('ecommerce_panel.products_info', product_id=p.id))
 
 @staff_required
 @mod.route('/products/edit/<int:product_id>/', methods=["POST", "GET"])

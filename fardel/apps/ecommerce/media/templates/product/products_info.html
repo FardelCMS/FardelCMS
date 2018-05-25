@@ -75,7 +75,7 @@
                       <h4 class="modal-title">{{gettext("Are you sure")}}</h4>
                     </div>
                     <div class="modal-body">
-                      <h4>{{gettext("Are you sure you want to delete the category?")}}</h4>
+                      <h4>{{gettext("Are you sure you want to delete the product variant?")}}</h4>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">{{gettext("Close")}}</button>
@@ -92,4 +92,13 @@
       </div>
     </div>
   </div>
-</div>{% endblock %}
+</div>
+{% endblock %}
+
+{% block js_block %}
+<script type="text/javascript">
+$('.confirm-delete').on('show.bs.modal', function(e) {
+  $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+});
+</script>
+{% endblock %}
