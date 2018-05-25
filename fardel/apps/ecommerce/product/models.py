@@ -169,11 +169,20 @@ class Product(db.Model, SeoModel):
             return int( self.attributes.get(str(_id)) )
 
     def dict(self, detailed=False):
-        obj = dict(name=self.name, price=self.price)
+        obj = dict(name=self.name, price=self.price, id=self.id)
         if detailed:
-            obj.update(variants=[v.dict() for v in self.product_variants])
+            obj.update(variants=[v.dict() for v in self.variants])
             obj.update(description=self.description, images=self.images)
             obj.update(self.seo_dict())
+            obj['variant_attributes'] = {}
+            for attr in self.product_type.variant_attributes:
+                obj['variant_attributes'][attr.name] = [c.name for c in attr.choices]
+
+            obj['attribute'] = {}
+            for key, value in self.attributes.items():
+                pa = ProductAttribute.query.filter_by(id=key).scalar()
+                acv = AttributeChoiceValue.query.filter_by(id=value).scalar()
+                obj['attribute'][pa.name] = acv.name
         else:
             obj['image'] = None
             if self.images:
@@ -229,7 +238,8 @@ class ProductVariant(db.Model):
 
     def dict(self):
         obj = dict(sku=self.sku, name=self.name,
-            price_override=self.price_override,)
+            price_override=self.price_override)
+        return obj
 
 
 class ProductAttribute(db.Model):

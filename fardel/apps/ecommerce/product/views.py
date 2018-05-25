@@ -39,6 +39,7 @@ class FeaturedProductApi(Resource):
     :URL: ``/api/ecommerce/products/featured/``
     """
     endpoints = ['/products/featured/']
+    @cache.cached(timeout=120)
     def get(self):
         return {}
 
@@ -50,7 +51,7 @@ class ProductCategoryApi(Resource):
     """
     endpoints = ['/categories/', '/categories/<category_name>/products/']
 
-    @cache.cached(timeout=50)
+    @cache.cached(timeout=600)
     def get(self, category_name=None):
         if category_name:
             cat = ProductCategory.query.filter_by(name=category_name).first()
@@ -68,6 +69,7 @@ class ProductCollectionApi(Resource):
     :URL: ``/api/ecommerce/collections/`` or ``/collections/<category_id>/products/``
     """
     endpoints = ['/collections/', '/collections/<collection_id>/products/']
+    @cache.cached(timeout=60)
     def get(self, collection_id=None):
         abort(404)
 
@@ -78,10 +80,11 @@ class ProductApi(Resource):
     :URL: ``/api/ecommerce/products/<product_id>/``
     """
     endpoints = ['/products/', '/products/<product_id>/']
+    @cache.cached(timeout=60)
     def get(self, product_id=None):
         if product_id:
             p = Product.query.filter_by(id=product_id).first()
-            return p.dict()
+            return p.dict(detailed=True)
 
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=20, type=int)
@@ -97,6 +100,7 @@ class FilterPanelApi(Resource):
     :URL: ``/api/ecommerce/filter_panel/`` or ``/api/ecommerce/filter_panel/<category_name>/``
     """
     endpoints = ['/filter_panel/', '/filter_panel/<category_name>/']
+    @cache.cached(timeout=600)
     def get(self, category_name=None):        
         key_query = db.session.query(func.jsonb_object_keys(Product.attributes)).distinct()
 
