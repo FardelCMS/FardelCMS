@@ -34,6 +34,15 @@ def products_info(product_id):
     return render_template('product/products_info.html', product=p)
 
 @staff_required
+@mod.route('/products/album/<int:product_id>/')
+@login_required
+def products_images(product_id):
+    p = Product.query.filter_by(id=product_id).first_or_404()
+    if request.method == "POST":
+        pass
+    return render_template('product/products_images.html', product=p)
+
+@staff_required
 @mod.route('/products/info/<int:product_id>/variants/add/',
     methods=["POST", "GET"])
 @login_required

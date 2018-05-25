@@ -79,11 +79,11 @@ class ProductApi(Resource):
     """
     :URL: ``/api/ecommerce/products/<product_id>/``
     """
-    endpoints = ['/products/', '/products/<product_id>/']
+    endpoints = ['/products/', '/products/<int:product_id>/']
     @cache.cached(timeout=60)
     def get(self, product_id=None):
         if product_id:
-            p = Product.query.filter_by(id=product_id).first()
+            p = Product.query.filter_by(id=product_id).first_or_404()
             return p.dict(detailed=True)
 
         page = request.args.get('page', default=1, type=int)

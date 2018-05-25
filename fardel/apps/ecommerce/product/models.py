@@ -148,7 +148,7 @@ class Product(db.Model, SeoModel):
 
     updated_at = db.Column(db.Integer, default=time.time, onupdate=time.time)
 
-    images = db.Column(JSONB(), default={})
+    images = db.Column(JSONB(), default=[])
     attributes = db.Column(JSONB(), default={})
 
     is_published = db.Column(db.Boolean, default=True)
@@ -174,15 +174,16 @@ class Product(db.Model, SeoModel):
             obj.update(variants=[v.dict() for v in self.variants])
             obj.update(description=self.description, images=self.images)
             obj.update(self.seo_dict())
-            obj['variant_attributes'] = {}
+            obj['variant_attributes'] = []
             for attr in self.product_type.variant_attributes:
-                obj['variant_attributes'][attr.name] = [c.name for c in attr.choices]
+                obj['variant_attributes'].append(
+                    {'name':attr.name, "choices":[c.name for c in attr.choices]})
 
-            obj['attribute'] = {}
+            obj['attributes'] = []
             for key, value in self.attributes.items():
                 pa = ProductAttribute.query.filter_by(id=key).scalar()
                 acv = AttributeChoiceValue.query.filter_by(id=value).scalar()
-                obj['attribute'][pa.name] = acv.name
+                obj['attributes'].append({"name":pa.name, "value":acv.name})
         else:
             obj['image'] = None
             if self.images:
