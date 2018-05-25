@@ -212,7 +212,7 @@ msgstr "نظر دادن"
 
 #: fardel/apps/blog/templates/posts_form.html:53
 msgid "Featured ?"
-msgstr "تبلیغ در صفحه اول وبسایت‌ ؟"
+msgstr "برگزیده ؟"
 
 #: fardel/apps/blog/templates/posts_form.html:60
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_list.html:54
