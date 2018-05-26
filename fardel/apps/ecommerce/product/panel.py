@@ -217,7 +217,7 @@ def products_types_create():
         name = request.form.get("name")
         has_variants = request.form.get("has_variants", type=bool, default=True)
         product_attributes = request.form.getlist('product_attributes', type=int)
-        product_variants = request.form.getlist('product_variants', type=int)
+        variant_attributes = request.form.getlist('product_variants', type=int)
         is_shipping_required = request.form.get('is_shipping_required',
             type=bool, default=True)
 
@@ -231,7 +231,7 @@ def products_types_create():
         db.session.flush()
         pt.set_attributes(product_attributes)
         if has_variants:
-            pt.set_variants(product_variants)
+            pt.set_variants(variant_attributes)
         db.session.commit()
         return redirect(url_for('ecommerce_panel.products_types_list'))
     attributes = ProductAttribute.query.all()
@@ -258,7 +258,7 @@ def products_types_edit(pt_id):
         pt.is_shipping_required = is_shipping_required
         pt.set_attributes(product_attributes)
         if has_variants:
-            pt.set_variants(product_variants)
+            pt.set_variants(variant_attributes)
         db.session.commit()
         return redirect(url_for('ecommerce_panel.products_types_list'))
     attributes = ProductAttribute.query.all()        
