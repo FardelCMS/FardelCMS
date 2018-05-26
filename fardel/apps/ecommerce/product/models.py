@@ -45,7 +45,6 @@ class ProductCategory(db.Model, SeoModel):
         )
         if products:
             subcategories = self.recersive_subcategories_id()
-            print(subcategories)
             query = Product.query.filter(
                 Product.category_id.in_(subcategories), Product.is_published==True
             ).outerjoin(ProductVariant).filter(ProductVariant.quantity>0)
