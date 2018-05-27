@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-05-25 12:33+0430\n"
+"POT-Creation-Date: 2018-05-27 23:14+0430\n"
 "PO-Revision-Date: 2018-05-05 17:12+0430\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fa_IR\n"
@@ -17,6 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
+
+#: fardel/config.py:27 fardel/core/panel/templates/panel_base.html:68
+msgid "Fardel"
+msgstr "خورجین"
 
 #: fardel/apps/blog/models.py:68 fardel/apps/blog/templates/posts_list.html:56
 #: fardel/apps/ecommerce/media/templates/product/products_form.html:67
@@ -75,7 +79,7 @@ msgstr "دسته ها"
 #: fardel/apps/ecommerce/media/templates/product/categories_list.html:3
 #: fardel/apps/ecommerce/media/templates/product/categories_list.html:4
 #: fardel/apps/ecommerce/media/templates/product/categories_list.html:11
-#: fardel/apps/ecommerce/panel.py:28
+#: fardel/apps/ecommerce/panel.py:27
 msgid "All Categories"
 msgstr "همه دسته بندی ها"
 
@@ -90,14 +94,14 @@ msgstr "اضافه کردن دسته بندی"
 msgid "Tags"
 msgstr "برچسب ها"
 
-#: fardel/apps/blog/panel.py:263 fardel/apps/ecommerce/product/panel.py:216
-#: fardel/apps/ecommerce/product/panel.py:244
-#: fardel/apps/ecommerce/product/panel.py:303
-#: fardel/apps/ecommerce/product/panel.py:327
-#: fardel/apps/ecommerce/product/panel.py:351
-#: fardel/apps/ecommerce/product/panel.py:392
-#: fardel/apps/ecommerce/product/panel.py:426
-#: fardel/apps/ecommerce/product/panel.py:454
+#: fardel/apps/blog/panel.py:263 fardel/apps/ecommerce/product/panel.py:258
+#: fardel/apps/ecommerce/product/panel.py:286
+#: fardel/apps/ecommerce/product/panel.py:345
+#: fardel/apps/ecommerce/product/panel.py:369
+#: fardel/apps/ecommerce/product/panel.py:393
+#: fardel/apps/ecommerce/product/panel.py:434
+#: fardel/apps/ecommerce/product/panel.py:468
+#: fardel/apps/ecommerce/product/panel.py:496
 msgid "Name is required"
 msgstr "اسم الزامی است"
 
@@ -107,7 +111,7 @@ msgstr "اسم الزامی است"
 #: fardel/apps/ecommerce/media/templates/product/categories_form.html:3
 #: fardel/apps/ecommerce/media/templates/product/categories_form.html:4
 #: fardel/apps/ecommerce/media/templates/product/categories_form.html:11
-#: fardel/apps/ecommerce/panel.py:30
+#: fardel/apps/ecommerce/panel.py:29
 msgid "New Category"
 msgstr "دسته بندی جدید"
 
@@ -185,8 +189,8 @@ msgstr "تنظیمات"
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_list.html:58
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:65
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:82
-#: fardel/apps/ecommerce/media/templates/product/products_list.html:48
-#: fardel/apps/ecommerce/media/templates/product/products_list.html:66
+#: fardel/apps/ecommerce/media/templates/product/products_list.html:49
+#: fardel/apps/ecommerce/media/templates/product/products_list.html:67
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:43
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:61
 msgid "Delete"
@@ -269,7 +273,7 @@ msgstr "ویرایش"
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_info.html:66
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_list.html:50
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:75
-#: fardel/apps/ecommerce/media/templates/product/products_list.html:58
+#: fardel/apps/ecommerce/media/templates/product/products_list.html:59
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:53
 msgid "Are you sure"
 msgstr "آیا اطمینان دارید ؟"
@@ -288,8 +292,8 @@ msgstr "نوشته"
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_info.html:73
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_list.html:57
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:81
-#: fardel/apps/ecommerce/media/templates/product/products_list.html:65
-#: fardel/apps/ecommerce/media/templates/product/products_list.html:95
+#: fardel/apps/ecommerce/media/templates/product/products_list.html:66
+#: fardel/apps/ecommerce/media/templates/product/products_list.html:96
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:60
 msgid "Close"
 msgstr "ببند"
@@ -298,76 +302,52 @@ msgstr "ببند"
 msgid "frequency"
 msgstr "تکرار"
 
-#: fardel/apps/ecommerce/panel.py:22
+#: fardel/apps/ecommerce/panel.py:21
 msgid "Online Shop"
 msgstr "فروشگاه آنلاین"
 
 #: fardel/apps/ecommerce/media/templates/product/products_list.html:4
 #: fardel/apps/ecommerce/media/templates/product/products_list.html:5
 #: fardel/apps/ecommerce/media/templates/product/products_list.html:12
-#: fardel/apps/ecommerce/panel.py:23
+#: fardel/apps/ecommerce/panel.py:22
 msgid "Products"
 msgstr "محصولات"
 
-#: fardel/apps/ecommerce/panel.py:25
+#: fardel/apps/ecommerce/panel.py:24
 msgid "All Products"
 msgstr "همه محصولات"
 
-#: fardel/apps/ecommerce/panel.py:33
+#: fardel/apps/ecommerce/panel.py:32
 msgid "All Product Types"
 msgstr "همه انواع محصولات"
 
 #: fardel/apps/ecommerce/media/templates/product/products_types_form.html:3
 #: fardel/apps/ecommerce/media/templates/product/products_types_form.html:4
 #: fardel/apps/ecommerce/media/templates/product/products_types_form.html:11
-#: fardel/apps/ecommerce/panel.py:35
+#: fardel/apps/ecommerce/panel.py:34
 msgid "New Product Type"
 msgstr "نوع محصول جدید"
 
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_list.html:3
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_list.html:4
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_list.html:11
-#: fardel/apps/ecommerce/panel.py:38
+#: fardel/apps/ecommerce/panel.py:37
 msgid "All Attributes"
 msgstr "همه ویژگی ها"
 
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_form.html:3
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_form.html:4
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_form.html:11
-#: fardel/apps/ecommerce/panel.py:40
+#: fardel/apps/ecommerce/panel.py:39
 msgid "New Attribute"
 msgstr "ویژگی جدید"
 
-#: fardel/apps/ecommerce/panel.py:50
-msgid "Discounts"
-msgstr "تخفیف ها"
-
-#: fardel/apps/ecommerce/panel.py:52
-msgctxt "Discounts section"
-msgid "All Sales"
-msgstr "همه حراج ها"
-
-#: fardel/apps/ecommerce/panel.py:54
-msgctxt "Discounts section"
-msgid "Create Sales"
-msgstr "حراج جدید"
-
-#: fardel/apps/ecommerce/panel.py:57
-msgctxt "Discounts section"
-msgid "All Vouchers"
-msgstr "همه کد تخفیف ها"
-
-#: fardel/apps/ecommerce/panel.py:59
-msgctxt "Discounts section"
-msgid "Create Voucher"
-msgstr "کد تخفیف جدید"
-
-#: fardel/apps/ecommerce/panel.py:63
+#: fardel/apps/ecommerce/panel.py:62
 msgctxt "Sales sections"
 msgid "Sales"
 msgstr "فروش"
 
-#: fardel/apps/ecommerce/panel.py:65
+#: fardel/apps/ecommerce/panel.py:64
 msgctxt "Sales sections"
 msgid "Orders"
 msgstr "سفارشات"
@@ -424,7 +404,6 @@ msgstr "جزئیات"
 #: fardel/apps/ecommerce/media/templates/product/categories_list.html:55
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_info.html:69
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_list.html:53
-#: fardel/apps/ecommerce/media/templates/product/products_info.html:78
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:56
 msgid "Are you sure you want to delete the category?"
 msgstr "آیا از حذف کردن دسته بندی اطمینان دارید؟"
@@ -504,6 +483,20 @@ msgstr "تبلیغ شود ؟"
 msgid "Attributes"
 msgstr "ویژگی ها"
 
+#: fardel/apps/ecommerce/media/templates/product/products_images.html:3
+#: fardel/apps/ecommerce/media/templates/product/products_images.html:4
+#: fardel/apps/ecommerce/media/templates/product/products_images.html:11
+msgid "Product Gallery"
+msgstr "گالری محصول"
+
+#: fardel/apps/ecommerce/media/templates/product/products_images.html:24
+msgid "Drop files here to upload"
+msgstr "برای آپلود عکس فایل هارو بنداز اینتو یا کلیک کن اینجارو"
+
+#: fardel/apps/ecommerce/media/templates/product/products_images.html:40
+msgid "Settings"
+msgstr "تنظیمات"
+
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:3
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:4
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:12
@@ -531,6 +524,10 @@ msgstr "تعداد"
 msgid "quantity allocated"
 msgstr "تعداد فروخته شده"
 
+#: fardel/apps/ecommerce/media/templates/product/products_info.html:78
+msgid "Are you sure you want to delete the product variant?"
+msgstr "آیا از حذف نوع محصول اطمینان دارید؟"
+
 #: fardel/apps/ecommerce/media/templates/product/products_list.html:24
 msgid "Add Product"
 msgstr "اضافه کردن محصول"
@@ -539,15 +536,19 @@ msgstr "اضافه کردن محصول"
 msgid "Variants"
 msgstr "انواع"
 
-#: fardel/apps/ecommerce/media/templates/product/products_list.html:61
+#: fardel/apps/ecommerce/media/templates/product/products_list.html:47
+msgid "Images"
+msgstr "عکس ها"
+
+#: fardel/apps/ecommerce/media/templates/product/products_list.html:62
 msgid "Are you sure you want to delete the product?"
 msgstr "آیا از حذف این محصول اطمینان دارید؟"
 
-#: fardel/apps/ecommerce/media/templates/product/products_list.html:62
+#: fardel/apps/ecommerce/media/templates/product/products_list.html:63
 msgid "Product"
 msgstr "محصول"
 
-#: fardel/apps/ecommerce/media/templates/product/products_list.html:85
+#: fardel/apps/ecommerce/media/templates/product/products_list.html:86
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:57
 msgid "Product Type"
 msgstr "نوع محصول"
@@ -614,13 +615,9 @@ msgstr ""
 msgid "Token is already expired"
 msgstr ""
 
-#: fardel/core/panel/templates/panel_base.html:39
+#: fardel/core/panel/templates/panel_base.html:40
 msgid "logout"
 msgstr "خروج"
-
-#: fardel/core/panel/templates/panel_base.html:67
-msgid "Fardel"
-msgstr "خورجین"
 
 #: fardel/core/panel/templates/panel_sidebar.html:12
 msgid "Welcome"
@@ -702,4 +699,23 @@ msgstr "ایمیل یا پسورد اشتباه است ..."
 #~ msgid "%(num)d characters"
 #~ msgid_plural "%(num)d characters"
 #~ msgstr[0] "هیچ کاراکتر"
+
+#~ msgid "Discounts"
+#~ msgstr "تخفیف ها"
+
+#~ msgctxt "Discounts section"
+#~ msgid "All Sales"
+#~ msgstr "همه حراج ها"
+
+#~ msgctxt "Discounts section"
+#~ msgid "Create Sales"
+#~ msgstr "حراج جدید"
+
+#~ msgctxt "Discounts section"
+#~ msgid "All Vouchers"
+#~ msgstr "همه کد تخفیف ها"
+
+#~ msgctxt "Discounts section"
+#~ msgid "Create Voucher"
+#~ msgstr "کد تخفیف جدید"
 

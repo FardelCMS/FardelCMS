@@ -1,0 +1,54 @@
+{% extends "panel_base.html" %}
+
+{% block header_title %}{{gettext("Product Gallery")}} | {{get_sitename()}}{% endblock %}
+{% block title %}{{gettext("Product Gallery")}}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2>{{gettext("Product Gallery")}}</h2>
+        <ul class="nav navbar-left panel_toolbox">
+          <li><a class="close-link"><i class="fa fa-close"></i></a>
+          </li>
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+          </li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <div class="row">
+          <div class="col-md-6">
+            <form class="dropzone dz-clickable" method="POST" action="{{url_for('ecommerce_panel.products_images', product_id=product.id)}}">
+              <div class="dz-default dz-message"><span>{{gettext("Drop files here to upload")}}</span></div>
+              {# <div class="form-group">
+                <input class="" type="file" name="">
+              </div>
+              <button class="btn btn-success">{{gettext("Submit")}}</button>   #}            
+            </form>
+          </div>
+        </div>
+
+        <div class="row">
+          {% for image in product.images %}
+          <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="thumbnail">
+              <div class="image view view-first">
+                <img class="image" src="{{image}}" alt="image" />
+                <div class="mask">
+                  <p>{{gettext("Settings")}}</p>
+                  <div class="tools tools-bottom">
+                    <a href="{{url_for('ecommerce_panel.product_images_delete', product_id=product.id, image_index=product.images.index(image) )}}"><i class="fa fa-times"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

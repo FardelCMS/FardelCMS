@@ -3134,7 +3134,7 @@ ul.project_files li a i {
     border-right: 2px solid transparent
 }
 .thumbnail .image {
-    height: 120px;
+    height: 250px;
     overflow: hidden
 }
 .caption {
@@ -3145,7 +3145,7 @@ ul.project_files li a i {
     margin-bottom: 5px
 }
 .thumbnail {
-    height: 190px;
+    height: 260px;
     overflow: hidden
 }
 .view {
@@ -3175,7 +3175,7 @@ ul.project_files li a i {
     font-size: 17px;
     padding: 3px;
     background: rgba(0, 0, 0, 0.35);
-    margin: 43px 0 0 0
+    margin: 169px 0 0 0
 }
 .mask.no-caption .tools {
     margin: 90px 0 0 0

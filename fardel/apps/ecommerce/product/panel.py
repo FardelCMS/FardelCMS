@@ -1,9 +1,13 @@
+import os
+import datetime
 import math
 
 from flask import (request, render_template, redirect, url_for,
-    jsonify, abort)
+    jsonify, abort, current_app)
 from flask_login import login_required
 
+from fardel.core.panel.views.media import is_safe_path
+from fardel.core.media.models import File
 from fardel.ext import db
 from ..panel import mod
 from .models import *
@@ -34,13 +38,42 @@ def products_info(product_id):
     return render_template('product/products_info.html', product=p)
 
 @staff_required
-@mod.route('/products/album/<int:product_id>/')
+@mod.route('/products/album/<int:product_id>/', methods=["POST", "GET"])
 @login_required
 def products_images(product_id):
     p = Product.query.filter_by(id=product_id).first_or_404()
     if request.method == "POST":
-        pass
+        file = request.files.get('file')
+        path = "images/%s" % datetime.datetime.now().year
+        if not file:
+            return jsonify({"message":"No file to upload"}), 422
+
+        uploads_folder = current_app.config['UPLOAD_FOLDER']
+        lookup_folder = uploads_folder / path
+        if is_safe_path(str(os.getcwd() / lookup_folder), str(lookup_folder)):
+            file = File(path, file=file)
+            file.save()
+            if not isinstance(p.images, list):
+                images = []
+            else:
+                images = p.images[:]
+            images.append(file.url)
+            p.images = images
+            db.session.commit()
+            return "OK"
+        return "FAIL", 400
     return render_template('product/products_images.html', product=p)
+
+@staff_required
+@mod.route('/products/album/<int:product_id>/delete/<int:image_index>/')
+@login_required
+def product_images_delete(product_id, image_index):
+    p = Product.query.filter_by(id=product_id).first_or_404()
+    images = p.images[:]
+    del images[image_index]
+    p.images = images
+    db.session.commit()
+    return redirect(url_for('ecommerce_panel.products_images', product_id=p.id))
 
 @staff_required
 @mod.route('/products/info/<int:product_id>/variants/add/',
