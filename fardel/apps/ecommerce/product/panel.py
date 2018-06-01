@@ -248,7 +248,7 @@ def products_types_list():
 def products_types_create():
     if request.method == "POST":
         name = request.form.get("name")
-        has_variants = request.form.get("has_variants", type=bool, default=True)
+        has_variants = request.form.get("has_variants", type=bool)
         product_attributes = request.form.getlist('product_attributes', type=int)
         variant_attributes = request.form.getlist('product_variants', type=int)
         is_shipping_required = request.form.get('is_shipping_required',
