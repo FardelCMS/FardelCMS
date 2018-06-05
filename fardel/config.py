@@ -16,6 +16,8 @@ class BaseConfig(object):
 
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+    JWT_REFRESH_TOKEN_EXPIRES = False
+    JWT_ACCESS_TOKEN_EXPIRES = False
 
     UPLOAD_FOLDER = Path(__file__).parent.parent / 'uploads'
 

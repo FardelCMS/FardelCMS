@@ -41,8 +41,13 @@
           </div>
           <div class="col-md-6">
               <div class="form-group">
-                  <label for="is_shipping_required">{{gettext("is shipping required")}}</label>
-                  <input placeholder="{{gettext('is shipping required')}}" type="checkbox" id="is_shipping_required" name="is_shipping_required" class="form-check-input" {% if product_type and product_type.is_shipping_required %}checked=""{% endif %}>
+                <label for="is_shipping_required">{{gettext("is shipping required")}}</label>
+                <input placeholder="{{gettext('is shipping required')}}" type="checkbox" id="is_shipping_required" name="is_shipping_required" class="form-check-input" {% if product_type and product_type.is_shipping_required %}checked=""{% endif %}>
+              </div>
+              <div class="divider-dashed"></div>
+              <div class="form-group">
+                <label for="is_file_required">{{gettext("is file required")}}</label>
+                <input placeholder="{{gettext('is file required')}}" type="checkbox" id="is_file_required" name="is_file_required" class="form-check-input" {% if product_type and product_type.is_file_required %}checked=""{% endif %}>
               </div>
               <div class="divider-dashed"></div>
               <div class="form-group">

@@ -60,12 +60,13 @@ class ProductType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     name = db.Column(db.String(128), nullable=False)
-    has_variants = db.Column(db.Boolean, default=True)
+    has_variants = db.Column(db.Boolean)
     product_attributes = db.relationship('ProductAttribute',
         secondary="product_product_types_attributes")
     variant_attributes = db.relationship('ProductAttribute',
         secondary="product_product_types_variants")
     is_shipping_required = db.Column(db.Boolean, default=False)
+    is_file_required = db.Column(db.Boolean, default=False)
 
     @property
     def product_attributes_print(self):
@@ -167,11 +168,16 @@ class Product(db.Model, SeoModel):
         if self.attributes.get(str(_id)):
             return int( self.attributes.get(str(_id)) )
 
+    @property
+    def is_file_required(self):
+        return self.product_type.is_file_required    
+
     def dict(self, detailed=False):
         obj = dict(name=self.name, price=self.price, id=self.id)
         if detailed:
             obj.update(variants=[v.dict() for v in self.variants])
             obj.update(description=self.description, images=self.images)
+            obj.update(is_file_required=self.is_file_required)
             obj.update(self.seo_dict())
             obj['variant_attributes'] = []
             for attr in self.product_type.variant_attributes:
@@ -237,9 +243,12 @@ class ProductVariant(db.Model):
         return self.product.images[0]
 
     def dict(self):
-        obj = dict(sku=self.sku, name=self.name,
-            price_override=self.price_override)
-        return obj
+        return {
+            'id':self.id,
+            'sku':self.sku,
+            "name":self.name,
+            "price_override":self.price_override
+        }
 
 
 class ProductAttribute(db.Model):

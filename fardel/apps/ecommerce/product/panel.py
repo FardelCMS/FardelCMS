@@ -208,7 +208,7 @@ def products_create(pt_id):
         seo_description = request.form.get("seo-description", default="")
         price = request.form.get("price", type=int)
         sku = request.form.get("sku")
-        category_id = request.form.get('category_id')
+        category_id = request.form.get('category_id', type=int)
         publish = request.form.get('publish', type=bool)
         featured = request.form.get('featured', type=bool)
         attributes = {}
@@ -251,15 +251,16 @@ def products_types_create():
         has_variants = request.form.get("has_variants", type=bool)
         product_attributes = request.form.getlist('product_attributes', type=int)
         variant_attributes = request.form.getlist('product_variants', type=int)
-        is_shipping_required = request.form.get('is_shipping_required',
-            type=bool, default=True)
+        is_shipping_required = request.form.get('is_shipping_required', type=bool)
+        is_file_required = request.form.get('is_file_required', type=bool)
 
         if not name:
             flash(gettext('Name is required'))
             return redirect(url_for('ecommerce_panel.products_types_create'))
 
         pt = ProductType(name=name, has_variants=has_variants,
-                         is_shipping_required=is_shipping_required)
+                         is_shipping_required=is_shipping_required,
+                         is_file_required=is_file_required)
         db.session.add(pt)
         db.session.flush()
         pt.set_attributes(product_attributes)
@@ -281,6 +282,7 @@ def products_types_edit(pt_id):
         product_attributes = request.form.getlist('product_attributes', type=int)
         variant_attributes = request.form.getlist('product_variants', type=int)
         is_shipping_required = request.form.get('is_shipping_required', type=bool)
+        is_file_required = request.form.get('is_file_required', type=bool)
         
         if not name:
             flash(gettext('Name is required'))
@@ -290,6 +292,7 @@ def products_types_edit(pt_id):
         pt.has_variants = has_variants
         pt.is_shipping_required = is_shipping_required
         pt.set_attributes(product_attributes)
+        pt.is_file_required = is_file_required
         if has_variants:
             pt.set_variants(variant_attributes)
         db.session.commit()
