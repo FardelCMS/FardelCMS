@@ -113,7 +113,12 @@ class ProductType(db.Model):
             db.session.flush()
 
     def dict(self):
-        pass
+        return {
+            "is_shipping_required": self.is_shipping_required,
+            "is_file_required": self.is_file_required,
+            "has_variants": self.has_variants,
+            "name": self.name
+        }
 
 
 class ProductTypeAttributes(db.Model):
@@ -173,22 +178,29 @@ class Product(db.Model, SeoModel):
         return self.product_type.is_file_required    
 
     def dict(self, detailed=False):
-        obj = dict(name=self.name, price=self.price, id=self.id)
+        obj = {
+            "name": self.name, "price": self.price, "id":self.id
+        }
         if detailed:
-            obj.update(variants=[v.dict() for v in self.variants])
-            obj.update(description=self.description, images=self.images)
-            obj.update(is_file_required=self.is_file_required)
-            obj.update(self.seo_dict())
-            obj['variant_attributes'] = []
+            _obj = {
+                "product_type":self.product_type.dict(),
+                "variants": [v.dict() for v in self.variants],
+                "description": self.description, "images": self.images,
+            }
+            _obj.update(self.seo_dict())
+
+            _obj['variant_attributes'] = []
             for attr in self.product_type.variant_attributes:
-                obj['variant_attributes'].append(
+                _obj['variant_attributes'].append(
                     {'name':attr.name, "choices":[c.name for c in attr.choices]})
 
-            obj['attributes'] = []
+            _obj['attributes'] = []
             for key, value in self.attributes.items():
                 pa = ProductAttribute.query.filter_by(id=key).scalar()
                 acv = AttributeChoiceValue.query.filter_by(id=value).scalar()
-                obj['attributes'].append({"name":pa.name, "value":acv.name})
+                _obj['attributes'].append({"name":pa.name, "value":acv.name})
+
+            obj.update(_obj)
         else:
             obj['image'] = None
             if self.images:
@@ -239,16 +251,25 @@ class ProductVariant(db.Model):
         return self.product.product_type.is_shipping_required
 
     @property
+    def is_file_required(self):
+        return self.product.product_type.is_file_required
+
+    @property
     def first_image(self):
         return self.product.images[0]
 
-    def dict(self):
-        return {
+    def dict(self, cart=False):
+        obj = {
             'id':self.id,
             'sku':self.sku,
             "name":self.name,
-            "price_override":self.price_override
+            "price":self.get_price()
         }
+        if cart:
+            obj['product'] = self.product.dict()
+            return obj
+        else:            
+            return obj
 
 
 class ProductAttribute(db.Model):

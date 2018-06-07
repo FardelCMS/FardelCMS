@@ -84,7 +84,7 @@ class ProductApi(Resource):
     def get(self, product_id=None):
         if product_id:
             p = Product.query.filter_by(id=product_id).first_or_404()
-            return p.dict(detailed=True)
+            return {"product":p.dict(detailed=True)}
 
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=20, type=int)
