@@ -147,7 +147,7 @@ class Cart(db.Model):
         """ Set exists line to the specified quantity
             if quantity is ZERO it will be removed.
         """
-        line = self.get_line(variant_id, data)
+        line = self.get_line(variant, data)
         if quantity == 0:
             line.delete()
         else:

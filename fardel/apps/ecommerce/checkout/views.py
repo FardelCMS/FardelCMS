@@ -23,8 +23,13 @@ def rest_resource(resource_cls):
 
 
 @mod.before_app_first_request
-def create_permissions():
+def create_defaults():
     CartStatus.generate_default()
+
+
+@mod.before_app_first_request
+def create_permissions():
+    pass
 
 
 @rest_resource
@@ -35,28 +40,37 @@ class ShoppingCartApi(Resource):
     endpoints = ['/checkout/cart/']
     @jwt_optional
     def get(self):
-        """ Get current_user open shopping cart """
+        """ To get current_user/anonymous_user shopping cart. """
+        cart_token = request.args.get('cart_token')
+        if cart_token:
+            cart = Cart.query.filter_by(token=cart_token).open().first()
+            if cart:
+                if current_user and cart.user_id == None:
+                    _cart = Cart.query.current_user().first()
+                    cart.user_id = current_user.id
+                    if _cart:
+                        db.session.delete(_cart)
+                    db.session.commit()
+
+                if current_user and cart.user_id != current_user.id:
+                    return {"cart": None}
+                return {"cart": cart.dict()}
+
         if current_user:
             cart = Cart.query.current_user().first()
             if cart:
-                return {
-                    "cart": cart.dict()
-                }
+                return {"cart": cart.dict()}        
 
-            return {
-                "cart": None
-            }
-        else:
-            cart_token = request.args.get('cart_token')
-            if cart_token:
-                return {
-                    "cart": Cart.query.filter_by(token=cart_token).open().first().dict()
-                }
-            return {"cart":None}
+        return {"cart": None}
 
     @jwt_optional
     def put(self):
-        """ Update/Create a shopping cart """
+        """
+        To add a product(ProductVariant) into a shopping cart, if shopping cart wasn't
+        available it creates a shopping cart. If the user is not logined client has to
+        save the shopping cart token and use it in every ShoppingCartApi request
+        as query parameter.
+        """
         data = request.form
         variant_id = data.get("variant_id")
         count = data.get('count')
@@ -66,51 +80,76 @@ class ShoppingCartApi(Resource):
             return {"message": "Data input is not valid."}, 422
 
         variant = ProductVariant.query.filter_by(id=variant_id).first()
+        if not variant:
+            return {"message":"No variant with this id"}, 404
+
         if variant.is_file_required and not file:
             return {"message":"This product type requires file."}, 422
 
-        if current_user:
-            cart = Cart.query.current_user().first()
+        cart_token = request.args.get('cart_token')
+        cart = Cart.query.filter_by(token=cart_token).first()
 
-            if not cart:
-                cs = CartStatus.query.filter_by(name="open").first()
-                cart = Cart(status_id=cs.id, user_id=current_user.id)
-                db.session.add(cart)
+        if cart:
+            if current_user and cart.user_id == None:
+                _cart = Cart.query.current_user().first()
+                cart.user_id = current_user.id
+                if _cart:
+                    db.session.delete(_cart)
                 db.session.commit()
+        else:
+            cs = CartStatus.query.filter_by(name="open").first()
+            cart = Cart(status_id=cs.id)
 
-            data = {}
-            if variant.is_file_required:
-                path = "images/%s" % datetime.datetime.now().year
+            if current_user:
+                cart.user_id = current_user.id
 
-                uploads_folder = current_app.config['UPLOAD_FOLDER']
-                lookup_folder = uploads_folder / path
-                if is_safe_path(str(os.getcwd() / lookup_folder), str(lookup_folder)):
-                    file = File(path, file=file)
-                    file.save()
-                    data['file'] = file.url
-
-            cart.add(variant, count, data)
+            db.session.add(cart)
             db.session.commit()
 
-            return {"cart":cart.dict()}
+        data = {}
+        if variant.is_file_required:
+            path = "images/%s" % datetime.datetime.now().year
+
+            uploads_folder = current_app.config['UPLOAD_FOLDER']
+            lookup_folder = uploads_folder / path
+            if is_safe_path(str(os.getcwd() / lookup_folder), str(lookup_folder)):
+                file = File(path, file=file)
+                file.save()
+                data['file'] = file.url
+
+        cart.add(variant, count, data)
+        db.session.commit()
+        return {'cart': cart.dict()}
+
+    @jwt_optional
+    def patch(self):
+        """
+        To update a product(ProductVariant) count in a shopping cart.
+        """
+        data = request.get_json()
+        variant_id = data.get("variant_id")
+        count = data.get('count')
+        cl_data = request.get('data')
+
+        if not variant_id or not count:
+            return {"message": "Data input is not valid."}, 422
+
+        variant = ProductVariant.query.filter_by(id=variant_id).first()
+        if not variant:
+            return {"message":"No variant with this id"}, 404
+
+        if current_user:
+            cart = Cart.query.current_user().first()
         else:
             cart_token = request.args.get('cart_token')
             cart = Cart.query.filter_by(token=cart_token).first()
 
-            if not cart:
-                cart = Cart(status_id=cs.id)
-
-            # cart.add(variant, count, data)
-            # db.session.commit()
-                
-            return {
-                'cart_token':cart.token,
-                'cart': cart.dict()
-            }
 
     @jwt_optional
     def delete(self):
-        cart = None
+        """
+        To clear/delete a shopping cart.
+        """
         if current_user:
             cart = Cart.query.current_user().first()
         else:
