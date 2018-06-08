@@ -160,7 +160,7 @@ def products_edit(product_id):
         seo_description = request.form.get("seo-description", default="")
         price = request.form.get("price", type=int)
         sku = request.form.get("sku")
-        category_id = request.form.get('category_id')
+        category_id = request.form.get('category_id', type=int)
         publish = request.form.get('publish', type=bool)
         featured = request.form.get('featured', type=bool)
         attributes = {}
