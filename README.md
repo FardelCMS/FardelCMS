@@ -6,6 +6,12 @@
 Boghche is another but complete cms. Its server is written in python and has Vue + Nuxt, iOS and Android clients. Currently it has a complete blog and a complete eCommerce. Its goal is to make costumization very easy and simple.
 
 [Documents](http://boghche.readthedocs.io/en/latest/)
+[Demo](http://fardel.hamzehlouy.com/)
+[Panel Demo](http://fardel.hamzehlouy.com/panel/login/)
+```
+Admin Email: test@test.com
+Admin Pass: 123
+```
 
 ## Installation
 
