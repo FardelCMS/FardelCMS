@@ -127,23 +127,20 @@ class ShoppingCartApi(Resource):
         To update a product(ProductVariant) count in a shopping cart.
         """
         data = request.get_json()
-        variant_id = data.get("variant_id")
+        line_id = data.get('line_id')
         count = data.get('count')
-        cl_data = request.get('data')
+        cart_token = request.args.get('cart_token')
 
-        if not variant_id or not count:
+        if not line_id or not isinstance(count, int):
             return {"message": "Data input is not valid."}, 422
 
-        variant = ProductVariant.query.filter_by(id=variant_id).first()
-        if not variant:
-            return {"message":"No variant with this id"}, 404
+        cl = CartLine.query.filter_by(id=line_id).first()
+        if not cl or cl.cart_token != cart_token:
+            return {"message":"No line with this id"}, 404
 
-        if current_user:
-            cart = Cart.query.current_user().first()
-        else:
-            cart_token = request.args.get('cart_token')
-            cart = Cart.query.filter_by(token=cart_token).first()
-
+        cart = cl.cart
+        cl.set_quantity(count)
+        return {"cart": cl.cart.dict()}
 
     @jwt_optional
     def delete(self):

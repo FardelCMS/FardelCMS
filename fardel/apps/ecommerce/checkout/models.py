@@ -60,7 +60,7 @@ class Cart(db.Model):
     # voucher = db.Column(db.Integer, db.ForeignKey('discount.Voucher'))
     checkout_data = db.Column(JSONB(), default={})
 
-    total = db.Column(db.String(12), default=0)
+    total = db.Column(db.Integer, default=0)
     quantity = db.Column(db.Integer, default=0)
 
     status = db.relationship("CartStatus")
@@ -77,10 +77,10 @@ class Cart(db.Model):
     def update_quantity_total(self):
         """Recalculate cart quantity based on lines."""
         self.quantity = 0
-        for line in lines:
+        self.total = 0
+        for line in self.lines:
             self.quantity += line.quantity
             self.total += line.get_total()
-        self.quantity = self._count
         db.session.commit()
 
     def change_status(self, status):
@@ -161,6 +161,7 @@ class Cart(db.Model):
 
     def dict(self):
         """ Serialize object to json """
+        self.update_quantity_total()
         return {
             'token': self.token,
             'total': self.total,
@@ -182,6 +183,15 @@ class CartLine(db.Model):
     data = db.Column(JSONB(), default={})
 
     variant = db.relationship("ProductVariant")
+    cart = db.relationship('Cart')
+
+    def set_quantity(self, count):
+        if count == 0:
+            db.session.delete(self)
+            db.session.commit()
+        else:
+            self.quantity = count
+            db.session.commit()
 
     def get_total(self):
         """Return the total price of this line."""
@@ -203,6 +213,7 @@ class CartLine(db.Model):
 
     def dict(self):
         return {
+            'id': self.id,
             'variant':self.variant.dict(cart=True),
             'quantity':self.quantity,
             'data':self.data,
