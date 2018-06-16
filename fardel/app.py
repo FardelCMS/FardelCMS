@@ -48,12 +48,13 @@ def configure_addons(app):
 
         try:
             app.register_blueprint(bp.panel.mod)
-            # print("Admin panel for %s registered" % app_name)
+            app.logger.info("Admin panel for %s registered" % app_name)
         except:
             app.logger.info("No admin panel for %s" % app_name)
 
         try:
             app.register_blueprint(bp.views.mod)
+            app.logger.info("Module %s registered" % app_name)
         except:
             app.logger.warning("%s app doesn't have blueprint." % app_name)
 
