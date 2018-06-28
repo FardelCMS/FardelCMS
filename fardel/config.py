@@ -23,7 +23,8 @@ class BaseConfig(object):
 
     ACTIVE_APPS = (
         "blog",
-        "ecommerce"
+        "auth_address",
+        "ecommerce",
     )
 
     SITE_NAME = lazy_gettext("Fardel")
