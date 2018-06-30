@@ -26,6 +26,7 @@ class BaseConfig(object):
 
     ACTIVE_APPS = (
         "blog",
+        "auth_address",
         "ecommerce",
     )
 

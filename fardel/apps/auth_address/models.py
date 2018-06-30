@@ -19,4 +19,11 @@ class UserAddress(db.Model):
     user = db.relationship("User", backref="addresses")
 
     def dict(self):
-        pass
+        return {
+            "id": self.id,
+            "country":self.country,
+            "city":self.city,
+            "phone":self.phone,
+            "postal_code":self.postal_code,
+            "street_address":self.street_address,
+        }
