@@ -8,6 +8,7 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from flask_sqlalchemy import BaseQuery
 from flask_jwt_extended import current_user
 
+from sqlalchemy_utils import ChoiceType
 from fardel.ext import db
 
 
@@ -221,3 +222,40 @@ class CartLine(db.Model):
             'item_price': self.get_price_per_item(),
             'is_shipping_required': self.is_shipping_required
         }
+
+
+class Payment(db.Model):
+    __tablename__= "checkout_payments"
+
+    TYPES = [
+        ('waiting', 0), 
+        ('done', 1),
+        ('failed', 2)
+    ]
+    
+    cart_token = db.Column(UUID(),
+        db.ForeignKey('checkout_carts.token', ondelete="CASCADE"))
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
+    create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
+    status = db.Column(ChoiceType(TYPES), default="waiting")
+    amount = db.Column(db.Integer)
+    authority = db.Column(db.String(64))
+    description = db.Column(db.String(256))
+
+    user = db.relationship("User")
+    cart = db.relationship("Cart")
+
+    def dict(self):
+        return {
+            'id': self.id,
+            'user' : self.user.dict(),
+            'cart': self.cart.dict(),
+            'create_time': self.create_time,
+            'status': self.status,
+            'amount': self.amount,
+            'authority': self.authority,
+            'description': self.description
+        }
+
+
