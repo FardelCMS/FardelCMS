@@ -165,27 +165,39 @@ class ShoppingCartApi(Resource):
 @rest_resource
 class PaymentApi(Resource):
     """
-    :URL: ``/api/ecommerce/checkout/payment/``
+    :URL: ``/api/ecommerce/checkout/payment/`` & ``/api/ecommerce/checkout/payment/payment_id/``
     """
     endpoints = ['/checkout/payment/', '/checkout/payment/payment_id']
 
     @jwt_required
-    def get(self, payment_id):
+    def get(self, payment_id=None):
 
         """ to get payemnt of a current_user with this cart_id """
+        if payment_id:
+            payemnt = Payment.query.filter_by(id=payment_id).first()
+            if payment and payment.user_id == current_user.id:
+                if payment.status == "pending":
+                    client = Client(ZARINPAL_WEBSERVICE)
+                    if request.args.get('Status') == 'OK':
+                        result = client.service.PaymentVerification(MERCHANT_ID,
+                                                                    payment.authority,
+                                                                    payment.amount)
+                        if result.status == 100 or result.status == 101:
+                            payment.status = "successful"
+                        else:
+                            payment.status = "failed"
+                        db.session.commit() 
+                return {"payment": payment.dict()}
+            return {"message":"Payment does not exist."}, 404
 
-        payemnt = Payment.query.filter_by(id=payment_id).first()
-        if payment:
-            if current_user and payment.user_id != current_user.id:
-                return {"payment": None}
-            return {"payment": payment.dict()}
-
-        return {"payment": None}
-
+        query = Payment.query
+        page = request.args.get("page", type=int, default=1)
+        per_page = request.args.get("per_page", type=int, default=16)
+        payments = query.paginate(per_page=per_page, page=page, error_out=False)
+        return {"payments": [payment.dict() for payment in payments]}
 
     @jwt_required
-    def post(self):
-
+    def post(self, payment_id=None):
         """
         To add a shopping cart  into payment, if payment wasn't
         available it creates a payment. 
@@ -230,6 +242,6 @@ class PaymentApi(Resource):
                                                redirect_url)
 
         if result.Status == 100:
-            return redirect('https://www.zarinpal.com/pg/StartPay/' + result.Authority)
+            return redirect('https://www.zarinpal.com/pg/StartPay/' + result.authority)
         else:
             return 'Error'

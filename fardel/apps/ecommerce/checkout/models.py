@@ -8,7 +8,6 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from flask_sqlalchemy import BaseQuery
 from flask_jwt_extended import current_user
 
-from sqlalchemy_utils import ChoiceType
 from fardel.ext import db
 
 
@@ -225,16 +224,19 @@ class CartLine(db.Model):
 
 
 class Payment(db.Model):
+    """
+    status types:
+        :Pending:
+        :succeeded:
+        :Failed:
+    """
     __tablename__= "checkout_payments"
 
-    order_id = db.Column(UUID(),
-        db.ForeignKey('checkout_carts.token', ondelete="CASCADE"))
+    # order_id = db.Column(db.Integer, db.ForiegnKey('orders.id'))
     id = db.Column(db.Integer, primary_key=True, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
-    status_id = db.Column(db.Integer, default=0)    
-    """ 0: 'Waiting', 1: 'Done', 2: 'Failed' """
+    status = db.Column(db.String(32))    
     create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
-    status = db.Column(ChoiceType(TYPES), default="waiting")
     amount = db.Column(db.Integer)
     authority = db.Column(db.String(64))
     description = db.Column(db.String(256))
@@ -254,4 +256,4 @@ class Payment(db.Model):
             'description': self.description
         }
 
-
+"""ask if you need a RefID column in the table"""
