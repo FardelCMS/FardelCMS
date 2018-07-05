@@ -2,9 +2,7 @@ import os
 
 from sqlalchemy import func
 from flask import request, current_app
-from flask_jwt_extended import jwt_optional
-from flask_login import login_required
-
+from flask_jwt_extended import current_user, jwt_required, jwt_optional
 
 from fardel.core.panel.views.media import is_safe_path
 from fardel.core.panel.decorator import staff_required
@@ -167,80 +165,71 @@ class ShoppingCartApi(Resource):
 @rest_resource
 class PaymentApi(Resource):
     """
-    :URL: ``/api/ecommerce/checkout/payment/<int:cart_id>/?url=<url>``
+    :URL: ``/api/ecommerce/checkout/payment/``
     """
-    endpoints = ['/checkout/payment/<cart_id>/']
+    endpoints = ['/checkout/payment/', '/checkout/payment/payment_id']
 
-    @login_required
-    def get(self, cart_id):
+    @jwt_required
+    def get(self, payment_id):
 
         """ to get payemnt of a current_user with this cart_id """
 
-        payemnt = Payment.query.filter_by(cart_token=cart_id).open().first()
+        payemnt = Payment.query.filter_by(id=payment_id).first()
         if payment:
             if current_user and payment.user_id != current_user.id:
-                return {"cart": None}
+                return {"payment": None}
             return {"payment": payment.dict()}
 
         return {"payment": None}
 
 
-    @login_required    
-    def put(self, cart_id):
+    @jwt_required
+    def post(self):
 
         """
         To add a shopping cart  into payment, if payment wasn't
         available it creates a payment. 
         """
 
-        data = request.form
-        description = data.get('description')
-        mobile_number = data.get('mobile_number')
-
-        cart = Cart.query.filter_by(token=cart_id).first()
+        data = request.get_json()
+        redirect_url = data.get('redirect_url')
+        cart_token = data.get('cart_token')
+        address_id = data.get('address_id')
+        
+        cart = Cart.query.filter_by(token=cart_token).first()
 
         if not cart:
             return {"message":"No cart with this id"}, 404
 
-
         user = Cart.query.current_user().first()
 
         if current_user and cart.token == user.token: 
-            payment = Payment.query.filter_by(cart_token=cart_id).first()
+            # order = Order.query.filter_by(cart_token=cart_token).first()
+            # if not order:
+            #     order = Order(cart_token=cart_token, user_id=current_user.id, amount=cart.total)
 
+            #     db.session.add(order)
+            #     db.session.commit()
+
+            payment = Payment.query.filter_by(order_id=order.id).first()
             if not payment:
-                payment = Payment(cart_token=cart_id, user_id=current_user.id, amount=cart.total)
+                payment = Payment(user_id=current_user.id, order_id=order.id)
 
                 db.session.add(payment)
                 db.session.commit()
 
-        data = {}
-
-        payment.add(description, mobile_number, data)
-        db.session.commit()
         # return {'payment': payment.dict()}
 
         client = Client(current_app.config['ZARINPAL_WEBSERVICE'])
         mail = current_user.mail
-
-
         result = client.service.PaymentRequest(current_app.config['MURCHANT_ID'],
                                                cart.amount,
-                                               description,
+                                               'nani',
                                                mail,
-                                               mobile_number,
-                                               str(url_for('verify', _external=True)))
+                                               order.mobile_number,
+                                               redirect_url)
 
         if result.Status == 100:
             return redirect('https://www.zarinpal.com/pg/StartPay/' + result.Authority)
         else:
             return 'Error'
-
-    @login_required        
-    def delete(self, cart_id):
-        payment = Payment.query.current_user().first()
-        if payment:
-            db.session.delete(payment)
-            db.session.commit()
-        return {
-            "message":"successfuly cleared the payment." }

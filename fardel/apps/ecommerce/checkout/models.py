@@ -227,16 +227,12 @@ class CartLine(db.Model):
 class Payment(db.Model):
     __tablename__= "checkout_payments"
 
-    TYPES = [
-        ('waiting', 0), 
-        ('done', 1),
-        ('failed', 2)
-    ]
-    
-    cart_token = db.Column(UUID(),
+    order_id = db.Column(UUID(),
         db.ForeignKey('checkout_carts.token', ondelete="CASCADE"))
     id = db.Column(db.Integer, primary_key=True, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
+    status_id = db.Column(db.Integer, default=0)    
+    """ 0: 'Waiting', 1: 'Done', 2: 'Failed' """
     create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
     status = db.Column(ChoiceType(TYPES), default="waiting")
     amount = db.Column(db.Integer)
@@ -244,13 +240,13 @@ class Payment(db.Model):
     description = db.Column(db.String(256))
 
     user = db.relationship("User")
-    cart = db.relationship("Cart")
+    # order = db.relationship("Order")
 
     def dict(self):
         return {
             'id': self.id,
             'user' : self.user.dict(),
-            'cart': self.cart.dict(),
+            # 'order': self.order.dict(),
             'create_time': self.create_time,
             'status': self.status,
             'amount': self.amount,
