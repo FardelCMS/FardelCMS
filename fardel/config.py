@@ -21,6 +21,9 @@ class BaseConfig(object):
 
     UPLOAD_FOLDER = Path(__file__).parent.parent / 'uploads'
 
+    MERCHANT_ID = ''  # Required
+    ZARINPAL_WEBSERVICE = 'https://www.zarinpal.com/pg/services/WebGate/wsdl'  # Required
+
     ACTIVE_APPS = (
         "blog",
         "auth_address",

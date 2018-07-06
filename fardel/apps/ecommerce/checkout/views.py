@@ -2,16 +2,18 @@ import os
 
 from sqlalchemy import func
 from flask import request, current_app
-from flask_jwt_extended import jwt_optional
+from flask_jwt_extended import current_user, jwt_required, jwt_optional
 
 from fardel.core.panel.views.media import is_safe_path
+from fardel.core.panel.decorator import staff_required
 from fardel.core.media.models import File
 from fardel.core.rest import create_api, abort, Resource
 from .models import *
 from ..product.models import ProductVariant
 from .. import mod
 from fardel.ext import db, cache
-
+from zeep import Client
+from fardel.config import BaseConfig
 
 ecommerce_checkout_api = create_api(mod)
 
@@ -30,7 +32,6 @@ def create_defaults():
 @mod.before_app_first_request
 def create_permissions():
     pass
-
 
 @rest_resource
 class ShoppingCartApi(Resource):
@@ -159,3 +160,88 @@ class ShoppingCartApi(Resource):
         return {
             "message":"successfuly cleared the shopping cart."
         }
+
+
+@rest_resource
+class PaymentApi(Resource):
+    """
+    :URL: ``/api/ecommerce/checkout/payment/`` & ``/api/ecommerce/checkout/payment/payment_id/``
+    """
+    endpoints = ['/checkout/payment/', '/checkout/payment/payment_id']
+
+    @jwt_required
+    def get(self, payment_id=None):
+
+        """ to get payemnt of a current_user with this cart_id """
+        if payment_id:
+            payemnt = Payment.query.filter_by(id=payment_id).first()
+            if payment and payment.user_id == current_user.id:
+                if payment.status == "pending":
+                    client = Client(ZARINPAL_WEBSERVICE)
+                    if request.args.get('Status') == 'OK':
+                        result = client.service.PaymentVerification(MERCHANT_ID,
+                                                                    payment.authority,
+                                                                    payment.amount)
+                        if result.status == 100 or result.status == 101:
+                            payment.status = "successful"
+                        else:
+                            payment.status = "failed"
+                        db.session.commit() 
+                return {"payment": payment.dict()}
+            return {"message":"Payment does not exist."}, 404
+
+        query = Payment.query
+        page = request.args.get("page", type=int, default=1)
+        per_page = request.args.get("per_page", type=int, default=16)
+        payments = query.paginate(per_page=per_page, page=page, error_out=False)
+        return {"payments": [payment.dict() for payment in payments]}
+
+    @jwt_required
+    def post(self, payment_id=None):
+        """
+        To add a shopping cart  into payment, if payment wasn't
+        available it creates a payment. 
+        """
+
+        data = request.get_json()
+        redirect_url = data.get('redirect_url')
+        cart_token = data.get('cart_token')
+        address_id = data.get('address_id')
+        
+        cart = Cart.query.filter_by(token=cart_token).first()
+
+        if not cart:
+            return {"message":"No cart with this id"}, 404
+
+        user = Cart.query.current_user().first()
+
+        if current_user and cart.token == user.token: 
+            # order = Order.query.filter_by(cart_token=cart_token).first()
+            # if not order:
+            #     order = Order(cart_token=cart_token, user_id=current_user.id, amount=cart.total)
+
+            #     db.session.add(order)
+            #     db.session.commit()
+
+            payment = Payment.query.filter_by(order_id=order.id).first()
+            if not payment:
+                payment = Payment(user_id=current_user.id, order_id=order.id)
+
+                db.session.add(payment)
+                db.session.commit()
+
+        # return {'payment': payment.dict()}
+
+        client = Client(current_app.config['ZARINPAL_WEBSERVICE'])
+        mail = current_user.mail
+        result = client.service.PaymentRequest(current_app.config['MURCHANT_ID'],
+                                               cart.amount,
+                                               'nani',
+                                               mail,
+                                               order.mobile_number,
+                                               redirect_url)
+
+        if result.Status == 100:
+            return redirect('https://www.zarinpal.com/pg/StartPay/' + result.authority)
+        else:
+            return 'Error'

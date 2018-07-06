@@ -221,3 +221,39 @@ class CartLine(db.Model):
             'item_price': self.get_price_per_item(),
             'is_shipping_required': self.is_shipping_required
         }
+
+
+class Payment(db.Model):
+    """
+    status types:
+        :Pending:
+        :succeeded:
+        :Failed:
+    """
+    __tablename__= "checkout_payments"
+
+    # order_id = db.Column(db.Integer, db.ForiegnKey('orders.id'))
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
+    status = db.Column(db.String(32))    
+    create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
+    amount = db.Column(db.Integer)
+    authority = db.Column(db.String(64))
+    description = db.Column(db.String(256))
+
+    user = db.relationship("User")
+    # order = db.relationship("Order")
+
+    def dict(self):
+        return {
+            'id': self.id,
+            'user' : self.user.dict(),
+            # 'order': self.order.dict(),
+            'create_time': self.create_time,
+            'status': self.status,
+            'amount': self.amount,
+            'authority': self.authority,
+            'description': self.description
+        }
+
+"""ask if you need a RefID column in the table"""
