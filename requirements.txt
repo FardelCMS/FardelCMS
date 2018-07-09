@@ -10,5 +10,6 @@ flask_login==0.4.1
 flask_caching==1.4.0
 Flask-Babel==0.11.2
 sqlalchemy_searchable==0.10.6
+zeep==3.0.0
 gunicorn
 meinheld
