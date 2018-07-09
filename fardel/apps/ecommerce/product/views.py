@@ -19,6 +19,7 @@ from sqlalchemy import func
 from flask import request
 
 from fardel.core.rest import create_api, abort, Resource
+from fardel.core.utils import cache_get_key
 from .models import *
 from .. import mod
 from fardel.ext import db, cache
@@ -75,12 +76,13 @@ class ProductCollectionApi(Resource):
 
 
 @rest_resource
+@cache_get_key
 class ProductApi(Resource):
     """
     :URL: ``/api/ecommerce/products/<product_id>/``
     """
     endpoints = ['/products/', '/products/<int:product_id>/']
-    @cache.cached(timeout=60)
+    # @cache.cached(timeout=60)
     def get(self, product_id=None):
         if product_id:
             p = Product.query.filter_by(id=product_id).first_or_404()
@@ -88,9 +90,16 @@ class ProductApi(Resource):
 
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=20, type=int)
-        ps = Product.query.filter_by(is_published=True
-            ).outerjoin(ProductVariant).filter(ProductVariant.quantity>0
-            ).paginate(page=page, per_page=per_page, error_out=False).items
+        order_by = request.args.get('order_by')
+        query = Product.query.filter_by(is_published=True
+            ).outerjoin(ProductVariant).filter(ProductVariant.quantity>0)
+        if order_by == "cheap_first":
+            query = query.order_by(Product.price.asc())
+        elif order_by == "expensive_first":
+            query = query.order_by(Product.price.desc())
+        else:
+            query = query.order_by(Product.id.desc())
+        ps = query.paginate(page=page, per_page=per_page, error_out=False).items
         return {'products':[p.dict() for p in ps]}    
 
 
