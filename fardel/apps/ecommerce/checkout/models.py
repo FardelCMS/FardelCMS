@@ -235,7 +235,7 @@ class Payment(db.Model):
     # order_id = db.Column(db.Integer, db.ForiegnKey('orders.id'))
     id = db.Column(db.Integer, primary_key=True, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
-    status = db.Column(db.String(32))    
+    status = db.Column(db.String(32), default='Pending')    
     create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
     amount = db.Column(db.Integer)
     authority = db.Column(db.String(64))
