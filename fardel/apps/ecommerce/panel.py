@@ -26,18 +26,18 @@ def add_blog_section():
 
     product_link.add_child(ChildLink(gettext("All Categories"),
         url_for('ecommerce_panel.categories_list'), permission="can_get_categories"))
-    product_link.add_child(ChildLink(gettext("New Category"),
-        url_for('ecommerce_panel.categories_create'), permission="can_create_categories"))
+    # product_link.add_child(ChildLink(gettext("New Category"),
+    #     url_for('ecommerce_panel.categories_create'), permission="can_create_categories"))
 
     product_link.add_child(ChildLink(gettext("All Product Types"),
         url_for('ecommerce_panel.products_types_list'), permission="can_get_products_types"))
-    product_link.add_child(ChildLink(gettext("New Product Type"),
-        url_for('ecommerce_panel.products_types_create'), permission="can_create_products_types"))
+    # product_link.add_child(ChildLink(gettext("New Product Type"),
+    #     url_for('ecommerce_panel.products_types_create'), permission="can_create_products_types"))
 
     product_link.add_child(ChildLink(gettext("All Attributes"),
         url_for('ecommerce_panel.products_attributes_list'), permission="can_get_products_types"))
-    product_link.add_child(ChildLink(gettext("New Attribute"),
-        url_for('ecommerce_panel.products_attributes_create'), permission="can_create_products_types"))
+    # product_link.add_child(ChildLink(gettext("New Attribute"),
+    #     url_for('ecommerce_panel.products_attributes_create'), permission="can_create_products_types"))
 
     # product_link.add_child(ChildLink(gettext("All Collections"),
     #     url_for('ecommerce_panel.categories_create'), permission="can_get_collections"))
