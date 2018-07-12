@@ -25,7 +25,7 @@ class BaseConfig(object):
     ZARINPAL_WEBSERVICE = 'https://www.zarinpal.com/pg/services/WebGate/wsdl'  # Required
 
     ACTIVE_APPS = (
-        "blog",
+        # "blog",
         "auth_address",
         "ecommerce",
     )
