@@ -62,7 +62,7 @@ msgstr "نوشته ها"
 #: fardel/apps/blog/panel.py:36 fardel/apps/blog/templates/posts_list.html:4
 #: fardel/apps/blog/templates/posts_list.html:5
 msgid "All Posts"
-msgstr "همه نوشته ها"
+msgstr "نوشته ها"
 
 #: fardel/apps/blog/panel.py:38
 msgid "Create Post"
@@ -81,7 +81,7 @@ msgstr "دسته ها"
 #: fardel/apps/ecommerce/media/templates/product/categories_list.html:11
 #: fardel/apps/ecommerce/panel.py:27
 msgid "All Categories"
-msgstr "همه دسته بندی ها"
+msgstr "دسته بندی ها"
 
 #: fardel/apps/blog/panel.py:47
 msgid "Create Category"
@@ -315,11 +315,11 @@ msgstr "محصولات"
 
 #: fardel/apps/ecommerce/panel.py:24
 msgid "All Products"
-msgstr "همه محصولات"
+msgstr "محصولات"
 
 #: fardel/apps/ecommerce/panel.py:32
 msgid "All Product Types"
-msgstr "همه انواع محصولات"
+msgstr "انواع محصولات"
 
 #: fardel/apps/ecommerce/media/templates/product/products_types_form.html:3
 #: fardel/apps/ecommerce/media/templates/product/products_types_form.html:4
@@ -333,7 +333,7 @@ msgstr "نوع محصول جدید"
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_list.html:11
 #: fardel/apps/ecommerce/panel.py:37
 msgid "All Attributes"
-msgstr "همه ویژگی ها"
+msgstr "ویژگی ها"
 
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_form.html:3
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_form.html:4
@@ -575,7 +575,7 @@ msgstr "دارای انواع است؟"
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:4
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:11
 msgid "All Products Types"
-msgstr "همه انواع محصولات"
+msgstr "انواع محصولات"
 
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:29
 msgid "product attributes"
@@ -684,7 +684,7 @@ msgstr "ایمیل یا پسورد اشتباه است ..."
 
 #~ msgctxt "Discounts section"
 #~ msgid "All Collections"
-#~ msgstr "همه مجموعه ها"
+#~ msgstr "مجموعه ها"
 
 #~ msgctxt "Discounts section"
 #~ msgid "Create Collection"
@@ -705,7 +705,7 @@ msgstr "ایمیل یا پسورد اشتباه است ..."
 
 #~ msgctxt "Discounts section"
 #~ msgid "All Sales"
-#~ msgstr "همه حراج ها"
+#~ msgstr "حراج ها"
 
 #~ msgctxt "Discounts section"
 #~ msgid "Create Sales"
@@ -713,7 +713,7 @@ msgstr "ایمیل یا پسورد اشتباه است ..."
 
 #~ msgctxt "Discounts section"
 #~ msgid "All Vouchers"
-#~ msgstr "همه کد تخفیف ها"
+#~ msgstr "کد تخفیف ها"
 
 #~ msgctxt "Discounts section"
 #~ msgid "Create Voucher"
