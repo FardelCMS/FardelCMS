@@ -15,15 +15,14 @@ class Order(db.Model):
     __tablename__ = "orders"
     """
     Status Types:
-        ::
-        ::
-        ::
-        ::
+        :Fulfiled:
+        :Unfulfiled:
+        :Canceled:
     """
     id = db.Column(db.Integer, primary_key=True, index=True)
     status = db.Column(db.String(32))    
     user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
-    address_id = db.Column(db.Integer, db.ForeignKey('auth_users_address'))
+    address_id = db.Column(db.Integer, db.ForeignKey('auth_users_address.id'))
     create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
     amount = db.Column(db.Integer, default=0)
     cart_token = db.Column(UUID(),
@@ -54,8 +53,33 @@ class Order(db.Model):
             'create_time': self.create_time,
             'amount': self.amount,
             'cart': self.cart.dict(),
-
         }
+
+
+class OrderLine(db.Model):
+    __tablename__= "order_lines"
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    order_id = db.Column(db.ForeignKey('orders.id'))    
+    variant_id = db.Column(db.Integer,
+        db.ForeignKey('product_product_variants.id', ondelete="CASCADE"))
+    total = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
+    data = db.Column(JSONB(), default={})
+
+    variant = db.relationship("ProductVariant")
+    order = db.relationship("Order")    
+
+    def dict(self):
+        return {
+            'id': self.id,
+            'variant':self.variant.dict(cart=True),
+            'quantity':self.quantity,
+            'data':self.data,
+            'total': self.total,
+            'quantity': self.quantity,
+        }
+
+
 
 # class Order(db.Model):
 #     created = models.DateTimeField(
