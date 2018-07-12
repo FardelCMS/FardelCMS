@@ -48,7 +48,7 @@ class Order(db.Model):
     def dict(self):
         return {
             'id': self.id,
-            'status': self.status
+            'status': self.status,
             'user' : self.user.dict(),
             'address': self.address.dict(),
             'create_time': self.create_time,
