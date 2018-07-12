@@ -19,18 +19,18 @@ class OrderApi(Resource):
     """
     :URL: ``/api/ecommerce/order/`` or ``/api/ecommerce/order/<order_id>/``
     """	
-	endpoint = ['/orders/', '/orders/<int:order_id>/']
+    endpoints = ['/orders/', '/orders/<int:order_id>/']
 
     @jwt_required
     def get(self, order_id=None):
-		if order_id:
-			order = Order.query.filter_by(user_id=current_user.id, id=order_id).first()
-			if order:
-				return {"order":order.dict()}
-			return {"message":"Order with this id does not exist."}, 404
+        if order_id:
+            order = Order.query.filter_by(user_id=current_user.id, id=order_id).first()
+            if order:
+                return {"order":order.dict()}
+            return {"message":"Order with this id does not exist."}, 404
 
-		query = Order.query.filter_by(user_id=current_user.id)
-		page = request.args.get("page", type=int, default=1)
-		per_page = request.args.get("per_page", type=int, default=16)
-		orders = query.paginate(per_page=per_page, page=page, error_out=False)
-		return {"orders": [order.dict() for order in orders]}
+        query = Order.query.filter_by(user_id=current_user.id)
+        page = request.args.get("page", type=int, default=1)
+        per_page = request.args.get("per_page", type=int, default=16)
+        orders = query.paginate(per_page=per_page, page=page, error_out=False)
+        return {"orders": [order.dict() for order in orders]}
