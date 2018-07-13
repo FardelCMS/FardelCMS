@@ -119,7 +119,7 @@ class Cart(db.Model):
         if not line:
             self.create_line(variant, quantity, data)
         else:
-            line.quantity += quantity
+            line.quantity += int(quantity)
             db.session.flush()
 
     def set_line(self, variant_id, quantity, data):
