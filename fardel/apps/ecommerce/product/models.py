@@ -1,6 +1,8 @@
 import math
 import time
 
+from collections import OrderedDict
+
 from sqlalchemy.dialects.postgresql import JSONB
 
 from fardel.core.seo import SeoModel
@@ -145,7 +147,7 @@ class Product(db.Model, SeoModel):
     __tablename__ = "product_products"
     id = db.Column(db.Integer, primary_key=True)
 
-    name = db.Column(db.String(32), nullable=False)
+    name = db.Column(db.String(64), nullable=False)
     description = db.Column(db.Text)
 
     price = db.Column(db.Integer, nullable=False)
@@ -189,10 +191,12 @@ class Product(db.Model, SeoModel):
             }
             _obj.update(self.seo_dict())
 
-            _obj['variant_attributes'] = []
-            for attr in self.product_type.variant_attributes:
-                _obj['variant_attributes'].append(
-                    {'name':attr.name, "choices":[c.name for c in attr.choices]})
+            _obj['variant_attributes'] = OrderedDict()
+            for variant in self.variants:
+                for attribute, choice in variant.attributes_names.items():
+                    if attribute not in _obj['variant_attributes']:
+                        _obj['variant_attributes'][attribute] = []
+                    _obj['variant_attributes'][attribute].append(choice)
 
             _obj['attributes'] = []
             for key, value in self.attributes.items():
@@ -226,6 +230,15 @@ class ProductVariant(db.Model):
     def get_attr_choice_id(self, _id):
         if self.attributes.get(str(_id)):
             return int( self.attributes.get(str(_id)) )
+
+    @property
+    def attributes_names(self):
+        attributes = {}
+        for k, v in self.attributes.items():
+            pa = ProductAttribute.query.filter_by(id=k).first()
+            acv = AttributeChoiceValue.query.filter_by(id=v).first()
+            attributes[pa.name] = acv.name
+        return attributes
 
     def generate_name(self):
         names = []
@@ -263,7 +276,8 @@ class ProductVariant(db.Model):
             'id':self.id,
             'sku':self.sku,
             "name":self.name,
-            "price":self.get_price()
+            "price":self.get_price(),
+            "attributes": self.attributes_names
         }
         if cart:
             obj['product'] = self.product.dict()
