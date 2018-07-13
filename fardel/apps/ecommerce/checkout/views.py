@@ -26,7 +26,7 @@ def rest_resource(resource_cls):
 
 @mod.before_app_first_request
 def create_defaults():
-    CartStatus.generate_default()
+    pass
 
 
 @mod.before_app_first_request
@@ -98,8 +98,7 @@ class ShoppingCartApi(Resource):
                     db.session.delete(_cart)
                 db.session.commit()
         else:
-            cs = CartStatus.query.filter_by(name="open").first()
-            cart = Cart(status_id=cs.id)
+            cart = Cart(status="open")
 
             if current_user:
                 cart.user_id = current_user.id
