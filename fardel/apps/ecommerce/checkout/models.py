@@ -206,12 +206,12 @@ class Payment(db.Model):
     """
     status types:
         :Pending:
-        :succeeded:
+        :Succeeded:
         :Failed:
     """
     __tablename__= "checkout_payments"
 
-    # order_id = db.Column(db.Integer, db.ForiegnKey('orders.id'))
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
     id = db.Column(db.Integer, primary_key=True, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
     status = db.Column(db.String(32))    
@@ -221,7 +221,7 @@ class Payment(db.Model):
     description = db.Column(db.String(256))
 
     user = db.relationship("User")
-    # order = db.relationship("Order")
+    order = db.relationship("Order")
 
     def dict(self):
         return {
