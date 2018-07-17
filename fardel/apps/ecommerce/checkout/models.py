@@ -13,32 +13,13 @@ from fardel.ext import db
 
 class CartQueryset(BaseQuery):
     def open(self):
-        return self.outerjoin(CartStatus).filter(CartStatus.name=="open")
+        return self.filter_by(status="open")
 
     def canceled(self):
-        return self.outerjoin(CartStatus).filter(CartStatus.name=="canceled")
+        return self.filter_by(status="canceled")
 
     def current_user(self):
         return self.filter_by(user_id=current_user.id).open()
-
-
-class CartStatus(db.Model):
-    __tablename__ = "checkout_carts_statuses"
-    id = db.Column(db.Integer, primary_key=True, index=True)
-    name = db.Column(db.String(32))
-
-    @staticmethod
-    def generate_default():
-        statuses = [
-            {'name':'open'},
-            {'name':'canceled'},
-        ]
-        for status in statuses:
-            s = CartStatus.query.filter_by(name=status['name']).first()
-            if not s:
-                s = CartStatus(name=status['name'])
-                db.session.add(s)
-                db.session.commit()
 
 
 def generate_unique_id():
@@ -51,8 +32,8 @@ class Cart(db.Model):
     __tablename__ = "checkout_carts"    
     token = db.Column(UUID(), primary_key=True, default=generate_unique_id)
 
-    status_id = db.Column(db.Integer, db.ForeignKey("checkout_carts_statuses.id",
-        ondelete="SET NULL"))
+    status = db.Column(db.String(16)) # open, canceled
+
     create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
     last_status_change = db.Column(db.TIMESTAMP,
         default=func.current_timestamp(), onupdate=func.current_timestamp())
@@ -63,15 +44,13 @@ class Cart(db.Model):
     total = db.Column(db.Integer, default=0)
     quantity = db.Column(db.Integer, default=0)
 
-    status = db.relationship("CartStatus")
     lines = db.relationship("CartLine")
     user = db.relationship("User")
 
     @staticmethod
     def cron_delete():
         """ DELETE old and canceled carts """
-        deleted = Cart.query.filter(CartStatus.name=="canceled"
-            ).join(CartStatus).delete()
+        deleted = Cart.query.filter_by(status="canceled").delete()
         db.session.flush()
 
     def update_quantity_total(self):
@@ -85,7 +64,7 @@ class Cart(db.Model):
 
     def change_status(self, status):
         """Change cart status."""
-        self.status_id = CartStatus.query.filter_by(name=status).first().id
+        self.status = status
         db.session.flush()
 
     def change_user(self, user):
@@ -140,7 +119,7 @@ class Cart(db.Model):
         if not line:
             self.create_line(variant, quantity, data)
         else:
-            line.quantity += quantity
+            line.quantity += int(quantity)
             db.session.flush()
 
     def set_line(self, variant_id, quantity, data):
