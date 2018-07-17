@@ -1,6 +1,6 @@
 import datetime
 
-from fardel.apps.ecommerce.checkout.models import Cart
+from fardel.apps.ecommerce.checkout.models import Cart, CartLine
 
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
@@ -20,19 +20,21 @@ class Order(db.Model):
         :Canceled:
     """
     id = db.Column(db.Integer, primary_key=True, index=True)
-    status = db.Column(db.String(64), default="Unfulfiled")    
+    status = db.Column(db.String(64), default="Unfulfiled")
     user_id = db.Column(db.Integer, db.ForeignKey('auth_users.id'))
     address_id = db.Column(db.Integer, db.ForeignKey('auth_users_address.id'))
     create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
     total = db.Column(db.Integer, default=0)
     quantity = db.Column(db.Integer, default=0)
+    data = db.Column(JSONB(), default={})
+
 
     user = db.relationship("User")
     address = db.relationship("UserAddress")
     lines = db.relationship("OrderLine")
 
     @staticmethod
-    def creat_from_cart(cart_id, address_id):
+    def create_from_cart(cart_id, address_id):
         cart = Cart.query.filter_by(token=cart_id).first()
         if current_user.id == cart.user_id:
             order = Order(
@@ -40,10 +42,22 @@ class Order(db.Model):
                 total=cart.total, 
                 quantity=cart.quantity,
                 address_id=address_id, 
-                data=cart.data
+                data=cart.checkout_data
                 )
+
             db.session.add(order)
-            db.session.commit(order)
+            db.session.commit()
+            
+            for line in cart.dict()['lines']:
+                order_line = OrderLine(
+                    order_id=order.id, 
+                    variant_id=line['variant']['id'], 
+                    quantity=line['quantity'], 
+                    total=line['total']
+                    )
+                db.session.add(order_line)
+                db.session.commit()
+
         else:
             return {"message": "this Cart does not exist"}, 404
 
@@ -58,53 +72,10 @@ class Order(db.Model):
                     break
         return self._is_shipping_required
 
-    def create_line(self, variant, quantity, data):
-        """
-        To Create a line if the variant_id with the data doesn't exists
-        """
-        cl = OrderLine(
-            order_id=self.id,
-            variant_id=variant.id,
-            quantity=quantity,
-            data=data
-        )
-        db.session.add(cl)
-        db.session.flush()
-
-    def get_line(self, variant, data):
-        """ Get a line with same variant_id and data """
-        return OrderLine.query.filter_by(order_id=self.id,
-            data=data, variant_id=variant.id).first()
-
-    def add(self, variant, quantity, data):
-        """
-        Create a line with the quantity and data or if variant+data already exists
-        it adds the quantity to exists one.
-        """
-        line = self.get_line(variant, data)
-        if not line:
-            self.create_line(variant, quantity, data)
-        else:
-            line.quantity += quantity
-            db.session.flush()
-
-    def set_line(self, variant_id, quantity, data):
-        """ Set exists line to the specified quantity
-            if quantity is ZERO it will be removed.
-        """
-        line = self.get_line(variant, data)
-        if quantity == 0:
-            line.delete()
-        else:
-            line.quantity = quantity
-            db.session.flush()
-
     def delete_line(self, variant_id, data):
         """ Delete a line with specified variant_id+data """
         line = self.get_line(variant_id, data)
         line.delete()
-
-
 
     def dict(self):
         """ Serialize object to json """
@@ -148,4 +119,3 @@ class OrderLine(db.Model):
     @property
     def is_shipping_required(self):
         return self.variant.is_shipping_required
-

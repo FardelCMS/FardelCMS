@@ -10,6 +10,8 @@ from fardel.core.media.models import File
 from fardel.core.rest import create_api, abort, Resource
 from .models import *
 from ..product.models import ProductVariant
+from ...auth_address.models import UserAddress
+from ..order.models import *
 from .. import mod
 from fardel.ext import db, cache
 from zeep import Client
@@ -176,16 +178,18 @@ class PaymentApi(Resource):
         if payment_id:
             payemnt = Payment.query.filter_by(id=payment_id).first()
             if payment and payment.user_id == current_user.id:
-                if payment.status == "pending":
+                order = Order.query.filter_by(id=payment.order_id).first()
+                if payment.status == "Pending":
                     client = Client(ZARINPAL_WEBSERVICE)
                     if request.args.get('Status') == 'OK':
-                        result = client.service.PaymentVerification(MERCHANT_ID,
+                        result = client.service.PaymentVerification(current_app.config['MERCHANT_ID'],
                                                                     payment.authority,
                                                                     payment.amount)
                         if result.status == 100 or result.status == 101:
-                            payment.status = "successful"
+                            payment.status = "Succeeded"
+                            order.status = "Fulfiled"
                         else:
-                            payment.status = "failed"
+                            payment.status = "Failed"
                         db.session.commit() 
                 return {"payment": payment.dict()}
             return {"message":"Payment does not exist."}, 404
@@ -213,35 +217,56 @@ class PaymentApi(Resource):
         if not cart:
             return {"message":"No cart with this id"}, 404
 
+        if not address_id:
+            return {"message": "Please enter a address for your order"}, 404
         user = Cart.query.current_user().first()
 
-        if current_user and cart.token == user.token: 
-            # order = Order.query.filter_by(cart_token=cart_token).first()
-            # if not order:
-            #     order = Order(cart_token=cart_token, user_id=current_user.id, amount=cart.total)
+        if current_user.id==user.user_id and cart.token == user.token: 
+            order = Order.query.filter_by(user_id=current_user.id, total=cart.total).first()
+            #line 219 fek konam moshkel dare. az koja mitunam check konam ke order sabt shode ya na?
 
-            #     db.session.add(order)
-            #     db.session.commit()
+            if not order:
+                Order.create_from_cart(cart_token, address_id)
+
+            order = Order.query.filter_by(user_id=current_user.id).first()
+            #nemidooonam line 225 lazeme ya na ba tavajjoh be line 219
 
             payment = Payment.query.filter_by(order_id=order.id).first()
             if not payment:
-                payment = Payment(user_id=current_user.id, order_id=order.id)
+                payment = Payment(
+                    user_id=current_user.id, 
+                    order_id=order.id, 
+                    amount=order.total,
+                    status='Pending'
+                    )
 
                 db.session.add(payment)
                 db.session.commit()
 
-        # return {'payment': payment.dict()}
-
         client = Client(current_app.config['ZARINPAL_WEBSERVICE'])
-        mail = current_user.mail
-        result = client.service.PaymentRequest(current_app.config['MURCHANT_ID'],
-                                               cart.amount,
+        mail = current_user._email
+
+        if not mail:
+            return {"message": "Please enter your email address to continue the payment"}
+
+        user_info = UserAddress.query.filter_by(id=address_id).first()
+        if user_info.phone:
+            mobile = user_info.phone
+        else:
+            mobile = ''    
+
+        result = client.service.PaymentRequest(current_app.config['MERCHANT_ID'],
+                                               payment.amount,
                                                'nani',
                                                mail,
-                                               order.mobile_number,
+                                               mobile,
                                                redirect_url)
-
+        payment.authority = result.Authority
+        print('https://www.zarinpal.com/pg/StartPay/' + result.Authority)
+        db.session.commit()
         if result.Status == 100:
-            return redirect('https://www.zarinpal.com/pg/StartPay/' + result.authority)
+            return 'https://www.zarinpal.com/pg/StartPay/' + result.Authority
         else:
-            return 'Error'
+            return {
+            'message':"We can't connect you to zarin pal server, right now. Please try again in a few moments."
+            }, 
