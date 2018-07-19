@@ -41,8 +41,6 @@
                 <td>{{order.is_shipping_required}}</td>                
                 <td>
                   <a class="btn btn-warning" href="{{url_for('ecommerce_panel.orders_info', order_id=order.id)}}">{{gettext("More Information")}}</a>                  
-                  <a class="btn btn-warning" href="{{url_for('ecommerce_panel.confirm_order', order_id=order.id)}}">{{gettext("Confirm the payment")}}</a>
-                  <button class="btn btn-danger" data-href="{{url_for('ecommerce_panel.order_delete', order_id=order.id)}}" data-toggle="modal" data-target=".confirm-delete">{{gettext("Delete")}}</button>
                 </td>
               </tr>
               <div class="modal confirm-delete" tabindex="-1" role="dialog" aria-hidden="true">

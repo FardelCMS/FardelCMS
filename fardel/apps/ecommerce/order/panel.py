@@ -29,26 +29,4 @@ def orders_list():
 def orders_info(order_id):
 	order = Order.query.filter_by(id=order_id).first_or_404()
 	user = User.query.filter_by(id=order.user_id).first_or_404()
-	print(order.lines)
 	return render_template('order/orders_info.html', order=order, user=user)
-
-@staff_required
-@mod.route('/orders/confirm_order/<int:order_id>')
-@login_required    
-def confirm_order(order_id):
-	order = Order.query.filter_by(id=order_id).first_or_404()
-	if order.status == "Unfulfiled":
-		order.status = "Fulfiled"
-	elif order.status == "Fulfiled"	:
-		order.status = "Unfulfiled"
-	db.session.commit()	
-	return redirect(url_for('ecommerce_panel.orders_list'))
-
-@staff_required
-@mod.route('/orders/delete/<int:order_id>')
-@login_required    
-def order_delete(order_id):
-	order = Order.query.filter_by(id=order_id).first_or_404()
-	db.session.delete(order)
-	db.session.commit()
-	return redirect(url_for('ecommerce_panel.orders_list'))

@@ -27,3 +27,5 @@ class UserAddress(db.Model):
             "postal_code":self.postal_code,
             "street_address":self.street_address,
         }
+    def get_full_address(self):
+        return self.country + " " + self.city + " " + self.street_address
