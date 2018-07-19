@@ -89,6 +89,8 @@ class Cart(db.Model):
 
     def clear(self):
         """Remove the cart."""
+        for line in self.lines:
+            line.delete()
         db.session.delete(self)
         db.session.flush()
 
@@ -219,6 +221,7 @@ class Payment(db.Model):
     amount = db.Column(db.Integer)
     authority = db.Column(db.String(64))
     description = db.Column(db.String(256))
+    ref_id = db.Column(db.String(128))    
 
     user = db.relationship("User")
     order = db.relationship("Order")
@@ -226,13 +229,12 @@ class Payment(db.Model):
     def dict(self):
         return {
             'id': self.id,
-            'user' : self.user.dict(),
+            # 'user' : self.user.dict(),
             # 'order': self.order.dict(),
-            'create_time': self.create_time,
+            # 'create_time': self.create_time,
             'status': self.status,
             'amount': self.amount,
             'authority': self.authority,
-            'description': self.description
+            'description': self.description,
+            'ref_id': self.ref_id
         }
-
-"""ask if you need a RefID column in the table"""

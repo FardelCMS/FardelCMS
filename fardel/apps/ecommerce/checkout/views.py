@@ -35,6 +35,8 @@ def create_defaults():
 def create_permissions():
     pass
 
+
+
 @rest_resource
 class ShoppingCartApi(Resource):
     """
@@ -173,23 +175,10 @@ class PaymentApi(Resource):
     @jwt_required
     def get(self, payment_id=None):
 
-        """ to get payemnt of a current_user with this cart_id """
+        """ to get payemnt of a current_user """
         if payment_id:
             payemnt = Payment.query.filter_by(id=payment_id).first()
             if payment and payment.user_id == current_user.id:
-                order = Order.query.filter_by(id=payment.order_id).first()
-                if payment.status == "Pending":
-                    client = Client(ZARINPAL_WEBSERVICE)
-                    if request.args.get('Status') == 'OK':
-                        result = client.service.PaymentVerification(current_app.config['MERCHANT_ID'],
-                                                                    payment.authority,
-                                                                    payment.amount)
-                        if result.status == 100 or result.status == 101:
-                            payment.status = "Succeeded"
-                            order.status = "Fulfiled"
-                        else:
-                            payment.status = "Failed"
-                        db.session.commit() 
                 return {"payment": payment.dict()}
             return {"message":"Payment does not exist."}, 404
 
@@ -205,42 +194,30 @@ class PaymentApi(Resource):
         To add a shopping cart  into payment, if payment wasn't
         available it creates a payment. 
         """
-
         data = request.get_json()
         redirect_url = data.get('redirect_url')
         cart_token = data.get('cart_token')
         address_id = data.get('address_id')
         
-        cart = Cart.query.filter_by(token=cart_token).first()
-
+        cart = Cart.query.filter_by(token=cart_token, user_id=current_user.id).first()
         if not cart:
             return {"message":"No cart with this id"}, 404
 
         if not address_id:
             return {"message": "Please enter a address for your order"}, 404
-        user = Cart.query.current_user().first()
 
-        if current_user.id==user.user_id and cart.token == user.token: 
-            order = Order.query.filter_by(user_id=current_user.id, total=cart.total).first()
-            #line 219 fek konam moshkel dare. az koja mitunam check konam ke order sabt shode ya na?
+        order = Order.create_from_cart(cart_token, address_id)
+        payment = Payment.query.filter_by(order_id=order.id).first()
+        if not payment:
+            payment = Payment(
+                user_id=current_user.id, 
+                order_id=order.id, 
+                amount=order.total,
+                status='Pending'
+                )
 
-            if not order:
-                Order.create_from_cart(cart_token, address_id)
-
-            order = Order.query.filter_by(user_id=current_user.id).first()
-            #nemidooonam line 225 lazeme ya na ba tavajjoh be line 219
-
-            payment = Payment.query.filter_by(order_id=order.id).first()
-            if not payment:
-                payment = Payment(
-                    user_id=current_user.id, 
-                    order_id=order.id, 
-                    amount=order.total,
-                    status='Pending'
-                    )
-
-                db.session.add(payment)
-                db.session.commit()
+            db.session.add(payment)
+            db.session.commit()
 
         client = Client(current_app.config['ZARINPAL_WEBSERVICE'])
         mail = current_user._email
@@ -260,12 +237,55 @@ class PaymentApi(Resource):
                                                mail,
                                                mobile,
                                                redirect_url)
+
         payment.authority = result.Authority
-        print('https://www.zarinpal.com/pg/StartPay/' + result.Authority)
         db.session.commit()
         if result.Status == 100:
-            return 'https://www.zarinpal.com/pg/StartPay/' + result.Authority
+            return {'payment_url':'https://www.zarinpal.com/pg/StartPay/' + result.Authority}
         else:
             return {
-            'message':"We can't connect you to zarin pal server, right now. Please try again in a few moments."
-            }, 
+                'message':"We can't connect you to zarin pal server, right now. Please try again in a few moments."
+            }, 404
+
+@rest_resource
+class PaymentVerification(Resource):
+    endpoints = ['/checkout/payment/verification/<authority>/<status>/']
+    def get(self, authority, status):
+        payment = Payment.query.filter_by(authority=authority).first_or_404()
+        if payment.status != 'Succeeded' or True:
+            client = Client(current_app.config['ZARINPAL_WEBSERVICE'])
+            if status == 'OK':
+                result = client.service.PaymentVerification(current_app.config['MERCHANT_ID'],
+                                                            authority,
+                                                            payment.amount)
+                
+                if result.Status == 100 or result.Status == 101:
+                    payment.status = "Succeeded"
+                    payment.ref_id = result.RefID
+                    if payment.amount == payment.order.total:                    
+                        payment.order.status = "Fulfiled"
+                else:
+                    payment.status = "Failed"
+                db.session.commit() 
+        return {'payment': payment.dict()} 
+
+
+@rest_resource
+class OrderApi(Resource):
+    endpoints = ['/checkout/order/', '/checkout/order/order_id/']
+
+    @jwt_required
+    def get(self, order_id=None):
+
+        """ to get orders of a current_user """
+        if order_id:
+            payemnt = Order.query.filter_by(id=order_id).first()
+            if order and order.user_id == current_user.id:
+                return {"order": order.dict()}
+            return {"message":"order does not exist."}, 404
+
+        query = Order.query
+        page = request.args.get("page", type=int, default=1)
+        per_page = request.args.get("per_page", type=int, default=16)
+        orders = query.paginate(per_page=per_page, page=page, error_out=False)
+        return {"orders": [order.dict() for order in orders]}
