@@ -63,6 +63,8 @@ def add_blog_section():
             permission="can_get_sales")
     sales_link.add_child(ChildLink(pgettext("Sales sections", 'Orders'),
         url_for('ecommerce_panel.orders_list'), permission="can_get_discounts"))
+    sales_link.add_child(ChildLink(pgettext("Sales section", 'Payments'),
+        url_for('ecommerce_panel.payments_list'), permission=""))
     section.add_link(sales_link)
 
     panel_sidebar.add_section(section)
@@ -70,3 +72,4 @@ def add_blog_section():
 
 import fardel.apps.ecommerce.product.panel
 import fardel.apps.ecommerce.order.panel
+import fardel.apps.ecommerce.checkout.panel
