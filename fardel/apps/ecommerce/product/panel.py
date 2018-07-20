@@ -3,8 +3,9 @@ import datetime
 import math
 
 from flask import (request, render_template, redirect, url_for,
-    jsonify, abort, current_app)
+    jsonify, abort, current_app, flash)
 from flask_login import login_required
+from flask_babel import gettext, pgettext
 
 from fardel.core.panel.views.media import is_safe_path
 from fardel.core.media.models import File
@@ -90,6 +91,11 @@ def variants_add(product_id):
         for attr in p.product_type.variant_attributes:
             if request.form.get('variant-attr-%d' % attr.id):
                 attributes[attr.id] = request.form.get('variant-attr-%d' % attr.id)
+        
+        check_pv = ProductVariant.query.filter_by(product_id=p.id, attributes=attributes).first()
+        if check_pv:
+            flash(gettext("You can't have same attributes for two variant."), 'error')
+            return redirect(url_for('ecommerce_panel.products_info', product_id=p.id))
 
         pv = ProductVariant(
             product_id=p.id,
