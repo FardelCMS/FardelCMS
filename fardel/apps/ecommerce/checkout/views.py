@@ -168,9 +168,9 @@ class ShoppingCartApi(Resource):
 @rest_resource
 class PaymentApi(Resource):
     """
-    :URL: ``/api/ecommerce/checkout/payment/`` & ``/api/ecommerce/checkout/payment/payment_id/``
+    :URL: ``/api/ecommerce/checkout/payment/`` & ``/api/ecommerce/checkout/payment/<payment_id>/``
     """
-    endpoints = ['/checkout/payment/', '/checkout/payment/payment_id']
+    endpoints = ['/checkout/payment/', '/checkout/payment/<int:payment_id>']
 
     @jwt_required
     def get(self, payment_id=None):
@@ -252,7 +252,7 @@ class PaymentVerification(Resource):
     endpoints = ['/checkout/payment/verification/<authority>/<status>/']
     def get(self, authority, status):
         payment = Payment.query.filter_by(authority=authority).first_or_404()
-        if payment.status != 'Succeeded' or True:
+        if payment.status != 'Succeed' or True:
             client = Client(current_app.config['ZARINPAL_WEBSERVICE'])
             if status == 'OK':
                 result = client.service.PaymentVerification(current_app.config['MERCHANT_ID'],
@@ -260,7 +260,7 @@ class PaymentVerification(Resource):
                                                             payment.amount)
                 
                 if result.Status == 100 or result.Status == 101:
-                    payment.status = "Succeeded"
+                    payment.status = "Succeed"
                     payment.ref_id = result.RefID
                     if payment.amount == payment.order.total:                    
                         payment.order.status = "Fulfiled"
@@ -268,24 +268,3 @@ class PaymentVerification(Resource):
                     payment.status = "Failed"
                 db.session.commit() 
         return {'payment': payment.dict()} 
-
-
-@rest_resource
-class OrderApi(Resource):
-    endpoints = ['/checkout/order/', '/checkout/order/order_id/']
-
-    @jwt_required
-    def get(self, order_id=None):
-
-        """ to get orders of a current_user """
-        if order_id:
-            payemnt = Order.query.filter_by(id=order_id).first()
-            if order and order.user_id == current_user.id:
-                return {"order": order.dict()}
-            return {"message":"order does not exist."}, 404
-
-        query = Order.query
-        page = request.args.get("page", type=int, default=1)
-        per_page = request.args.get("per_page", type=int, default=16)
-        orders = query.paginate(per_page=per_page, page=page, error_out=False)
-        return {"orders": [order.dict() for order in orders]}
