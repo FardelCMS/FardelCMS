@@ -19,7 +19,7 @@ class OrderApi(Resource):
     """
     :URL: ``/api/ecommerce/order/`` or ``/api/ecommerce/order/<order_id>/``
     """	
-    endpoints = ['/orders/', '/orders/<int:order_id>/']
+    endpoints = ['/order/', '/order/<int:order_id>/']
 
     @jwt_required
     def get(self, order_id=None):

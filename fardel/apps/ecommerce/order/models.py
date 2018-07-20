@@ -85,9 +85,7 @@ class Order(db.Model):
         return {
             'id': self.id,
             'status': self.status,
-            'user' : self.user.dict(),
             'address': self.address.dict(),
-            'create_time': self.create_time,
             'total': self.total,
             'quantity': self.quantity,
             'lines': [line.dict() for line in self.lines],

@@ -31,6 +31,7 @@
                 <td>{{gettext("first_name")}}</td>
                 <td>{{gettext("last_name")}}</td>                
                 <td>{{gettext("user_mail")}}</td>
+                <td>{{gettext('More Information')}}</td>
               </tr>
             </thead>
             <tbody>
@@ -42,6 +43,9 @@
                 <td>{{payment.user.first_name}}</td>
                 <td>{{payment.user.last_name}}</td>                
                 <td>{{payment.user._email}}</td>
+                <td>
+                  <a class="btn btn-warning" href="{{url_for('ecommerce_panel.orders_info', order_id=payment.order.id)}}">{{gettext("More Information")}}</a>                  
+                </td>  
               </tr>
               <div class="modal confirm-delete" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
