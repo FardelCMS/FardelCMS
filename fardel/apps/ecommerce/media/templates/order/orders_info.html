@@ -24,22 +24,18 @@
             <thead>
               <tr class="headings">
                 <td>{{gettext("ID")}}</td>
-                <td>{{gettext("user_firstname")}}</td>
-                <td>{{gettext("user_lastname")}}</td> 
-                <td>{{gettext("address")}}</td>
-                <td>{{gettext("is_shipping_required")}}</td>
-                <td>{{gettext("product_name")}}</td>
-                <td>{{gettext("quantity")}}</td>
-                <td>{{gettext("price")}}</td>
-                <td>{{gettext("file")}}</td>
+                <td>{{gettext("User Address")}}</td>
+                <td>{{gettext("Is Shipping Required")}}</td>
+                <td>{{gettext("Product Name")}}</td>
+                <td>{{gettext("Quantity")}}</td>
+                <td>{{gettext("Price")}}</td>
+                <td>{{gettext("File")}}</td>
               </tr>
             </thead>
             <tbody>
               {% for line_order in order.lines %}             
               <tr>
                 <td>{{line_order.id}}</td>
-                <td>{{user.first_name}}</td>
-                <td>{{user.last_name}}</td>
                 <td>{{order.address.get_full_address()}}</td>                
                 <td>{{line_order.is_shipping_required}}</td>
                 <td>{{line_order.variant.product.name}} {{line_order.variant.generate_names}}</td>
@@ -47,7 +43,7 @@
                 <td>{{line_order.total}}</td>
                 <td>
                 {% if line_order.variant.is_file_required %}
-                  <a href='{{line_order.data['file']}}'>{{gettext("link file")}}<a>
+                  <a href='{{line_order.data['file']}}'>{{gettext("file link")}}<a>
                 {% endif %}
                 </td>
 

@@ -26,12 +26,12 @@
             <thead>
               <tr class="headings">
                 <td>{{gettext("ID")}}</td>
-                <td>{{gettext("price")}}</td>
-                <td>{{gettext("status")}}</td>
-                <td>{{gettext("first_name")}}</td>
-                <td>{{gettext("last_name")}}</td>                
-                <td>{{gettext("user_mail")}}</td>
-                <td>{{gettext('More Information')}}</td>
+                <td>{{gettext("Price")}}</td>
+                <td>{{gettext("Status")}}</td>
+                <td>{{gettext("First Name")}}</td>
+                <td>{{gettext("Last Name")}}</td>                
+                <td>{{gettext("User Email")}}</td>
+                <td>{{gettext('Order Link')}}</td>
               </tr>
             </thead>
             <tbody>
@@ -44,7 +44,7 @@
                 <td>{{payment.user.last_name}}</td>                
                 <td>{{payment.user._email}}</td>
                 <td>
-                  <a class="btn btn-warning" href="{{url_for('ecommerce_panel.orders_info', order_id=payment.order.id)}}">{{gettext("More Information")}}</a>                  
+                  <a class="btn btn-warning" href="{{url_for('ecommerce_panel.orders_info', order_id=payment.order.id)}}">{{gettext("Order Link")}}</a>                  
                 </td>  
               </tr>
               <div class="modal confirm-delete" tabindex="-1" role="dialog" aria-hidden="true">

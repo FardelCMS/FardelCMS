@@ -1,5 +1,8 @@
 from flask import request
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6e23f20... some bugs fixed
 from flask_jwt_extended import current_user, jwt_required, jwt_optional
 
 from fardel.core.rest import create_api, abort, Resource
@@ -34,5 +37,5 @@ class OrderApi(Resource):
         query = Order.query.filter_by(user_id=current_user.id)
         page = request.args.get("page", type=int, default=1)
         per_page = request.args.get("per_page", type=int, default=16)
-        orders = query.paginate(per_page=per_page, page=page, error_out=False)
-        return {"orders": [order.dict() for order in orders.items]}
+        orders = query.paginate(per_page=per_page, page=page, error_out=False).items
+        return {"orders": [order.dict() for order in orders]}

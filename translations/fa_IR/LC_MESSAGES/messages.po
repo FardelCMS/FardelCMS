@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-07-19 17:49+0430\n"
+"POT-Creation-Date: 2018-07-21 18:37+0430\n"
 "PO-Revision-Date: 2018-05-05 17:12+0430\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fa_IR\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
 
-#: fardel/config.py:33 fardel/core/panel/templates/panel_base.html:68
+#: fardel/config.py:33 fardel/core/panel/templates/panel_base.html:81
 msgid "Fardel"
 msgstr "خورجین"
 
@@ -94,14 +94,14 @@ msgstr "اضافه کردن دسته بندی"
 msgid "Tags"
 msgstr "برچسب ها"
 
-#: fardel/apps/blog/panel.py:263 fardel/apps/ecommerce/product/panel.py:258
-#: fardel/apps/ecommerce/product/panel.py:288
-#: fardel/apps/ecommerce/product/panel.py:348
-#: fardel/apps/ecommerce/product/panel.py:372
-#: fardel/apps/ecommerce/product/panel.py:396
-#: fardel/apps/ecommerce/product/panel.py:437
-#: fardel/apps/ecommerce/product/panel.py:471
-#: fardel/apps/ecommerce/product/panel.py:499
+#: fardel/apps/blog/panel.py:263 fardel/apps/ecommerce/product/panel.py:264
+#: fardel/apps/ecommerce/product/panel.py:294
+#: fardel/apps/ecommerce/product/panel.py:354
+#: fardel/apps/ecommerce/product/panel.py:378
+#: fardel/apps/ecommerce/product/panel.py:402
+#: fardel/apps/ecommerce/product/panel.py:443
+#: fardel/apps/ecommerce/product/panel.py:477
+#: fardel/apps/ecommerce/product/panel.py:505
 msgid "Name is required"
 msgstr "اسم الزامی است"
 
@@ -143,6 +143,7 @@ msgstr "نام"
 #: fardel/apps/ecommerce/media/templates/product/products_form.html:91
 #: fardel/apps/ecommerce/media/templates/product/products_types_form.html:58
 #: fardel/apps/ecommerce/media/templates/product/variants_form.html:54
+#: fardel/core/panel/templates/auth/users_form.html:59
 msgid "Save"
 msgstr "ذخیره سازی"
 
@@ -166,7 +167,6 @@ msgstr "شناسه یکتا"
 #: fardel/apps/blog/templates/categories_list.html:30
 #: fardel/apps/blog/templates/posts_list.html:37
 #: fardel/apps/blog/templates/tags_list.html:31
-#: fardel/apps/ecommerce/media/templates/order/orders_list.html:32
 #: fardel/apps/ecommerce/media/templates/product/categories_info.html:49
 #: fardel/apps/ecommerce/media/templates/product/categories_list.html:31
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_info.html:47
@@ -182,9 +182,9 @@ msgstr "تنظیمات"
 #: fardel/apps/blog/templates/posts_list.html:58
 #: fardel/apps/blog/templates/posts_list.html:76
 #: fardel/apps/blog/templates/tags_list.html:41
-#: fardel/apps/ecommerce/media/templates/order/orders_info.html:69
+#: fardel/apps/ecommerce/media/templates/order/orders_info.html:65
 #: fardel/apps/ecommerce/media/templates/order/orders_list.html:60
-#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:60
+#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:64
 #: fardel/apps/ecommerce/media/templates/product/categories_info.html:61
 #: fardel/apps/ecommerce/media/templates/product/categories_info.html:78
 #: fardel/apps/ecommerce/media/templates/product/categories_list.html:43
@@ -259,8 +259,6 @@ msgid "views"
 msgstr "تعداد مشاهده"
 
 #: fardel/apps/blog/templates/posts_list.html:36
-#: fardel/apps/ecommerce/media/templates/order/orders_list.html:30
-#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:30
 msgid "status"
 msgstr "وضعیت"
 
@@ -276,9 +274,9 @@ msgid "Edit"
 msgstr "ویرایش"
 
 #: fardel/apps/blog/templates/posts_list.html:68
-#: fardel/apps/ecommerce/media/templates/order/orders_info.html:62
+#: fardel/apps/ecommerce/media/templates/order/orders_info.html:58
 #: fardel/apps/ecommerce/media/templates/order/orders_list.html:53
-#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:53
+#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:57
 #: fardel/apps/ecommerce/media/templates/product/categories_info.html:71
 #: fardel/apps/ecommerce/media/templates/product/categories_list.html:53
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_info.html:66
@@ -298,11 +296,11 @@ msgid "Post"
 msgstr "نوشته"
 
 #: fardel/apps/blog/templates/posts_list.html:75
-#: fardel/apps/ecommerce/media/templates/order/orders_info.html:68
+#: fardel/apps/ecommerce/media/templates/order/orders_info.html:64
 #: fardel/apps/ecommerce/media/templates/order/orders_list.html:59
 #: fardel/apps/ecommerce/media/templates/order/orders_list.html:89
-#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:59
-#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:89
+#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:63
+#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:93
 #: fardel/apps/ecommerce/media/templates/product/categories_info.html:77
 #: fardel/apps/ecommerce/media/templates/product/categories_list.html:59
 #: fardel/apps/ecommerce/media/templates/product/products_attributes_info.html:73
@@ -366,48 +364,37 @@ msgid "Order Info"
 msgstr "اطلاعات سفارش"
 
 #: fardel/apps/ecommerce/media/templates/order/orders_info.html:27
-msgid "user_firstname"
-msgstr "نام سفارش دهنده"
+msgid "User Address"
+msgstr "آدرس کاربر"
 
 #: fardel/apps/ecommerce/media/templates/order/orders_info.html:28
-msgid "user_lastname"
-msgstr "نام خانوادگی سفارش دهنده"
+msgid "Is Shipping Required"
+msgstr "یاز به ارسال"
 
 #: fardel/apps/ecommerce/media/templates/order/orders_info.html:29
-msgid "address"
-msgstr "آدرس سفارش دهنده"
-
-#: fardel/apps/ecommerce/media/templates/order/orders_info.html:30
-#: fardel/apps/ecommerce/media/templates/order/orders_list.html:31
-msgid "is_shipping_required"
-msgstr "نیاز به ارسال"
-
-#: fardel/apps/ecommerce/media/templates/order/orders_info.html:31
-msgid "product_name"
+msgid "Product Name"
 msgstr "نام محصول"
 
-#: fardel/apps/ecommerce/media/templates/order/orders_info.html:32
-#: fardel/apps/ecommerce/media/templates/product/products_info.html:50
-msgid "quantity"
-msgstr "تعداد"
+#: fardel/apps/ecommerce/media/templates/order/orders_info.html:30
+msgid "Quantity"
+msgstr "مقدار"
 
-#: fardel/apps/ecommerce/media/templates/order/orders_info.html:33
+#: fardel/apps/ecommerce/media/templates/order/orders_info.html:31
 #: fardel/apps/ecommerce/media/templates/order/orders_list.html:29
 #: fardel/apps/ecommerce/media/templates/payment/payments_list.html:29
-#: fardel/apps/ecommerce/media/templates/product/products_info.html:49
-#: fardel/apps/ecommerce/media/templates/product/products_list.html:31
-msgid "price"
+#: fardel/apps/ecommerce/media/templates/product/products_form.html:45
+msgid "Price"
 msgstr "قیمت"
 
-#: fardel/apps/ecommerce/media/templates/order/orders_info.html:34
-msgid "file"
+#: fardel/apps/ecommerce/media/templates/order/orders_info.html:32
+msgid "File"
 msgstr "فایل"
 
-#: fardel/apps/ecommerce/media/templates/order/orders_info.html:50
-msgid "link file"
+#: fardel/apps/ecommerce/media/templates/order/orders_info.html:46
+msgid "file link"
 msgstr "لینک فایل"
 
-#: fardel/apps/ecommerce/media/templates/order/orders_info.html:65
+#: fardel/apps/ecommerce/media/templates/order/orders_info.html:61
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:78
 msgid "Are you sure you want to delete the product variant?"
 msgstr "آیا از حذف نوع محصول اطمینان دارید؟"
@@ -418,6 +405,18 @@ msgstr "آیا از حذف نوع محصول اطمینان دارید؟"
 msgid "Orders"
 msgstr "سفارشات"
 
+#: fardel/apps/ecommerce/media/templates/order/orders_list.html:30
+#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:30
+msgid "Status"
+msgstr "وضعیت"
+
+#: fardel/apps/ecommerce/media/templates/order/orders_list.html:31
+#: fardel/apps/ecommerce/media/templates/product/products_types_form.html:44
+#: fardel/apps/ecommerce/media/templates/product/products_types_form.html:45
+msgid "is shipping required"
+msgstr "نیاز به ارسال دارد ؟"
+
+#: fardel/apps/ecommerce/media/templates/order/orders_list.html:32
 #: fardel/apps/ecommerce/media/templates/order/orders_list.html:43
 msgid "More Information"
 msgstr "اطلاعات بیشتر"
@@ -427,7 +426,7 @@ msgid "Are you sure you want to delete the order?"
 msgstr ""
 
 #: fardel/apps/ecommerce/media/templates/order/orders_list.html:79
-#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:79
+#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:83
 #: fardel/apps/ecommerce/media/templates/product/products_list.html:86
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:58
 msgid "Product Type"
@@ -440,18 +439,25 @@ msgid "Payments"
 msgstr "پرداخت ها"
 
 #: fardel/apps/ecommerce/media/templates/payment/payments_list.html:31
-msgid "first_name"
-msgstr "نام پرداخت کننده"
+#: fardel/core/panel/templates/auth/users_form.html:31
+msgid "First Name"
+msgstr "نام"
 
 #: fardel/apps/ecommerce/media/templates/payment/payments_list.html:32
-msgid "last_name"
-msgstr "نام خانوادگی پرداخت کننده"
+#: fardel/core/panel/templates/auth/users_form.html:37
+msgid "Last Name"
+msgstr "نام خانوادگی"
 
 #: fardel/apps/ecommerce/media/templates/payment/payments_list.html:33
-msgid "user_mail"
-msgstr "ایمیل پرداخت کننده"
+msgid "User Email"
+msgstr "ایمیل کاربر"
 
-#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:56
+#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:34
+#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:47
+msgid "Order Link"
+msgstr "لینک سفارش"
+
+#: fardel/apps/ecommerce/media/templates/payment/payments_list.html:60
 msgid "Are you sure you want to delete the payment?"
 msgstr ""
 
@@ -579,10 +585,6 @@ msgstr[0] "%(num)d کاراکتر"
 msgid "SEO Description"
 msgstr "توضیحات برای موتور های حستوجو"
 
-#: fardel/apps/ecommerce/media/templates/product/products_form.html:45
-msgid "Price"
-msgstr "قیمت"
-
 #: fardel/apps/ecommerce/media/templates/product/products_form.html:51
 #: fardel/apps/ecommerce/media/templates/product/variants_form.html:24
 #: fardel/apps/ecommerce/media/templates/product/variants_form.html:25
@@ -625,6 +627,15 @@ msgstr "انواع محصول"
 msgid "Add Variant"
 msgstr "اضافه کردن یک نوع محصول"
 
+#: fardel/apps/ecommerce/media/templates/product/products_info.html:49
+#: fardel/apps/ecommerce/media/templates/product/products_list.html:31
+msgid "price"
+msgstr "قیمت"
+
+#: fardel/apps/ecommerce/media/templates/product/products_info.html:50
+msgid "quantity"
+msgstr "تعداد"
+
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:51
 msgid "quantity allocated"
 msgstr "تعداد فروخته شده"
@@ -662,11 +673,6 @@ msgstr "ویژگی های این نوع محصول"
 #: fardel/apps/ecommerce/media/templates/product/products_types_form.html:37
 msgid "product type variants"
 msgstr "ویژگی های انواع این نوع محصول"
-
-#: fardel/apps/ecommerce/media/templates/product/products_types_form.html:44
-#: fardel/apps/ecommerce/media/templates/product/products_types_form.html:45
-msgid "is shipping required"
-msgstr "نیاز به ارسال دارد ؟"
 
 #: fardel/apps/ecommerce/media/templates/product/products_types_form.html:49
 #: fardel/apps/ecommerce/media/templates/product/products_types_form.html:50
@@ -710,6 +716,10 @@ msgstr "تغییر قیمت"
 msgid "Number in stock"
 msgstr "تعداد در انبار"
 
+#: fardel/apps/ecommerce/product/panel.py:97
+msgid "You can't have same attributes for two variant."
+msgstr ""
+
 #: fardel/core/base.py:16
 msgid "Unvalid form submitted"
 msgstr ""
@@ -734,15 +744,55 @@ msgstr "خروج"
 msgid "Welcome"
 msgstr "خوش آمدید"
 
+#: fardel/core/panel/templates/auth/users_form.html:3
+#: fardel/core/panel/templates/auth/users_form.html:4
+#: fardel/core/panel/templates/auth/users_form.html:11
+msgid "Edit User Information"
+msgstr "ویرایش اطلاعات کاربر"
+
+#: fardel/core/panel/templates/auth/users_form.html:26
+#: fardel/core/panel/templates/auth/users_form.html:27
+#: fardel/core/panel/templates/auth/users_list.html:27
+msgid "email"
+msgstr "ایمیل"
+
+#: fardel/core/panel/templates/auth/users_form.html:42
+msgid "Password"
+msgstr "پسورد"
+
+#: fardel/core/panel/templates/auth/users_form.html:43
+msgid "password"
+msgstr "پسورد"
+
+#: fardel/core/panel/templates/auth/users_form.html:46
+msgid "Confirmed"
+msgstr "تاییده شده"
+
+#: fardel/core/panel/templates/auth/users_form.html:47
+msgid "confirmed"
+msgstr "تاییده شده"
+
+#: fardel/core/panel/templates/auth/users_form.html:50
+msgid "Is Admin"
+msgstr "ادمین است"
+
+#: fardel/core/panel/templates/auth/users_form.html:51
+msgid "is_admin"
+msgstr "ادمین است"
+
+#: fardel/core/panel/templates/auth/users_form.html:54
+msgid "Is Staff"
+msgstr "کارمند است"
+
+#: fardel/core/panel/templates/auth/users_form.html:55
+msgid "is_staff"
+msgstr "کارمند است"
+
 #: fardel/core/panel/templates/auth/users_list.html:9
 #: fardel/core/panel/views/__init__.py:26
 #: fardel/core/panel/views/__init__.py:27
 msgid "Users"
 msgstr "کاربران"
-
-#: fardel/core/panel/templates/auth/users_list.html:27
-msgid "email"
-msgstr "ایمیل"
 
 #: fardel/core/panel/templates/auth/users_list.html:28
 msgid "first name"
@@ -832,4 +882,40 @@ msgstr "ایمیل یا پسورد اشتباه است ..."
 
 #~ msgid "Confirm the payment"
 #~ msgstr "تایید پرداخت"
+
+#~ msgid "user_firstname"
+#~ msgstr "نام سفارش دهنده"
+
+#~ msgid "user_lastname"
+#~ msgstr "نام خانوادگی سفارش دهنده"
+
+#~ msgid "is_shipping_required"
+#~ msgstr "نیاز به ارسال"
+
+#~ msgid "product_name"
+#~ msgstr "نام محصول"
+
+#~ msgid "link file"
+#~ msgstr "لینک فایل"
+
+#~ msgid "first_name"
+#~ msgstr "نام پرداخت کننده"
+
+#~ msgid "last_name"
+#~ msgstr "نام خانوادگی پرداخت کننده"
+
+#~ msgid "user_mail"
+#~ msgstr "ایمیل پرداخت کننده"
+
+#~ msgid "address"
+#~ msgstr "آدرس سفارش دهنده"
+
+#~ msgid "product name"
+#~ msgstr "نام محصول"
+
+#~ msgid "file"
+#~ msgstr "فایل"
+
+#~ msgid "user email"
+#~ msgstr "ایمیل کاربر"
 
