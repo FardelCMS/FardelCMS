@@ -185,7 +185,7 @@ class PaymentApi(Resource):
         query = Payment.query
         page = request.args.get("page", type=int, default=1)
         per_page = request.args.get("per_page", type=int, default=16)
-        payments = query.paginate(per_page=per_page, page=page, error_out=False)
+        payments = query.paginate(per_page=per_page, page=page, error_out=False).items
         return {"payments": [payment.dict() for payment in payments]}
 
     @jwt_required

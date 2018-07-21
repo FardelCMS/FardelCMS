@@ -2,7 +2,8 @@ import math
 
 from sqlalchemy import or_
 
-from flask import request, abort, jsonify, render_template
+from flask import (request, render_template, redirect, url_for,
+    jsonify, abort, current_app, flash)
 from flask_login import current_user, login_required
 
 from fardel.core.auth.models import User, Group, Permission
@@ -47,14 +48,28 @@ def users_edit(user_id):
         'last_name', 'group_id', 'confirmed',
         'is_admin', 'is_staff'
     ]
-    u = User.query.filter_by(id=user_id).first_or_404()
-
-    data = request.get_json()
-    for attr in edditable_attrs:
-        if data.get(attr):
-            setattr(u, attr, data[attr])
-    db.session.commit()
-    abort(404)
+    user = User.query.filter_by(id=user_id).first_or_404()
+    if request.method == "POST":
+        email = request.form.get('email')
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        password = request.form.get('password')
+        confirmed = request.form.get('confirmed', type=bool)
+        is_admin = request.form.get('is_admin', type=bool)
+        is_staff = request.form.get('is_staff', type=bool)
+        
+        if not email or not first_name or not last_name or not password:
+            flash('gettext(email, first name, last name and password fields can not be empty!)', 'error')    
+        user._email = email
+        user.first_name = first_name
+        user.last_name = last_name
+        user.password = password
+        user.confirmed = confirmed
+        user.is_admin = is_admin
+        user.is_staff = is_staff
+        db.session.commit()
+        return redirect(url_for('panel.users_list'))
+    return render_template('auth/users_form.html', user=user)
 
 @admin_required
 @staff_required
@@ -77,6 +92,7 @@ def users_delete(user_id):
 ################
 
 @permission_required("can_get_users")
+@admin_required
 @staff_required
 @login_required
 @mod.route('/auth/staffs/list/')
