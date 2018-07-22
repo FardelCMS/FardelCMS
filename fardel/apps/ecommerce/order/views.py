@@ -1,8 +1,4 @@
 from flask import request
-<<<<<<< HEAD
-
-=======
->>>>>>> 6e23f20... some bugs fixed
 from flask_jwt_extended import current_user, jwt_required, jwt_optional
 
 from fardel.core.rest import create_api, abort, Resource
