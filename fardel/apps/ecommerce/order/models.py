@@ -85,6 +85,7 @@ class Order(db.Model):
             'id': self.id,
             'status': self.status,
             'address': self.address.dict(),
+            'create_time': self.create_time,
             'total': self.total,
             'quantity': self.quantity,
             'lines': [line.dict() for line in self.lines],
@@ -113,6 +114,7 @@ class OrderLine(db.Model):
             'data':self.data,
             'total': self.total,
             'quantity': self.quantity,
+            'is_shipping_required': self.is_shipping_required
         }
 
     @property
