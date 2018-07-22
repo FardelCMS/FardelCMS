@@ -252,7 +252,7 @@ class PaymentVerification(Resource):
     endpoints = ['/checkout/payment/verification/<authority>/<status>/']
     def get(self, authority, status):
         payment = Payment.query.filter_by(authority=authority).first_or_404()
-        if payment.status != 'Succeed' or True:
+        if payment.status != 'Succeeded' or True:
             client = Client(current_app.config['ZARINPAL_WEBSERVICE'])
             if status == 'OK':
                 result = client.service.PaymentVerification(current_app.config['MERCHANT_ID'],
@@ -260,7 +260,7 @@ class PaymentVerification(Resource):
                                                             payment.amount)
                 
                 if result.Status == 100 or result.Status == 101:
-                    payment.status = "Succeed"
+                    payment.status = "Succeeded"
                     payment.ref_id = result.RefID
                     if payment.amount == payment.order.total:                    
                         payment.order.status = "Fulfiled"

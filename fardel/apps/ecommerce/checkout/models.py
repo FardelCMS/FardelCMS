@@ -208,7 +208,7 @@ class Payment(db.Model):
     """
     status types:
         :Pending:
-        :Succeed:
+        :Succeeded:
         :Failed:
     """
     __tablename__= "checkout_payments"

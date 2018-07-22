@@ -58,7 +58,7 @@ def users_edit(user_id):
         is_admin = request.form.get('is_admin', type=bool)
         is_staff = request.form.get('is_staff', type=bool)
         
-        if not email or not first_name or not last_name or not password:
+        if not email or not first_name or not last_name:
             flash('gettext(email, first name, last name and password fields can not be empty!)', 'error')    
         user._email = email
         user.first_name = first_name
