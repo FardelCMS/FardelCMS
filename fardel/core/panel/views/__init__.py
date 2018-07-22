@@ -33,15 +33,15 @@ def add_auth_section():
 	panel_sidebar.add_section(section)
 
 
-@mod.before_app_first_request
-def add_media_section():
-	section = Section(gettext("Uploads"))
-	link = Link("fa fa-file", gettext("Files"))
-	link.add_child(ChildLink(gettext("Files"), "#"))
-	# link.add_child(ChildLink("آلبوم عکس", "#"))
-	section.add_link(link)
+# @mod.before_app_first_request
+# def add_media_section():
+# 	section = Section(gettext("Uploads"))
+# 	link = Link("fa fa-file", gettext("Files"))
+# 	link.add_child(ChildLink(gettext("Files"), "#"))
+# 	# link.add_child(ChildLink("آلبوم عکس", "#"))
+# 	section.add_link(link)
 
-	panel_sidebar.add_section(section)
+# 	panel_sidebar.add_section(section)
 
 
 @mod.route('/login/', methods=['POST', 'GET'])
