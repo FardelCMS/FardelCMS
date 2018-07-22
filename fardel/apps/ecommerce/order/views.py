@@ -1,8 +1,4 @@
 from flask import request
-<<<<<<< HEAD
-=======
-
->>>>>>> c027f373c4fc48a0fce73f65fd2da5949d49c4a6
 from flask_jwt_extended import current_user, jwt_required, jwt_optional
 
 from fardel.core.rest import create_api, abort, Resource
