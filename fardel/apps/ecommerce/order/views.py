@@ -36,4 +36,3 @@ class OrderApi(Resource):
         per_page = request.args.get("per_page", type=int, default=16)
         orders = query.paginate(per_page=per_page, page=page, error_out=False).items
         return {"orders": [order.dict() for order in orders]}
-
