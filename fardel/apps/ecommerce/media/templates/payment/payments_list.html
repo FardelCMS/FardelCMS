@@ -1,15 +1,15 @@
 {% extends "panel_base.html" %}
 {% import '_macros.html' as macros %}
 
-{% block header_title %}{{gettext("Orders")}} | {{get_sitename()}}{% endblock %}
-{% block title %}{{gettext("Orders")}}{% endblock %}
+{% block header_title %}{{gettext("Payments")}} | {{get_sitename()}}{% endblock %}
+{% block title %}{{gettext("Payments")}}{% endblock %}
 
 {% block content %}
 <div class="row"> 
   <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="x_panel">
       <div class="x_title">
-        <h2>{{gettext("Orders")}}</h2>
+        <h2>{{gettext("Payments")}}</h2>
         <ul class="nav navbar-left panel_toolbox">
           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
           </li>
@@ -28,20 +28,24 @@
                 <td>{{gettext("ID")}}</td>
                 <td>{{gettext("Price")}}</td>
                 <td>{{gettext("Status")}}</td>
-                <td>{{gettext("is shipping required")}}</td>                
-                <td>{{gettext("More Information")}}</td>
+                <td>{{gettext("First Name")}}</td>
+                <td>{{gettext("Last Name")}}</td>                
+                <td>{{gettext("User Email")}}</td>
+                <td>{{gettext('Order Link')}}</td>
               </tr>
             </thead>
             <tbody>
-              {% for order in orders %}             
+              {% for payment in payments %}             
               <tr>
-                <td>{{order.id}}</td>
-                <td>{{order.total}}</td>
-                <td>{{order.status}}</td>
-                <td>{{order.is_shipping_required}}</td>                
+                <td>{{payment.id}}</td>
+                <td>{{payment.amount}}</td>
+                <td>{{payment.status}}</td>
+                <td>{{payment.user.first_name}}</td>
+                <td>{{payment.user.last_name}}</td>                
+                <td>{{payment.user._email}}</td>
                 <td>
-                  <a class="btn btn-warning" href="{{url_for('ecommerce_panel.orders_info', order_id=order.id)}}">{{gettext("More Information")}}</a>                  
-                </td>
+                  <a class="btn btn-warning" href="{{url_for('ecommerce_panel.orders_info', order_id=payment.order.id)}}">{{gettext("Order Link")}}</a>                  
+                </td>  
               </tr>
               <div class="modal confirm-delete" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -53,7 +57,7 @@
                       <h4 class="modal-title">{{gettext("Are you sure")}}</h4>
                     </div>
                     <div class="modal-body">
-                      <h4>{{gettext("Are you sure you want to delete the order?")}}</h4>
+                      <h4>{{gettext("Are you sure you want to delete the payment?")}}</h4>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-default" data-dismiss="modal">{{gettext("Close")}}</button>

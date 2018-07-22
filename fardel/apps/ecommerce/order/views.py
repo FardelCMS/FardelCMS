@@ -1,3 +1,8 @@
+from flask import request
+<<<<<<< HEAD
+=======
+
+>>>>>>> c027f373c4fc48a0fce73f65fd2da5949d49c4a6
 from flask_jwt_extended import current_user, jwt_required, jwt_optional
 
 from fardel.core.rest import create_api, abort, Resource
@@ -19,7 +24,7 @@ class OrderApi(Resource):
     """
     :URL: ``/api/ecommerce/order/`` or ``/api/ecommerce/order/<order_id>/``
     """	
-    endpoints = ['/orders/', '/orders/<int:order_id>/']
+    endpoints = ['/order/', '/order/<int:order_id>/']
 
     @jwt_required
     def get(self, order_id=None):
@@ -32,5 +37,6 @@ class OrderApi(Resource):
         query = Order.query.filter_by(user_id=current_user.id)
         page = request.args.get("page", type=int, default=1)
         per_page = request.args.get("per_page", type=int, default=16)
-        orders = query.paginate(per_page=per_page, page=page, error_out=False)
+        orders = query.paginate(per_page=per_page, page=page, error_out=False).items
         return {"orders": [order.dict() for order in orders]}
+

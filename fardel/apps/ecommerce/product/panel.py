@@ -3,8 +3,9 @@ import datetime
 import math
 
 from flask import (request, render_template, redirect, url_for,
-    jsonify, abort, current_app)
+    jsonify, abort, current_app, flash)
 from flask_login import login_required
+from flask_babel import gettext, pgettext
 
 from fardel.core.panel.views.media import is_safe_path
 from fardel.core.media.models import File
@@ -90,6 +91,11 @@ def variants_add(product_id):
         for attr in p.product_type.variant_attributes:
             if request.form.get('variant-attr-%d' % attr.id):
                 attributes[attr.id] = request.form.get('variant-attr-%d' % attr.id)
+        
+        check_pv = ProductVariant.query.filter_by(product_id=p.id, attributes=attributes).first()
+        if check_pv:
+            flash(gettext("You can't have same attributes for two variant."), 'error')
+            return redirect(url_for('ecommerce_panel.products_info', product_id=p.id))
 
         pv = ProductVariant(
             product_id=p.id,
@@ -285,7 +291,7 @@ def products_types_edit(pt_id):
         is_file_required = request.form.get('is_file_required', type=bool)
         
         if not name:
-            flash(gettext('Name is required'))
+            flash(gettext('Name is required'), 'error')
             return redirect(url_for('ecommerce_panel.products_types_create'))
 
         pt.name = name
@@ -345,7 +351,7 @@ def products_attributes_create():
     if request.method == "POST":
         name = request.form.get('name')
         if not name:
-            flash(gettext('Name is required'))
+            flash(gettext('Name is required'), 'error')
             return redirect(url_for('ecommerce_panel.products_attributes_create'))
         pa = ProductAttribute(name=name)
         db.session.add(pa)
@@ -369,7 +375,7 @@ def products_attributes_edit(attr_id):
     if request.method == "POST":
         name = request.form.get('name')
         if not name:
-            flash(gettext('Name is required'))
+            flash(gettext('Name is required'), 'error')
             return redirect(url_for('ecommerce_panel.products_attributes_create'))
         pa.name = name
         db.session.commit()
@@ -393,7 +399,7 @@ def products_attributes_add_value(attr_id):
     if request.method == "POST":
         name = request.form.get('name')
         if not name:
-            flash(gettext('Name is required'))
+            flash(gettext('Name is required'), 'error')
             return redirect(url_for('ecommerce_panel.products_attributes_add_value',
                 attr_id=attr_id))
 
@@ -434,7 +440,7 @@ def categories_create():
         seo_description = request.form.get('seo-desc', default="")
 
         if not name:
-            flash(gettext("Name is required"))
+            flash(gettext("Name is required"), 'error')
             return redirect(url_for('ecommerce_panel.categories_create'))
 
         pc = ProductCategory(name=name,
@@ -468,7 +474,7 @@ def categories_addsub(c_id):
         seo_description = request.form.get('seo-desc', default="")
 
         if not name:
-            flash(gettext("Name is required"))
+            flash(gettext("Name is required"), 'error')
             return redirect(url_for('ecommerce_panel.categories_create'))
 
         pc = ProductCategory(name=name,
@@ -496,7 +502,7 @@ def categories_edit(c_id):
         seo_description = request.form.get('seo-desc', default="")
 
         if not name:
-            flash(gettext("Name is required"))
+            flash(gettext("Name is required"), 'error')
             return redirect(url_for('ecommerce_panel.categories_create'))
 
         pc.name = name

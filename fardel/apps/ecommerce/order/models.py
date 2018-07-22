@@ -26,7 +26,7 @@ class Order(db.Model):
     create_time = db.Column(db.TIMESTAMP, default=func.current_timestamp())
     total = db.Column(db.Integer, default=0)
     quantity = db.Column(db.Integer, default=0)
-    data = db.Column(JSONB(), default={})
+    data = db.Column(JSONB())
 
 
     user = db.relationship("User")
@@ -48,18 +48,21 @@ class Order(db.Model):
             db.session.add(order)
             db.session.commit()
             
-            for line in cart.dict()['lines']:
+            for line in cart.lines:
                 order_line = OrderLine(
                     order_id=order.id, 
-                    variant_id=line['variant']['id'], 
-                    quantity=line['quantity'], 
-                    total=line['total']
+                    variant_id=line.variant_id,
+                    quantity=line.quantity, 
+                    total=line.get_total(),
+                    data=line.data
                     )
                 db.session.add(order_line)
-                db.session.commit()
 
+            cart.clear()    
+            db.session.flush()
+            return order
         else:
-            return {"message": "this Cart does not exist"}, 404
+            return None
 
     @property
     def is_shipping_required(self):
@@ -82,9 +85,7 @@ class Order(db.Model):
         return {
             'id': self.id,
             'status': self.status,
-            'user' : self.user.dict(),
             'address': self.address.dict(),
-            'create_time': self.create_time,
             'total': self.total,
             'quantity': self.quantity,
             'lines': [line.dict() for line in self.lines],
