@@ -29,6 +29,8 @@
                 <td>{{gettext("ID")}}</td>
                 <td>{{gettext("name")}}</td>
                 <td>{{gettext("price")}}</td>
+                <td>{{gettext("Number in stock")}}</td>
+                <td>{{gettext("quantity allocated")}}</td>
                 <td>{{gettext("settings")}}</td>
               </tr>
             </thead>
@@ -38,6 +40,8 @@
                 <td>{{p.id}}</td>
                 <td>{{p.name}}</td>
                 <td>{{p.price}}</td>
+                <td>{% if not p.product_type.has_variants %}{{p.variants[0].quantity}}{% endif %}</td>
+                <td>{% if not p.product_type.has_variants %}{{p.variants[0].quantity_allocated}}{% endif %}</td>
                 <td>
                   <a class="btn btn-warning" href="{{url_for('ecommerce_panel.products_edit', product_id=p.id)}}">{{gettext("Edit")}}</a>
 
