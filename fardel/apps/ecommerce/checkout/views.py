@@ -262,8 +262,8 @@ class PaymentVerification(Resource):
                 if result.Status == 100 or result.Status == 101:
                     payment.status = "Succeeded"
                     payment.ref_id = result.RefID
-                    if payment.amount == payment.order.total:                    
-                        payment.order.status = "Fulfiled"
+                    if payment.amount == payment.order.total and payment.order.status != "Fulfiled":
+                        payment.order.set_fulfiled()
                 else:
                     payment.status = "Failed"
                 db.session.commit() 

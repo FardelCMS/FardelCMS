@@ -8,6 +8,7 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from flask_sqlalchemy import BaseQuery
 from flask_jwt_extended import current_user
 
+from ..product.models import ProductVariant
 from fardel.ext import db
 
 
@@ -27,7 +28,6 @@ class Order(db.Model):
     total = db.Column(db.Integer, default=0)
     quantity = db.Column(db.Integer, default=0)
     data = db.Column(JSONB())
-
 
     user = db.relationship("User")
     cart = db.relationship("Cart")
@@ -79,6 +79,12 @@ class Order(db.Model):
         """ Delete a line with specified variant_id+data """
         line = self.get_line(variant_id, data)
         line.delete()
+
+    def set_fulfiled(self):
+        for line in self.lines:
+            line.variant.quantity_allocated = ProductVariant.quantity_allocated + line.quantity
+        self.status = "Fulfiled"
+        db.session.flush()
 
     def dict(self):
         return {
