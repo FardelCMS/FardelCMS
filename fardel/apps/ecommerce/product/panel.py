@@ -169,6 +169,7 @@ def products_edit(product_id):
         category_id = request.form.get('category_id', type=int)
         publish = request.form.get('publish', type=bool)
         featured = request.form.get('featured', type=bool)
+        quantity = request.form.get("quantity", type=int, default=0)
         attributes = {}
         for attr in product_type.product_attributes:
             if request.form.get('attribute-%d' % attr.id):
@@ -185,6 +186,7 @@ def products_edit(product_id):
         p.is_featured = featured
         p.attributes = attributes
         if not product_type.has_variants:
+            p.variants[0].quantity = quantity
             p.variants[0].sku = sku
         db.session.commit()
 
@@ -217,6 +219,7 @@ def products_create(pt_id):
         category_id = request.form.get('category_id', type=int)
         publish = request.form.get('publish', type=bool)
         featured = request.form.get('featured', type=bool)
+        quantity = request.form.get("quantity", type=int, default=0)
         attributes = {}
         for attr in product_type.product_attributes:
             if request.form.get('attribute-%d' % attr.id):
@@ -232,7 +235,7 @@ def products_create(pt_id):
         db.session.add(product)
         db.session.flush()
         if not product_type.has_variants:
-            pv = ProductVariant(sku=sku, product_id=product.id)
+            pv = ProductVariant(sku=sku, product_id=product.id, quantity=quantity)
             db.session.add(pv)
         db.session.commit()
 

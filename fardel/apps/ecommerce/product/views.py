@@ -92,7 +92,8 @@ class ProductApi(Resource):
         per_page = request.args.get('per_page', default=20, type=int)
         order_by = request.args.get('order_by')
         query = Product.query.filter_by(is_published=True
-            ).outerjoin(ProductVariant).filter(ProductVariant.quantity>0)
+            ).outerjoin(ProductVariant
+            ).filter(ProductVariant.quantity>0)
         if order_by == "cheap_first":
             query = query.order_by(Product.price.asc())
         elif order_by == "expensive_first":

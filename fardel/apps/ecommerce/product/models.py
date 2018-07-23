@@ -183,20 +183,29 @@ class Product(db.Model, SeoModel):
         obj = {
             "name": self.name, "price": self.price, "id":self.id
         }
+        available_variants = ProductVariant.query.filter_by(product_id=self.id).filter(
+            ProductVariant.quantity>0,ProductVariant.quantity!=ProductVariant.quantity_allocated
+        ).all()
+        if available_variants:
+            obj['status'] = "available"
+        else:
+            obj['status'] = "unavailable"
         if detailed:
             _obj = {
                 "product_type":self.product_type.dict(),
-                "variants": [v.dict() for v in self.variants],
+                "variants": [v.dict() for v in self.variants if v.quantity > 0 and v.quantity != v.quantity_allocated],
                 "description": self.description, "images": self.images,
             }
             _obj.update(self.seo_dict())
 
             _obj['variant_attributes'] = OrderedDict()
             for variant in self.variants:
-                for attribute, choice in variant.attributes_names.items():
-                    if attribute not in _obj['variant_attributes']:
-                        _obj['variant_attributes'][attribute] = []
-                    _obj['variant_attributes'][attribute].append(choice)
+                if variant.quantity > 0 and variant.quantity != variant.quantity_allocated:
+                    for attribute, choice in variant.attributes_names.items():
+                        if attribute not in _obj['variant_attributes']:
+                            _obj['variant_attributes'][attribute] = []
+                        if choice not in _obj['variant_attributes'][attribute]:
+                            _obj['variant_attributes'][attribute].append(choice)
 
             _obj['attributes'] = []
             for key, value in self.attributes.items():
