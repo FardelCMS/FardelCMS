@@ -4,6 +4,7 @@ import time
 from collections import OrderedDict
 
 from sqlalchemy.dialects.postgresql import JSONB
+from flask_sqlalchemy import BaseQuery
 
 from fardel.core.seo import SeoModel
 from fardel.ext import db
@@ -13,6 +14,21 @@ __all__ = (
     "Product", "ProductVariant", "ProductAttribute",
     "AttributeChoiceValue",
 )
+
+
+class ProductQueryset(BaseQuery):
+    def availables(self):
+        return self.filter_by(is_published=True
+            ).outerjoin(ProductVariant
+            ).filter(ProductVariant.quantity>0)
+    
+    def order(self, _by):
+        if _by == "cheap_first":
+            return self.order_by(Product.price.asc())
+        elif _by == "expensive_first":
+            return self.order_by(Product.price.desc())
+        else:
+            return self.order_by(Product.id.desc())
 
 
 class ProductCategory(db.Model, SeoModel):
@@ -39,7 +55,7 @@ class ProductCategory(db.Model, SeoModel):
         subc.append(self.id)
         return subc
 
-    def dict(self, products=False, page=None, per_page=None):
+    def dict(self, products=False, page=None, per_page=None, order_by=None):
         obj = dict(
             id=self.id,
             name=self.name,
@@ -47,9 +63,7 @@ class ProductCategory(db.Model, SeoModel):
         )
         if products:
             subcategories = self.recersive_subcategories_id()
-            query = Product.query.filter(
-                Product.category_id.in_(subcategories), Product.is_published==True
-            ).outerjoin(ProductVariant).filter(ProductVariant.quantity>0)
+            query = Product.query.availables().filter(Product.category_id.in_(subcategories)).order(order_by)
             pages = math.ceil(query.count() / per_page)
             products = query.paginate(page=page, per_page=per_page, error_out=False).items
             obj.update(pages=pages, products=[p.dict() for p in products])
@@ -144,6 +158,7 @@ class ProductTypeVariants(db.Model):
 
 
 class Product(db.Model, SeoModel):
+    query_class = ProductQueryset
     __tablename__ = "product_products"
     id = db.Column(db.Integer, primary_key=True)
 
