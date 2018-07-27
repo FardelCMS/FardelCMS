@@ -52,13 +52,15 @@ class ProductCategoryApi(Resource):
     """
     endpoints = ['/categories/', '/categories/<category_name>/products/']
 
-    @cache.cached(timeout=600)
+    # @cache.cached(timeout=600)
     def get(self, category_name=None):
+        print('asdasd')
         if category_name:
             cat = ProductCategory.query.filter_by(name=category_name).first()
             page = request.args.get('page', default=1, type=int)
             per_page = request.args.get('per_page', default=20, type=int)
-            return cat.dict(products=True, page=page, per_page=per_page)
+            order_by = request.args.get('order_by')
+            return cat.dict(products=True, page=page, per_page=per_page, order_by=order_by)
 
         categories = ProductCategory.query.filter_by(hidden=False, parent_id=None).all()
         return {"categories":[cat.dict() for cat in categories]}
@@ -91,15 +93,7 @@ class ProductApi(Resource):
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=20, type=int)
         order_by = request.args.get('order_by')
-        query = Product.query.filter_by(is_published=True
-            ).outerjoin(ProductVariant
-            ).filter(ProductVariant.quantity>0)
-        if order_by == "cheap_first":
-            query = query.order_by(Product.price.asc())
-        elif order_by == "expensive_first":
-            query = query.order_by(Product.price.desc())
-        else:
-            query = query.order_by(Product.id.desc())
+        query = Product.query.availables().order(order_by)
         ps = query.paginate(page=page, per_page=per_page, error_out=False).items
         return {'products':[p.dict() for p in ps]}    
 
