@@ -84,11 +84,11 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
     __tablename__ = 'auth_users'
     id = db.Column(db.Integer, primary_key=True, index=True)
 
-    first_name = db.Column(db.String(64))
-    last_name = db.Column(db.String(64))
+    first_name = db.Column(db.String(64), nullable=False)
+    last_name = db.Column(db.String(64), nullable=False)
     # username = db.Column(db.String(64), index=True, unique=True)
 
-    _email = db.Column(db.String(128), index=True, unique=True)
+    _email = db.Column(db.String(128), index=True, unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
 
     group_id = db.Column(db.Integer, db.ForeignKey('auth_groups.id'))

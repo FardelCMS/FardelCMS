@@ -1,4 +1,8 @@
 from flask import request
+<<<<<<< HEAD
+=======
+
+>>>>>>> dana
 from flask_jwt_extended import current_user, jwt_required, jwt_optional
 
 from fardel.core.rest import create_api, abort, Resource
@@ -34,4 +38,8 @@ class OrderApi(Resource):
         page = request.args.get("page", type=int, default=1)
         per_page = request.args.get("per_page", type=int, default=16)
         orders = query.paginate(per_page=per_page, page=page, error_out=False).items
+<<<<<<< HEAD
         return {"orders": [order.dict() for order in orders]}
+=======
+        return {"orders": [order.dict() for order in orders]}
+>>>>>>> dana

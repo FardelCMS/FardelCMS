@@ -143,13 +143,13 @@ class RegistrationApi(BaseResource):
                     {"message": "A user with this email already exists."}
         """
         data = request.get_json()
-        if not self.check_data(data, ['password', 'email']):
+        if not self.check_data(data, ['password', 'email', 'first_name', 'last_name']):
             return self.bad_request()
 
         password = data['password']
         email = data['email']
-        first_name = data.get('first_name')
-        last_name = data.get('last_name')
+        first_name = data['first_name']
+        last_name = data['last_name']
 
         if User.query.filter_by(_email=email).first():
             return self.already_exists()
@@ -203,7 +203,7 @@ class LoginApi(BaseResource):
             :status_code: 401
             :response:
                 .. code-block:: json
-
+    
                     {"message":"Username or password is not correct"}
         """
         data = request.get_json()

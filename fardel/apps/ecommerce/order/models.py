@@ -30,8 +30,8 @@ class Order(db.Model):
     data = db.Column(JSONB())
 
     user = db.relationship("User")
-    cart = db.relationship("Cart")
     address = db.relationship("UserAddress")
+    lines = db.relationship("OrderLine")
 
     @staticmethod
     def create_from_cart(cart_id, address_id):
@@ -87,11 +87,15 @@ class Order(db.Model):
         db.session.flush()
 
     def dict(self):
+        """ Serialize object to json """
         return {
             'id': self.id,
             'status': self.status,
             'address': self.address.dict(),
+<<<<<<< HEAD
             'create_time': self.create_time,
+=======
+>>>>>>> dana
             'total': self.total,
             'quantity': self.quantity,
             'lines': [line.dict() for line in self.lines],
