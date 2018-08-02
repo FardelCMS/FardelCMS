@@ -92,10 +92,6 @@ class Order(db.Model):
             'id': self.id,
             'status': self.status,
             'address': self.address.dict(),
-<<<<<<< HEAD
-            'create_time': self.create_time,
-=======
->>>>>>> dana
             'total': self.total,
             'quantity': self.quantity,
             'lines': [line.dict() for line in self.lines],
