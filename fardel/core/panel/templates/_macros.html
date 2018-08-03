@@ -31,7 +31,7 @@
 <nav aria-label="...">
   <ul class="pagination">
     <li class="page-item {% if page < 2 %}disabled{% endif %}">
-      <a class="page-link" href="{{url_for(endpoint, page=page-1)}}">قبلی</a>
+      <a class="page-link" href="{{url_for(endpoint, page=page-1)}}">{{gettext("Prev")}}</a>
     </li>
     {% if page >= 6 %}      
     <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
@@ -101,7 +101,7 @@
     <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
     {% endif %}
     <li class="page-item {% if page == pages %}disabled{% endif %}">
-      <a class="page-link" href="{{url_for(endpoint, page=page+1)}}">بعدی</a>
+      <a class="page-link" href="{{url_for(endpoint, page=page+1)}}">{{gettext("Next")}}</a>
     </li>
   </ul>
 </nav>

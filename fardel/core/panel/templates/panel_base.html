@@ -13,7 +13,11 @@
     <link href="{{url_for('panel.static', filename='css/nprogress.css')}}" rel="stylesheet">
     <link href="{{url_for('panel.static', filename='css/select2.min.css')}}" rel="stylesheet">
     <link href="{{url_for('panel.static', filename='css/dropzone.min.css')}}" rel="stylesheet">
+{% if get_text_direction() == "rtl" %}
     <link href="{{url_for('panel.static', filename='css/custom.css')}}" rel="stylesheet">
+{% else %}
+    <link href="{{url_for('panel.static', filename='css/custom.ltr.css')}}" rel="stylesheet">
+{% endif %}
     {% block css_block %}{% endblock %}
   </head>
 
@@ -48,7 +52,7 @@
 
         <!-- page content -->
         <div class="right_col" role="main">
-          <div class="">
+          <div>
             <div class="page-title">
               <div class="title_right">
                 <h3>{% block title %}{% endblock %}</h3>
@@ -63,12 +67,12 @@
         <!-- /page content -->
 
         <!-- footer content -->
-        <!-- <footer>
+        <footer>
           <div class="pull-right">
             Copy right 2018 - {{gettext("Fardel")}} + Gentelella(<a href="https://colorlib.com">Colorlib</a>)
           </div>
           <div class="clearfix"></div>
-        </footer> -->
+        </footer>
         <!-- /footer content -->
       </div>
     </div>
