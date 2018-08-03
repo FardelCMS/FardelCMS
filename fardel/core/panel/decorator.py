@@ -34,6 +34,10 @@ def permission_required_rest(permission):
     return decorator
 
 def staff_required(func):
+    if not hasattr(func, 'decorators'):
+        func.decorators = {}
+    func.decorators['staff_required'] = True
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         if fl_current_user and (fl_current_user.is_staff or fl_current_user.is_admin):
@@ -50,6 +54,10 @@ def staff_required_rest(func):
     return wrapper
 
 def admin_required(func):
+    if not hasattr(func, 'decorators'):
+        func.decorators = {}
+    func.decorators['admin_required'] = True
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         if fl_current_user and fl_current_user.is_admin:

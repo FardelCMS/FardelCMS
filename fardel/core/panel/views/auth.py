@@ -16,10 +16,10 @@ from .. import mod, staff_required, admin_required, permission_required
 # USERS #
 #########
 
+@mod.route('/auth/users/list/')
 @permission_required("can_get_users")
 @staff_required
 @login_required
-@mod.route('/auth/users/list/')
 def users_list():
     page = request.args.get('page', type=int, default=1)
     per_page = request.args.get('per_page', type=int, default=40)
@@ -38,10 +38,10 @@ def users_list():
 #     u = User.query.filter_by(id=user_id).first_or_404()
 #     return render_template('auth/users_get.html', user=u)
 
+@mod.route('/auth/users/edit/<int:user_id>/', methods=['POST', 'GET'])
 @admin_required
 @staff_required
 @login_required
-@mod.route('/auth/users/edit/<int:user_id>/', methods=['POST', 'GET'])
 def users_edit(user_id):
     edditable_attrs = [
         'email', 'password', 'first_name',
@@ -71,19 +71,19 @@ def users_edit(user_id):
         return redirect(url_for('panel.users_list'))
     return render_template('auth/users_form.html', user=user)
 
+@mod.route('/auth/users/create/', methods=['POST', 'GET'])
 @admin_required
 @staff_required
 @login_required
-@mod.route('/auth/users/create/', methods=['POST', 'GET'])
 def users_create():
     if request.method == "POST":
         pass
     return render_template('auth/users_form.html')
 
+@mod.route('/auth/users/delete/<int:user_id>/')
 @admin_required
 @staff_required
 @login_required
-@mod.route('/auth/users/delete/<int:user_id>/')
 def users_delete(user_id):
     abort(404)
 
@@ -91,11 +91,11 @@ def users_delete(user_id):
 # STAFFMEMBERS #
 ################
 
+@mod.route('/auth/staffs/list/')
 @permission_required("can_get_users")
 @admin_required
 @staff_required
 @login_required
-@mod.route('/auth/staffs/list/')
 def staffs_list():
     page = request.args.get('page', type=int, default=1)
     per_page = request.args.get('per_page', type=int, default=40)
@@ -106,17 +106,17 @@ def staffs_list():
     return render_template('auth/users_list.html',
         users=users, pages=pages, page=page)
 
+@mod.route('/auth/staffs/edit/<int:user_id>/')
 @admin_required
 @staff_required
 @login_required
-@mod.route('/auth/staffs/edit/<int:user_id>/')
 def staffs_edit(user_id):
     abort(404)
 
+@mod.route('/auth/staffs/create/')
 @admin_required
 @staff_required
 @login_required
-@mod.route('/auth/staffs/create/')
 def staffs_create():
     abort(404)
 
@@ -124,10 +124,10 @@ def staffs_create():
 # PERMISSIONS #
 ###############
 
+@mod.route('/auth/permissions/list/')
 @permission_required('can_get_permissions')
 @staff_required
 @login_required
-@mod.route('/auth/permissions/list/')
 def permissions_get():
     return jsonify({
         'permissions': [obj.dict() for obj in 
@@ -138,10 +138,10 @@ def permissions_get():
 # GRPOUPS #
 ###########
 
+@mod.route('/auth/groups/list/')
 @permission_required('can_get_groups')
 @staff_required
 @login_required
-@mod.route('/auth/groups/list/')
 def groups_list():
     abort(404)
     if group_id:
@@ -155,9 +155,9 @@ def groups_list():
             Group.query.all()]
     }
 
+@mod.route('/auth/permissions/create/')
 @admin_required
 @staff_required
 @login_required
-@mod.route('/auth/permissions/create/')
 def groups_create(self):
     abort(404)

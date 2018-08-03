@@ -19,7 +19,7 @@ DEFAULT_APP_NAME = 'fardel'
 
 
 class Fardel(object):
-
+    ignored_panel_urls = ['static']
     def __init__(self, develop=False):
         self.app = Flask(DEFAULT_APP_NAME)
         self.panels = []
@@ -84,8 +84,20 @@ class Fardel(object):
             
             self.app.register_blueprint(blueprint)
             for rule in self.app.url_map.iter_rules():
-                if rule.endpoint.split('.')[0] in self.panels and not rule.rule.startswith("/panel/"):
+                endpoint = rule.endpoint.split('.')
+                if endpoint[0] in self.panels and not rule.rule.startswith("/panel/"):
                     raise Exception("Panel url must start with /panel/")
+                if endpoint[0] in self.panels and endpoint[1] not in self.ignored_panel_urls:
+                    view_func = self.app.view_functions.get(rule.endpoint)
+                    has_staff_required = False
+                    has_admin_required = False
+                    if hasattr(view_func, 'decorators'):
+                        has_staff_required = view_func.decorators.get('staff_required', False)
+                        has_admin_required = view_func.decorators.get('admin_required', False)
+                    
+                    if not has_staff_required and not has_admin_required:
+                        raise Exception("No staff_required or admin_required for panel function %s" % rule.endpoint)
+                    
 
             self.app.logger.debug("Admin panel for %s registered" % app_name)
         else:

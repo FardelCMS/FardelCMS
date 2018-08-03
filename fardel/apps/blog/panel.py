@@ -54,9 +54,9 @@ def add_blog_section():
     )
     panel_sidebar.add_section(section)
 
+@mod.route('/upload/images/', methods=['POST'])
 @permission_required('can_upload_files')
 @staff_required
-@mod.route('/upload/images/', methods=['POST'])
 @login_required
 def upload_images():
     file = request.files.get('file')
@@ -74,9 +74,9 @@ def upload_images():
              'location':file.url})
     return jsonify({"message":"Invalid path"}), 422
 
+@mod.route('/posts/list/')
 @permission_required('can_get_posts')
 @staff_required
-@mod.route('/posts/list/')
 @login_required
 def posts_list():
     page = request.args.get('page', default=1, type=int)
@@ -87,9 +87,9 @@ def posts_list():
     posts = query.order_by(Post.id.desc()).paginate(page=page, per_page=per_page, error_out=False).items
     return render_template('posts_list.html', posts=posts, page=page, pages=pages)
 
+@mod.route('/posts/create/', methods=["POST", "GET"])
 @permission_required('can_create_posts')
 @staff_required
-@mod.route('/posts/create/', methods=["POST", "GET"])
 @login_required
 def posts_create():
     """ To create Post without publish for the first time """
@@ -129,9 +129,9 @@ def posts_create():
     categories = Category.query.all()
     return render_template('posts_form.html', categories=categories)
 
+@mod.route('/posts/edit/<int:post_id>/', methods=["POST", "GET"])
 @permission_required('can_create_posts')
 @staff_required
-@mod.route('/posts/edit/<int:post_id>/', methods=["POST", "GET"])
 @login_required
 def posts_edit(post_id):
     post = Post.query.filter_by(id=post_id).first_or_404()
@@ -169,9 +169,9 @@ def posts_edit(post_id):
     categories = Category.query.all()
     return render_template("posts_form.html", categories=categories, post=post)
 
+@mod.route('/posts/publish/<int:post_id>/')
 @permission_required('can_publish_posts')
 @staff_required
-@mod.route('/posts/publish/<int:post_id>/')
 @login_required
 def posts_publish(post_id):
     p = Post.query.filter_by(id=post_id).first_or_404()
@@ -181,9 +181,9 @@ def posts_publish(post_id):
     db.session.commit()
     return redirect(url_for('blog_panel.posts_list'))
 
+@mod.route('/posts/draft/<int:post_id>/')
 @permission_required('can_publish_posts')
 @staff_required
-@mod.route('/posts/draft/<int:post_id>/')
 @login_required
 def posts_draft(post_id):
     p = Post.query.filter_by(id=post_id).first_or_404()
@@ -192,10 +192,10 @@ def posts_draft(post_id):
     db.session.commit()
     return redirect(url_for('blog_panel.posts_list'))
 
+@mod.route('/posts/trash/<int:post_id>/')
 @permission_required('can_delete_posts')
 @staff_required
 @login_required
-@mod.route('/posts/trash/<int:post_id>/')
 def posts_trash(post_id):
     """ To delete Post """
     post = Post.query.filter_by(id=post_id).first_or_404()
@@ -204,8 +204,8 @@ def posts_trash(post_id):
     db.session.commit()
     return redirect(url_for('blog_panel.posts_list'))
 
-@staff_required
 @mod.route('/tags/')
+@staff_required
 @login_required
 def tags_api():
     """ Get closest tags to the string """
@@ -215,8 +215,8 @@ def tags_api():
     tags = Tag.query.filter(Tag.name.like('%' + like +'%')).limit(20)
     return jsonify({'results':[tag.panel_dict() for tag in tags]})
 
-@staff_required
 @mod.route('/tags/list/')
+@staff_required
 @login_required
 def tags_list():
     """ Get closest tags to the string """
@@ -224,8 +224,8 @@ def tags_list():
     tags = Tag.query.all()
     return render_template('tags_list.html', tags=tags)
 
-@staff_required
 @mod.route('/tags/delete/<int:tag_id>/')
+@staff_required
 @login_required
 def tags_delete(tag_id):
     """ Get closest tags to the string """
@@ -235,15 +235,15 @@ def tags_delete(tag_id):
         abort(404)
     return redirect(url_for('blog_panel.tags_list'))
 
-@staff_required
 @mod.route('/categories/list/')
+@staff_required
 @login_required
 def categories_list():
     categories = Category.query.all()
     return render_template("categories_list.html", categories=categories)
 
-@staff_required
 @mod.route('/categories/delete/<int:cat_id>/')
+@staff_required
 @login_required
 def categories_delete(cat_id):
     deleted = Category.query.filter_by(id=cat_id).delete()
@@ -252,8 +252,8 @@ def categories_delete(cat_id):
         abort(404)
     return redirect(url_for('blog_panel.categories_list'))
 
-@staff_required
 @mod.route('/categories/create/', methods=["POST", "GET"])
+@staff_required
 @login_required
 def categories_create():
     if request.method == "POST":
