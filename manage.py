@@ -1,16 +1,16 @@
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
-from fardel.app import create_app
+from fardel import Fardel
 from fardel.ext import db
 
 from fardel.core.auth.models import User
 
 
-app = create_app(develop=True)
-migrate = Migrate(app, db)
+fardel = Fardel(develop=True)
+migrate = Migrate(fardel.app, db)
 
-manager = Manager(app)
+manager = Manager(fardel.app)
 manager.add_command('db', MigrateCommand)
 
 @manager.command

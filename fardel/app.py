@@ -17,62 +17,76 @@ __all__ = ['create_app']
 
 DEFAULT_APP_NAME = 'fardel'
 
-def create_app(develop=False):
-    app = Flask(DEFAULT_APP_NAME)
 
-    configure_app(app, develop)
-    configure_addons(app)
-    configure_views(app)
-    configure_extentions(app)
-    configure_logger(app)
-    init_jinja_globals(app)
-    return app
+class Fardel(object):
 
-def configure_app(app, develop):
-    if develop:
-        app.config.from_object(DevConfig)
-    else:
-        app.config.from_object(ProdConfig)
+    def __init__(self, develop=False):
+        self.app = Flask(DEFAULT_APP_NAME)
+        self.panels = []
 
-def configure_addons(app):
-    from fardel.core.auth.views import mod as auth
-    from fardel.core.panel.views import mod as panel
-    from fardel.core.media.views import mod as media
-    app.register_blueprint(auth)
-    app.register_blueprint(panel)
-    app.register_blueprint(media)
+        self.configure_app(develop)
+        self.configure_addons()
+        self.configure_views()
+        self.configure_extentions()
+        self.configure_logger()
+        self.init_jinja_globals()
 
-    for app_name in app.config['ACTIVE_APPS']:
+    def configure_app(self, develop):
+        if develop:
+            self.app.config.from_object(DevConfig)
+        else:
+            self.app.config.from_object(ProdConfig)
 
-        bp = __import__('fardel.apps.%s' % app_name, fromlist=['views','panel'])
+    def configure_addons(self):
+        from fardel.core.auth.views import mod as auth
+        from fardel.core.panel.views import mod as panel
+        from fardel.core.media.views import mod as media
+        self.app.register_blueprint(auth)
+        self.app.register_blueprint(panel)
+        self.app.register_blueprint(media)
 
-        try:
-            app.register_blueprint(bp.panel.mod)
-            app.logger.info("Admin panel for %s registered" % app_name)
-        except:
-            app.logger.info("No admin panel for %s" % app_name)
+        for app_name in self.app.config['ACTIVE_APPS']:
 
-        try:
-            app.register_blueprint(bp.views.mod)
-            app.logger.info("Module %s registered" % app_name)
-        except:
-            app.logger.warning("%s app doesn't have blueprint." % app_name)
+            bp = __import__('fardel.apps.%s' % app_name, fromlist=['views','panel'])
+            if hasattr(bp, 'panel'):
+                self._register_panel(self.app, bp.panel.mod, app_name)
+            else:
+                self.app.logger.debug("No admin panel for %s" % app_name)
+            
+            try:
+                self.app.register_blueprint(bp.views.mod)
+                self.app.logger.debug("Module %s registered" % app_name)
+            except:
+                self.app.logger.warning("%s app doesn't have blueprint." % app_name)
 
-def configure_views(app):
-    app.add_url_rule('/api/search/', 'search', core.search)
+    def configure_views(self):
+        self.app.add_url_rule('/api/search/', 'search', core.search)
 
-def configure_logger(app):
-    app.logger = logging.getLogger("fardel")
+    def configure_logger(self):
+        self.app.logger = logging.getLogger("fardel")
 
-def configure_extentions(app):
-    db.init_app(app)
-    with app.app_context():
-        db.configure_mappers()
-    jwt.init_app(app)
-    cache.init_app(app)
-    login_manager.init_app(app)
-    babel.init_app(app)
+    def configure_extentions(self):
+        db.init_app(self.app)
+        with self.app.app_context():
+            db.configure_mappers()
+        jwt.init_app(self.app)
+        cache.init_app(self.app)
+        login_manager.init_app(self.app)
+        babel.init_app(self.app)
 
-def init_jinja_globals(app):
-    from fardel.core.panel.template_tags import add_globals
-    add_globals(app)
+    def init_jinja_globals(self):
+        from fardel.core.panel.template_tags import add_globals
+        add_globals(self.app)
+
+    def _register_panel(self, app, blueprint, app_name):
+        if blueprint.name.endswith("panel"):
+            self.panels.append(blueprint.name)
+            
+            self.app.register_blueprint(blueprint)
+            for rule in self.app.url_map.iter_rules():
+                if rule.endpoint.split('.')[0] in self.panels and not rule.rule.startswith("/panel/"):
+                    raise Exception("Panel url must start with /panel/")
+
+            self.app.logger.debug("Admin panel for %s registered" % app_name)
+        else:
+            raise Exception("Panel blueprint's name must ends with panel")

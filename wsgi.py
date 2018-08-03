@@ -1,6 +1,6 @@
-from fardel.app import create_app
+from fardel import Fardel
 
-app = create_app()
+fardel = Fardel()
 
 if __name__ == "__main__":
 	app.run()

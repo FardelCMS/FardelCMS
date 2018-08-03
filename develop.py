@@ -1,6 +1,6 @@
-from fardel.app import create_app
+from fardel import Fardel
 
-app = create_app(develop=True)
+fardel = Fardel(develop=True)
 
 if __name__ == "__main__":
-	app.run(host='0.0.0.0')
+	fardel.app.run(host='0.0.0.0')
