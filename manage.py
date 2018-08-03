@@ -17,11 +17,7 @@ manager.add_command('db', MigrateCommand)
 def create_admin(email, password):
 	u = User(email=email, password=password, is_admin=True)
 	db.session.add(u)
-	try:
-		db.session.commit()
-	except:
-		print("Error aquired, i think a user with this email already exists")
-		return
+	db.session.commit()
 	print("Successfull created an admin.")
 
 @manager.command
