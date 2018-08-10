@@ -19,6 +19,7 @@ class Order(db.Model):
         :Fulfiled:
         :Unfulfiled:
         :Canceled:
+        :Done:
     """
     id = db.Column(db.Integer, primary_key=True, index=True)
     status = db.Column(db.String(64), default="Unfulfiled")

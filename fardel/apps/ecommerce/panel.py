@@ -61,8 +61,10 @@ def add_blog_section():
 
     sales_link = Link('fa fa-clipboard', pgettext('Sales sections', 'Sales'),
             permission="can_get_sales")
-    sales_link.add_child(ChildLink(pgettext("Sales sections", 'Orders'),
-        url_for('ecommerce_panel.orders_list'), permission="can_get_discounts"))
+    sales_link.add_child(ChildLink(pgettext("Sales sections", 'Done Orders'),
+        url_for('ecommerce_panel.done_orders_list'), permission="can_get_discounts"))
+    sales_link.add_child(ChildLink(pgettext("Sales sections", 'Undone Orders'),
+        url_for('ecommerce_panel.undone_orders_list'), permission="can_get_discounts"))
     sales_link.add_child(ChildLink(pgettext("Sales section", 'Payments'),
         url_for('ecommerce_panel.payments_list'), permission=""))
     section.add_link(sales_link)
