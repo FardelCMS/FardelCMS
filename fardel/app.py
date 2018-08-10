@@ -6,6 +6,7 @@ import logging
 import json
 
 import sqlalchemy
+from raven.contrib.flask import Sentry
 
 from flask import Flask, request, jsonify, redirect, url_for, render_template
 
@@ -30,6 +31,7 @@ class Fardel(object):
         self.configure_extentions()
         self.configure_logger()
         self.init_jinja_globals()
+        self.configure_sentry()
 
     def configure_app(self, develop):
         if develop:
@@ -73,6 +75,10 @@ class Fardel(object):
         cache.init_app(self.app)
         login_manager.init_app(self.app)
         babel.init_app(self.app)
+
+    def configure_sentry(self):
+        if self.app.config['SENTRY_DSN']:
+            sentry = Sentry(self.app, dsn=self.app.config['SENTRY_DSN'])
 
     def init_jinja_globals(self):
         from fardel.core.panel.template_tags import add_globals

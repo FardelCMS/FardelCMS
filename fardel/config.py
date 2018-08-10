@@ -38,6 +38,8 @@ class BaseConfig(object):
     BABEL_DEFAULT_LOCALE = "en"
     BABEL_TRANSLATION_DIRECTORIES = str(PATH_TO_ROOT / "translations")
 
+    SENTRY_DSN = ""
+
     # MAIL_SERVER = ""
     # MAIL_USERNAME = ""
     # MAIL_PASSWORD = ""
