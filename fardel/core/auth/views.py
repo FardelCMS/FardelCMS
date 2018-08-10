@@ -132,7 +132,7 @@ class RegistrationApi(BaseResource):
             :response:
                 .. code-block:: json
 
-                    {"message":"Unvalid form submitted"}
+                    {"message":"Invalid form submitted"}
 
             If email already exists:
 
@@ -196,7 +196,7 @@ class LoginApi(BaseResource):
             :response:
                 .. code-block:: json
 
-                    {"message":"Unvalid form submitted"}
+                    {"message":"Invalid form submitted"}
 
             If email or password is not correct:
 

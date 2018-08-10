@@ -26,12 +26,12 @@ class AuthTestCase(BaseTestCase):
 
         response = self.post('/api/auth/register/', data={'password':self.password}, with_token=False)
         json_data = self.get_json(response.data)
-        self.assertEqual(json_data['message'], 'Unvalid form submitted')
+        self.assertEqual(json_data['message'], 'Invalid form submitted')
         self.assertEqual(400, response.status_code)
 
         response = self.post('/api/auth/register/', data={'email':self.email}, with_token=False)
         json_data = self.get_json(response.data)
-        self.assertEqual(json_data['message'], 'Unvalid form submitted')
+        self.assertEqual(json_data['message'], 'Invalid form submitted')
         self.assertEqual(400, response.status_code)
 
     def test_login_logout_refresh(self):
@@ -42,12 +42,12 @@ class AuthTestCase(BaseTestCase):
 
         response = self.post('/api/auth/login/', data={'password':self.password}, with_token=False)
         json_data = self.get_json(response.data)
-        self.assertEqual(json_data['message'], 'Unvalid form submitted')
+        self.assertEqual(json_data['message'], 'Invalid form submitted')
         self.assertEqual(400, response.status_code)
 
         response = self.post('/api/auth/login/', data={'email':self.email}, with_token=False)
         json_data = self.get_json(response.data)
-        self.assertEqual(json_data['message'], 'Unvalid form submitted')
+        self.assertEqual(json_data['message'], 'Invalid form submitted')
         self.assertEqual(400, response.status_code)
 
         response = self.post('/api/auth/logout/')

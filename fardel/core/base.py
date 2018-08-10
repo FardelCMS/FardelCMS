@@ -13,7 +13,7 @@ __all__ = (
 class BaseResource(Resource):
 
     def bad_request(self):
-        return {'message':gettext('Unvalid form submitted')}, 400
+        return {'message':gettext('Invalid form submitted')}, 400
 
     def check_data(self, data, requires):
         for r in requires:
