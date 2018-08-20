@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2018-08-10 21:07+0430\n"
+"POT-Creation-Date: 2018-08-11 00:48+0430\n"
 "PO-Revision-Date: 2018-05-05 17:12+0430\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: fa_IR\n"
@@ -17,6 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.5.3\n"
+
+#: fardel/config.py:33 fardel/core/panel/templates/panel_base.html:68
+msgid "Fardel"
+msgstr "خورجین"
 
 #: fardel/apps/blog/models.py:68 fardel/apps/blog/templates/posts_list.html:56
 #: fardel/apps/ecommerce/media/templates/product/products_form.html:72
@@ -156,7 +160,7 @@ msgstr "ذخیره سازی"
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:47
 #: fardel/apps/ecommerce/media/templates/product/products_list.html:29
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:28
-#: fardel/core/panel/templates/auth/users_list.html:26
+#: fardel/core/panel/templates/auth/users_list.html:28
 msgid "ID"
 msgstr "شناسه یکتا"
 
@@ -170,7 +174,7 @@ msgstr "شناسه یکتا"
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:52
 #: fardel/apps/ecommerce/media/templates/product/products_list.html:34
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:32
-#: fardel/core/panel/templates/auth/users_list.html:34
+#: fardel/core/panel/templates/auth/users_list.html:36
 msgid "settings"
 msgstr "تنظیمات"
 
@@ -265,7 +269,7 @@ msgstr "وضعیت"
 #: fardel/apps/ecommerce/media/templates/product/products_info.html:64
 #: fardel/apps/ecommerce/media/templates/product/products_list.html:46
 #: fardel/apps/ecommerce/media/templates/product/products_types_list.html:43
-#: fardel/core/panel/templates/auth/users_list.html:48
+#: fardel/core/panel/templates/auth/users_list.html:50
 msgid "Edit"
 msgstr "ویرایش"
 
@@ -760,10 +764,6 @@ msgstr ""
 msgid "logout"
 msgstr "خروج"
 
-#: fardel/core/panel/templates/panel_base.html:68
-msgid "Fardel"
-msgstr "خورجین"
-
 #: fardel/core/panel/templates/panel_sidebar.html:12
 msgid "Welcome"
 msgstr "خوش آمدید"
@@ -774,9 +774,15 @@ msgstr "خوش آمدید"
 msgid "Edit User Information"
 msgstr "ویرایش اطلاعات کاربر"
 
+#: fardel/core/panel/templates/auth/users_form.html:3
+#: fardel/core/panel/templates/auth/users_form.html:4
+#: fardel/core/panel/templates/auth/users_form.html:11
+msgid "Create User"
+msgstr "افزودن کاربر"
+
 #: fardel/core/panel/templates/auth/users_form.html:26
 #: fardel/core/panel/templates/auth/users_form.html:27
-#: fardel/core/panel/templates/auth/users_list.html:27
+#: fardel/core/panel/templates/auth/users_list.html:29
 msgid "email"
 msgstr "ایمیل"
 
@@ -804,41 +810,29 @@ msgstr "ادمین است"
 msgid "is_admin"
 msgstr "ادمین است"
 
-#: fardel/core/panel/templates/auth/users_form.html:54
-msgid "Is Staff"
-msgstr "کارمند است"
-
-#: fardel/core/panel/templates/auth/users_form.html:55
-msgid "is_staff"
-msgstr "کارمند است"
-
 #: fardel/core/panel/templates/auth/users_list.html:9
 #: fardel/core/panel/views/__init__.py:26
 #: fardel/core/panel/views/__init__.py:27
 msgid "Users"
 msgstr "کاربران"
 
-#: fardel/core/panel/templates/auth/users_list.html:28
+#: fardel/core/panel/templates/auth/users_list.html:21
+msgid "Add Admin"
+msgstr "افزودن کاربر"
+
+#: fardel/core/panel/templates/auth/users_list.html:30
 msgid "first name"
 msgstr "نام"
 
-#: fardel/core/panel/templates/auth/users_list.html:29
+#: fardel/core/panel/templates/auth/users_list.html:31
 msgid "last name"
 msgstr "نام خانوادگی"
 
-#: fardel/core/panel/templates/auth/users_list.html:30
+#: fardel/core/panel/templates/auth/users_list.html:32
 msgid "is admin"
 msgstr "مدیریت"
 
-#: fardel/core/panel/templates/auth/users_list.html:31
-msgid "is staffmember"
-msgstr "کارمند"
-
-#: fardel/core/panel/templates/auth/users_list.html:32
-msgid "group"
-msgstr "گروه"
-
-#: fardel/core/panel/templates/auth/users_list.html:33
+#: fardel/core/panel/templates/auth/users_list.html:35
 msgid "is confirmed"
 msgstr "تایید شده"
 
@@ -857,6 +851,18 @@ msgstr "کارمندان"
 #: fardel/core/panel/views/__init__.py:60
 msgid "Email or password is wrong..."
 msgstr "ایمیل یا پسورد اشتباه است ..."
+
+#: fardel/core/panel/views/auth.py:85
+msgid "user with this email already exists."
+msgstr ""
+
+#: fardel/core/panel/views/auth.py:95
+msgid "email, first name, last name and password fields can not be empty!"
+msgstr ""
+
+#: fardel/core/panel/views/auth.py:103
+msgid "user successfully created"
+msgstr ""
 
 #~ msgctxt "Discounts section"
 #~ msgid "All Collections"
@@ -934,10 +940,6 @@ msgstr "ایمیل یا پسورد اشتباه است ..."
 #~ msgid "user email"
 #~ msgstr "ایمیل کاربر"
 
-#~ msgctxt "Sales sections"
-#~ msgid "Orders"
-#~ msgstr "سفارشات"
-
 #~ msgid "Orders"
 #~ msgstr "سفارشات"
 
@@ -946,4 +948,16 @@ msgstr "ایمیل یا پسورد اشتباه است ..."
 
 #~ msgid "Files"
 #~ msgstr "فایل ها"
+
+#~ msgid "Is Staff"
+#~ msgstr "کارمند است"
+
+#~ msgid "is_staff"
+#~ msgstr "کارمند است"
+
+#~ msgid "is staffmember"
+#~ msgstr "کارمند"
+
+#~ msgid "group"
+#~ msgstr "گروه"
 

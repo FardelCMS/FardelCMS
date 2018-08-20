@@ -5,6 +5,7 @@ from sqlalchemy import or_
 from flask import (request, render_template, redirect, url_for,
     jsonify, abort, current_app, flash)
 from flask_login import current_user, login_required
+from flask_babel import gettext, pgettext
 
 from fardel.core.auth.models import User, Group, Permission
 from fardel.ext import db
@@ -77,7 +78,28 @@ def users_edit(user_id):
 @login_required
 def users_create():
     if request.method == "POST":
-        pass
+        email = request.form.get('email')
+        if User.query.filter_by(_email=email).first():
+            flash(gettext('user with this email already exists.'), 'error')
+            return redirect(url_for('panel.users_create'))
+
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        password = request.form.get('password')
+        confirmed = request.form.get('confirmed', type=bool)
+        is_admin = request.form.get('is_admin', type=bool)
+
+        if not email or not first_name or not last_name:
+            flash(gettext('email, first name, last name and password fields can not be empty!'), 'error')    
+            return redirect(url_for('panel.users_create'))
+
+        user = User(_email=email, first_name=first_name, last_name=last_name, password=password,
+                    confirmed=confirmed, is_admin=is_admin)    
+
+        db.session.add(user)
+        db.session.commit()
+        flash(gettext('user successfully created'), 'success')
+        return redirect(url_for("panel.users_list"))
     return render_template('auth/users_form.html')
 
 @mod.route('/auth/users/delete/<int:user_id>/')
