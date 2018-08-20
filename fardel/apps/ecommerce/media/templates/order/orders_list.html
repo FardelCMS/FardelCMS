@@ -1,17 +1,21 @@
 {% extends "panel_base.html" %}
 {% import '_macros.html' as macros %}
-{% if orders[0].status == 'Done' %} {{gettext('Done Orders')}}{% else  %}  {{gettext('Undone Orders')}}{% endif %}
-{% block header_title %}{% if orders[0].status == 'Done' %} {{gettext('Done Orders')}}{% else  %}  {{gettext('Undone Orders')}}{% endif %}
- | {{get_sitename()}}{% endblock %}
-{% block title %}{% if orders[0].status == 'Done' %} {{gettext('Done Orders')}}{% else  %}  {{gettext('Undone Orders')}}{% endif %}
-{% endblock %}
+
+{% if orders_status == 'Done' %}
+  {{gettext('Done Orders')}}
+{% else  %}
+  {{gettext('Undone Orders')}}
+{% endif %}
+
+{% block header_title %}{% if orders_status == 'Done' %}{{gettext('Done Orders')}}{% else  %}{{gettext('Undone Orders')}}{% endif %} | {{get_sitename()}}{% endblock %}
+{% block title %}{% if orders_status == 'Done' %}{{gettext('Done Orders')}}{% else %}{{gettext('Undone Orders')}}{% endif %} | {{get_sitename()}}{% endblock %}
 
 {% block content %}
 <div class="row"> 
   <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="x_panel">
       <div class="x_title">
-        <h2>{% if orders[0].status == 'Done' %} {{gettext('Done Orders')}}{% else  %}  {{gettext('Undone Orders')}}{% endif %}
+        <h2>{% if orders_status == 'Done' %} {{gettext('Done Orders')}}{% else  %}  {{gettext('Undone Orders')}}{% endif %}
 </h2>
         <ul class="nav navbar-left panel_toolbox">
           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
@@ -33,7 +37,7 @@
                 <td>{{gettext("Status")}}</td>
                 <td>{{gettext("is shipping required")}}</td>                
                 <td>{{gettext("More Information")}}</td>
-              {% if orders[0].status != 'Done' %}
+              {% if orders_status != 'Done' %}
                 <td>{{gettext("Is Done?")}}
               {% endif %}
               </tr>

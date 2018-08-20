@@ -20,8 +20,7 @@ def done_orders_list():
 	query = Order.query.filter_by(status='Done').order_by(Order.create_time.asc())
 	pages = math.ceil(query.count() / per_page)
 	orders = query.paginate(page=page, per_page=per_page, error_out=False).items
-	return render_template('order/orders_list.html',
-		orders=orders)
+	return render_template('order/orders_list.html', orders=orders, orders_status="Done")
 
 @staff_required
 @mod.route('/orders/list/undone/')
@@ -32,8 +31,7 @@ def undone_orders_list():
 	query = Order.query.filter(Order.status != 'Done').order_by(Order.create_time.asc())
 	pages = math.ceil(query.count() / per_page)
 	orders = query.paginate(page=page, per_page=per_page, error_out=False).items
-	return render_template('order/orders_list.html',
-		orders=orders)
+	return render_template('order/orders_list.html', orders=orders, orders_status="Undone")
 
 @staff_required
 @mod.route('/orders/list/change_status/<int:order_id>/')
