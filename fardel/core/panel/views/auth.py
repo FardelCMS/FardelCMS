@@ -64,7 +64,10 @@ def users_edit(user_id):
         user._email = email
         user.first_name = first_name
         user.last_name = last_name
-        user.password = password
+        
+        if password and password != "":
+            user.password = password
+
         user.confirmed = confirmed
         user.is_admin = is_admin
         user.is_staff = is_staff
