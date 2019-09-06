@@ -30,6 +30,7 @@
                 <td>{{gettext("first name")}}</td>
                 <td>{{gettext("last name")}}</td>
                 <td>{{gettext("is admin")}}</td>
+                <td>{{gettext("group name")}}</td>
                 <td>{{gettext("is confirmed")}}</td>
                 <td>{{gettext("settings")}}</td>
               </tr>
@@ -41,8 +42,9 @@
                 <td>{{u.email}}</td>
                 <td>{{u.get_first_name()}}</td>
                 <td>{{u.get_last_name()}}</td>
-                <td>{{u.is_admin}}</td>
-                <td>{{u.get_confirmed()}}</td>
+                <td>{% if u.is_admin %}{{gettext("Yes")}}{% else %}{{gettext("No")}}{% endif %}</td>
+                <td>{{u.group.name}}</td>
+                <td>{% if u.confirmed %}{{gettext("Yes")}}{% else %}{{gettext("No")}}{% endif %}</td>
                 <td><a class="btn btn-warning" href="{{url_for('panel.users_edit', user_id=u.id)}}">{{gettext("Edit")}}</a></td>
               </tr>
               {% endfor %}

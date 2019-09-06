@@ -7,6 +7,11 @@ class Section():
 
 	def add_link(self, link):
 		self.links.append(link)
+	
+	def get_link(self, title):
+		for link in self.links:
+			if link.title == title:
+				return link
 
 	@property
 	def permissions(self):
@@ -75,6 +80,11 @@ class PanelSidebar():
 
 	def add_section(self, section):
 		self.sections.append(section)
+
+	def get_section(self, title):
+		for section in self.sections:
+			if section.title == title:
+				return section
 
 	def render(self):
 		sections = []

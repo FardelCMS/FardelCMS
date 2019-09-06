@@ -31,13 +31,6 @@ def users_list():
     return render_template('auth/users_list.html',
         users=users, pages=pages, page=page)
 
-# @permission_required("can_get_users")
-# @staff_required
-# @login_required
-# @mod.route('/auth/users/get/<int:user_id>/')
-# def users_get(user_id):
-#     u = User.query.filter_by(id=user_id).first_or_404()
-#     return render_template('auth/users_get.html', user=u)
 
 @mod.route('/auth/users/edit/<int:user_id>/', methods=['POST', 'GET'])
 @admin_required
@@ -58,12 +51,14 @@ def users_edit(user_id):
         confirmed = request.form.get('confirmed', type=bool)
         is_admin = request.form.get('is_admin', type=bool)
         is_staff = request.form.get('is_staff', type=bool)
+        group_id = request.form.get('group_id')
         
         if not email or not first_name or not last_name:
             flash('gettext(email, first name, last name and password fields can not be empty!)', 'error')    
         user._email = email
         user.first_name = first_name
         user.last_name = last_name
+        user.group_id = group_id
 
         if password and password != "":
             user.password = password
@@ -77,7 +72,8 @@ def users_edit(user_id):
             
         return redirect(url_for('panel.users_list'))
         
-    return render_template('auth/users_form.html', user=user)
+    groups = Group.query.all()
+    return render_template('auth/users_form.html', user=user, groups=groups)
 
 @mod.route('/auth/users/create/', methods=['POST', 'GET'])
 @admin_required
@@ -95,19 +91,21 @@ def users_create():
         password = request.form.get('password')
         confirmed = request.form.get('confirmed', type=bool)
         is_admin = request.form.get('is_admin', type=bool)
+        group_id = request.form.get('group_id')
 
         if not email or not first_name or not last_name:
             flash(gettext('email, first name, last name and password fields can not be empty!'), 'error')    
             return redirect(url_for('panel.users_create'))
 
         user = User(_email=email, first_name=first_name, last_name=last_name, password=password,
-                    confirmed=confirmed, is_admin=is_admin)    
+                    confirmed=confirmed, is_admin=is_admin, group_id=group_id)    
 
         db.session.add(user)
         db.session.commit()
         flash(gettext('user successfully created'), 'success')
         return redirect(url_for("panel.users_list"))
-    return render_template('auth/users_form.html')
+    groups = Group.query.all()
+    return render_template('auth/users_form.html', groups=groups)
 
 @mod.route('/auth/users/delete/<int:user_id>/')
 @admin_required
