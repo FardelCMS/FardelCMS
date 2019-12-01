@@ -86,7 +86,7 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
 
     first_name = db.Column(db.String(64), nullable=False, default="")
     last_name = db.Column(db.String(64), nullable=False, default="")
-    # username = db.Column(db.String(64), index=True, unique=True)
+    username = db.Column(db.String(64), index=True, unique=True)
 
     _email = db.Column(db.String(128), index=True, unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
