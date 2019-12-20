@@ -100,8 +100,7 @@ ENV/
 # mypy
 .mypy_cache/
 
-# flask migration
-migration/
-
-# upload files
+# fardel dev env
 uploads/
+fardel_apps/
+manage.py

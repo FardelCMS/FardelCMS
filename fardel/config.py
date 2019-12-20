@@ -1,4 +1,4 @@
-import os 
+import os
 
 from pathlib import Path
 from flask_babel import lazy_gettext
@@ -6,11 +6,15 @@ from flask_babel import lazy_gettext
 
 PATH_TO_ROOT = Path(__file__).parent.parent
 
+
 class BaseConfig(object):
     VERSION = "0.1.0"
     MINIFY = False
 
-    SECRET_KEY = 'qt584635@(*$(KC=oijr )*@$*^SAd- okasfoijh*(@Y$*)A)S(+D' # move this to os.environment
+    SQLALCHEMY_DATABASE_URI = 'postgresql://username:password@server_address/db_name'
+    DEBUG = True
+
+    SECRET_KEY = 'GET SECRET KEY FROM ENV'
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -21,9 +25,7 @@ class BaseConfig(object):
 
     UPLOAD_FOLDER = Path(__file__).parent.parent / 'uploads'
 
-    MERCHANT_ID = ''  # Required
-    ZARINPAL_WEBSERVICE = 'https://www.zarinpal.com/pg/services/WebGate/wsdl'  # Required
-
+    FARDEL_APP_PATH = "fardel_apps"
     ACTIVE_APPS = (
         "blog",
         "auth_address",
@@ -39,34 +41,3 @@ class BaseConfig(object):
     BABEL_TRANSLATION_DIRECTORIES = str(PATH_TO_ROOT / "translations")
 
     SENTRY_DSN = ""
-
-    # MAIL_SERVER = ""
-    # MAIL_USERNAME = ""
-    # MAIL_PASSWORD = ""
-
-    # ADMIN_EMAIL = ""
-
-    # MAIL_SUBJECT_PREFIX = '[]'
-    # MAIL_SENDER = 'Info <@.com>'
-
-
-    # ZARINPAL_MERCHANT_ID = ''
-    # ZARINPAL_WEBSERVICE = ''
-
-    # RECAPTCHA_ENABLED = True
-    # RECAPTCHA_SITE_KEY = ""
-    # RECAPTCHA_SECRET_KEY = ""
-    # RECAPTCHA_THEME = "light"
-    # RECAPTCHA_TYPE = "image"
-    # RECAPTCHA_SIZE = "compact"
-    # RECAPTCHA_RTABINDEX = 10
-
-
-class DevConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = 'postgresql://dev_shop:123@localhost/dev_shop'
-    DEBUG = True
-
-
-class ProdConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = 'postgresql://dev_shop:123@localhost/dev_shop'
-    DEBUG = False

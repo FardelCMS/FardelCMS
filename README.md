@@ -3,62 +3,42 @@
 ![docs badge](https://readthedocs.org/projects/boghche/badge/?version=latest)
 
 
-Boghche is another but complete cms. Its server is written in python and has Vue + Nuxt, iOS and Android clients. Currently it has a complete blog and a complete eCommerce. Its goal is to make costumization very easy and simple.
+Fardel is another but complete CMS. Its server is written in python and has Nuxt and iOS clients. Currently it has a complete blog and a complete eCommerce. Its goal is to make costumization very easy and simple.
 
-[Documents](http://boghche.readthedocs.io/en/latest/)
-[Demo](http://fardel.hamzehlouy.com/)
-[Panel Demo](http://fardel.hamzehlouy.com/panel/login/)
-```
-Admin Email: test@test.com
-Admin Pass: 123
-```
 
 ## Installation
 
-###### Requirements:
+You can easily install fardel with pip command:
 
-* python +3.5
-* postgresql database
+`pip install fardel`
 
-###### Install Postgresql database and database
+## Manage commands
 
-Create development database (Postgresql):
-```
-$ sudo -u postgres psql
-
-postgres=# CREATE USER dev_shop WITH PASSWORD '123';
-postgres=# CREATE DATABASE dev_shop;
-postgres=# GRANT ALL PRIVILEGES ON DATABASE dev_shop to dev_shop;
-```
-
-###### Install python dependencies:
+For migration command and costum commands:
 
 ```
-$ pip install -r requirements.txt
+from fardel.manager import FardelManager, Fardel
+from fardel.config import BaseConfig
+
+fardel = Fardel(BaseConfig)
+manager = FardelManager(fardel)
+
+
+if __name__ == "__main__":
+    manager.run()
 ```
 
-###### Setup tables:
-```
-python manage.py db init
-python manage.py db migrate
-python manage.py db upgrade
-```
+## WSGI Server
 
-###### Run Tests:
+For deployment and tests:
 
 ```
-$ python test.py
-```
+from fardel import Fardel
+from fardel.config import BaseConfig
 
-###### Run server:
+fardel = Fardel(BaseConfig)
+app = fardel.app
 
-```
-$ python wsgi.py
-```
-
-###### To have sample data
-
-```
-$ pip install mimesis
-$ python manage.py generate_fake
+if __name__ == "__main__":
+    fardel.app.run()
 ```

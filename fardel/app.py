@@ -11,21 +11,24 @@ from raven.contrib.flask import Sentry
 from flask import Flask, request, jsonify, redirect, url_for, render_template
 
 from fardel import core
-from fardel.ext import  db, jwt, cache, login_manager, babel
-from fardel.config import DevConfig, ProdConfig
+from fardel.ext import db, jwt, cache, login_manager, babel
 
-__all__ = ['create_app']
+
+__all__ = (
+    'Fardel',
+)
 
 DEFAULT_APP_NAME = 'fardel'
 
 
 class Fardel(object):
     ignored_panel_urls = ['static']
-    def __init__(self, develop=False):
+
+    def __init__(self, config_class):
         self.app = Flask(DEFAULT_APP_NAME)
         self.panels = []
 
-        self.configure_app(develop)
+        self.configure_app(config_class)
         self.configure_addons()
         self.configure_views()
         self.configure_extentions()
@@ -33,11 +36,8 @@ class Fardel(object):
         self.init_jinja_globals()
         self.configure_sentry()
 
-    def configure_app(self, develop):
-        if develop:
-            self.app.config.from_object(DevConfig)
-        else:
-            self.app.config.from_object(ProdConfig)
+    def configure_app(self, config_class):
+        self.app.config.from_object(config_class)
 
     def configure_addons(self):
         from fardel.core.auth.views import mod as auth
@@ -47,14 +47,23 @@ class Fardel(object):
         self.app.register_blueprint(panel)
         self.app.register_blueprint(media)
 
-        for app_name in self.app.config['ACTIVE_APPS']:
+        fardel_apps_path = self.app.config['FARDEL_APP_PATH']
 
-            bp = __import__('fardel.apps.%s' % app_name, fromlist=['views','panel'])
+        for app_name in self.app.config['ACTIVE_APPS']:
+            try:
+                bp = __import__('{fardel_apps_path}.{app_name}'.format(
+                    app_name=app_name,
+                    fardel_apps_path=fardel_apps_path
+                ), fromlist=['views', 'panel'])
+            except:
+                self.app.logger.warning("%s app not found" % app_name)
+                continue
+
             if hasattr(bp, 'panel'):
                 self._register_panel(self.app, bp.panel.mod, app_name)
             else:
                 self.app.logger.debug("No admin panel for %s" % app_name)
-            
+
             try:
                 self.app.register_blueprint(bp.views.mod)
                 self.app.logger.debug("Module %s registered" % app_name)
@@ -87,7 +96,6 @@ class Fardel(object):
     def _register_panel(self, app, blueprint, app_name):
         if blueprint.name.endswith("panel"):
             self.panels.append(blueprint.name)
-            
             self.app.register_blueprint(blueprint)
             for rule in self.app.url_map.iter_rules():
                 endpoint = rule.endpoint.split('.')
@@ -100,10 +108,9 @@ class Fardel(object):
                     if hasattr(view_func, 'decorators'):
                         has_staff_required = view_func.decorators.get('staff_required', False)
                         has_admin_required = view_func.decorators.get('admin_required', False)
-                    
+
                     if not has_staff_required and not has_admin_required:
                         raise Exception("No staff_required or admin_required for panel function %s" % rule.endpoint)
-                    
 
             self.app.logger.debug("Admin panel for %s registered" % app_name)
         else:

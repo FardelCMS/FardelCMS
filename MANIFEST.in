@@ -1,0 +1,5 @@
+include fardel/core/panel/templates/*
+include fardel/core/panel/templates/**/*
+include fardel/core/panel/static/**/*
+include fardel/core/panel/static/**/**/*
+include fardel/core/panel/static/**/**/**/*
