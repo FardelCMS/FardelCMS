@@ -41,3 +41,12 @@ class BaseConfig(object):
     BABEL_TRANSLATION_DIRECTORIES = str(PATH_TO_ROOT / "translations")
 
     SENTRY_DSN = ""
+
+    EMAIL_VERIFICATION_EMAIL_SENDER = os.getenv("EMAIL_VERIFICATION_EMAIL_SENDER")
+    EMAIL_VERIFICATION_ACTIVE = bool(os.getenv("EMAIL_VERIFICATION_ACTIVE", default=False))
+
+    MAIL_SERVER = os.getenv("MAIL_SERVER")
+    MAIL_PORT = int(os.getenv("MAIL_PORT", default=465))
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")

@@ -7,6 +7,7 @@ from flask_jwt_extended import JWTManager
 from flask_caching import Cache
 from flask_login import LoginManager
 from flask_babel import Babel
+from flask_mail import Mail
 
 
 db = SQLAlchemy()
@@ -14,3 +15,4 @@ jwt = JWTManager()
 cache = Cache()
 login_manager = LoginManager()
 babel = Babel()
+mail = Mail()

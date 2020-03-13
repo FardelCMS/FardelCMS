@@ -11,7 +11,7 @@ from raven.contrib.flask import Sentry
 from flask import Flask, request, jsonify, redirect, url_for, render_template
 
 from fardel import core
-from fardel.ext import db, jwt, cache, login_manager, babel
+from fardel.ext import db, jwt, cache, login_manager, babel, mail
 
 
 __all__ = (
@@ -24,8 +24,8 @@ DEFAULT_APP_NAME = 'fardel'
 class Fardel(object):
     ignored_panel_urls = ['static']
 
-    def __init__(self, config_class):
-        self.app = Flask(DEFAULT_APP_NAME)
+    def __init__(self, config_class, **flask_options):
+        self.app = Flask(DEFAULT_APP_NAME, **flask_options)
         self.panels = []
 
         self.configure_app(config_class)
@@ -55,20 +55,22 @@ class Fardel(object):
                     app_name=app_name,
                     fardel_apps_path=fardel_apps_path
                 ), fromlist=['views', 'panel'])
-            except:
+
+                if hasattr(bp, 'panel'):
+                    self._register_panel(self.app, bp.panel.mod, app_name)
+                else:
+                    self.app.logger.debug("No admin panel for %s" % app_name)
+
+                try:
+                    self.app.register_blueprint(bp.views.mod)
+                    self.app.logger.debug("Module %s registered" % app_name)
+                except Exception as err:
+                    self.app.logger.warning("%s app doesn't have blueprint." % app_name)
+                    self.app.logger.warning(err, exc_info=True)
+
+            except Exception as err:
                 self.app.logger.warning("%s app not found" % app_name)
-                continue
-
-            if hasattr(bp, 'panel'):
-                self._register_panel(self.app, bp.panel.mod, app_name)
-            else:
-                self.app.logger.debug("No admin panel for %s" % app_name)
-
-            try:
-                self.app.register_blueprint(bp.views.mod)
-                self.app.logger.debug("Module %s registered" % app_name)
-            except:
-                self.app.logger.warning("%s app doesn't have blueprint." % app_name)
+                self.app.logger.warning(err, exc_info=True)
 
     def configure_views(self):
         self.app.add_url_rule('/api/search/', 'search', core.search)
@@ -84,6 +86,7 @@ class Fardel(object):
         cache.init_app(self.app)
         login_manager.init_app(self.app)
         babel.init_app(self.app)
+        mail.init_app(self.app)
 
     def configure_sentry(self):
         if self.app.config['SENTRY_DSN']:

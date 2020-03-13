@@ -10,18 +10,29 @@ __all__ = (
     'BaseResource', 'GetBaseResource'
 )
 
+
 class BaseResource(Resource):
 
     def bad_request(self):
-        return {'message':gettext('Invalid form submitted')}, 400
+        return {'message': gettext('Invalid form submitted')}, 400
 
-    def check_data(self, data, requires):
-        for r in requires:
-            if r not in data:
-                return False
-            if not data[r]:
-                return False
-        return True
+    def check_data(self, data, *or_requires):
+        for requires in or_requires:
+            satisfied = True
+
+            if not isinstance(requires, list):
+                raise Exception("or_requires are list each item not %s" % type(requires))
+
+            for r in requires:
+                if r not in data:
+                    satisfied = False
+                if not data[r]:
+                    satisfied = False
+
+            if satisfied:
+                return True
+
+        return False
 
 
 class GetBaseResource(BaseResource):
@@ -32,7 +43,7 @@ class GetBaseResource(BaseResource):
             raise NotImplementedError("resource_class have to be assigned")
 
     def obj_id_required(self):
-        return {"message":gettext("obj_id must be provided")}, 422
+        return {"message": gettext("obj_id must be provided")}, 422
 
     def get(self, obj_id=None):
         self.check_implemented()
@@ -45,9 +56,9 @@ class GetBaseResource(BaseResource):
         resource_name = "%ss" % self.resource_class.__name__.lower()
         page = request.args.get('page', type=int, default=1)
         return {
-            resource_name: [obj.dict() for obj in 
-                self.resource_class.query.paginate(
-                    page=page, per_page=32, error_out=False).items]
+            resource_name: [obj.dict() for obj in
+                            self.resource_class.query.paginate(
+                page=page, per_page=32, error_out=False).items]
         }
 
 
@@ -67,7 +78,7 @@ class PostBaseResource(GetBaseResource):
         data = request.get_json()
         for field in self.required_to_create:
             if not data.get(field):
-                return {'message':'%s must be provided.' % field}, 422
+                return {'message': '%s must be provided.' % field}, 422
             fields[field] = data[field]
 
         for field in self.optional_fields:
@@ -94,10 +105,10 @@ class DeleteBaseResource(GetBaseResource):
         deleteds = self.resource_class.query.filter_by(id=obj_id).delete()
         db.session.commit()
         if deleteds == 1:
-            return {"message":"%s successfully deleted" % self.resource_class.__name__}
+            return {"message": "%s successfully deleted" % self.resource_class.__name__}
         elif deleteds > 1:
             return {
-                "message":"%ss successfully deleted, count: %d" % (
+                "message": "%ss successfully deleted, count: %d" % (
                     self.resource_class.__name__, deleteds
                 )}
-        return {"message":"No %s deleted" % self.resource_class.__name__.lower()}, 404
+        return {"message": "No %s deleted" % self.resource_class.__name__.lower()}, 404

@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 
 install_requires = [
     "flask==1.1.1",
+    "flask_mail==0.9.1",
     "flask_sqlalchemy==2.3.2",
     "psycopg2-binary",
     "bcrypt==3.1.4",
@@ -18,7 +19,7 @@ install_requires = [
 
 setup(
     name='fardel',
-    version='1.0.2',
+    version='1.1.0',
     description='Complete and modular CMS',
     author='Sepehr Hamzehlouy',
     author_email='s.hamzelooy@gmail.com',

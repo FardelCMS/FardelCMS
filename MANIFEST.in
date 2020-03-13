@@ -1,3 +1,4 @@
+include fardel/core/auth/templates/*
 include fardel/core/panel/templates/*
 include fardel/core/panel/templates/**/*
 include fardel/core/panel/static/**/*

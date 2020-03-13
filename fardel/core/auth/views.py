@@ -63,10 +63,10 @@ Revoked token:
 
         {"message":"Token has been revoked"}
 """
-
+import time
 
 from sqlalchemy import or_
-from flask import render_template, redirect, url_for, jsonify, request, make_response
+from flask import render_template, redirect, url_for, jsonify, request, make_response, current_app
 
 from fardel.core.rest import create_api, abort, Resource
 from flask_jwt_extended import (
@@ -78,12 +78,14 @@ from flask_jwt_extended import (
 
 from fardel.ext import jwt, db
 from fardel.core.base import BaseResource
+from fardel.core import email as email_pkg
 
 from . import mod
 from .models import *
 
 
 auth_api = create_api(mod)
+
 
 @mod.before_app_first_request
 def create_permissions():
@@ -143,13 +145,14 @@ class RegistrationApi(BaseResource):
                     {"message": "A user with this email already exists."}
         """
         data = request.get_json()
-        if not self.check_data(data, ['password', 'email', 'first_name', 'last_name']):
+        if not self.check_data(data, ['password', 'email'], ['password', 'phone_number']):
             return self.bad_request()
 
         password = data['password']
-        email = data['email']
-        first_name = data['first_name']
-        last_name = data['last_name']
+        email = data.get('email')
+        phone_number = data.get('phone_number')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
 
         if User.query.filter_by(_email=email).first():
             return self.already_exists()
@@ -159,10 +162,15 @@ class RegistrationApi(BaseResource):
 
         db.session.add(u)
         db.session.commit()
+
+        if current_app.config['EMAIL_ACTIVE']:
+            email = u.generate_registration_email()
+            email_pkg.send_email(email)
+
         access_token = create_access_token(identity=u.email)
         refresh_token = create_refresh_token(identity=u.email)
         return {
-            'message':'Successfully registered',
+            'message': 'Successfully registered',
             'access_token': access_token,
             'refresh_token': refresh_token
         }
@@ -174,6 +182,7 @@ class LoginApi(BaseResource):
     :URL: ``/api/auth/login/``
     """
     endpoints = ['/login/']
+
     def post(self):
         """
         :required arguments:
@@ -203,7 +212,7 @@ class LoginApi(BaseResource):
             :status_code: 401
             :response:
                 .. code-block:: json
-    
+
                     {"message":"Username or password is not correct"}
         """
         data = request.get_json()
@@ -218,7 +227,7 @@ class LoginApi(BaseResource):
             access_token = create_access_token(identity=u.email)
             refresh_token = create_refresh_token(identity=u.email)
             obj = {
-                'message':'Successfully logined',
+                'message': 'Successfully logined',
                 'access_token': access_token,
                 'refresh_token': refresh_token,
             }
@@ -227,7 +236,7 @@ class LoginApi(BaseResource):
                 obj['access'] = access
             return obj
         return {
-            'message':'Username or password is not correct'
+            'message': 'Username or password is not correct'
         }, 401
 
 
@@ -264,6 +273,7 @@ class LogoutRefreshApi(BaseResource):
     """
     endpoints = ['/logout-refresh/']
     method_decorators = [jwt_refresh_token_required]
+
     def post(self):
         """
         * Authorization header containing refresh token is required
@@ -289,6 +299,7 @@ class RefreshTokenApi(BaseResource):
     """
     endpoints = ['/refresh-token/']
     method_decorators = [jwt_refresh_token_required]
+
     def post(self):
         """
         * Authorization header containing refresh token is required
@@ -313,8 +324,8 @@ class ProfileApi(BaseResource):
     """
     endpoints = ['/profile/']
     method_decorators = {
-        'get':[jwt_required],
-        'put':[jwt_required]
+        'get': [jwt_required],
+        'put': [jwt_required]
     }
 
     def get(self):
@@ -329,7 +340,7 @@ class ProfileApi(BaseResource):
                     "user": UserObject
                 }
         """
-        return {"user":current_user.dict()}
+        return {"user": current_user.dict()}
 
     def put(self):
         """
@@ -356,5 +367,36 @@ class ProfileApi(BaseResource):
                 setattr(current_user, field, data[field])
 
         db.session.commit()
-        return {"message":"Profile successfully updated",
-                'user':current_user.dict()}
+        return {"message": "Profile successfully updated",
+                'user': current_user.dict()}
+
+
+@rest_resource
+class ConfirmEmailAPI(BaseResource):
+    """
+    :URL: ``/api/auth/confirm/email/`, `/api/auth/confirm/email/<token>/``
+    """
+    endpoints = ['/confirm/email/', '/confirm/email/<token>/']
+
+    def count_active_tokens(self, tokens):
+        count = 0
+        for t in tokens:
+            if t['expire_at'] > time.time():
+                count += 1
+        return count
+
+    @jwt_required
+    def get(self):
+        if current_user.tokens and self.count_active_tokens(current_user.tokens) > 2:
+            return {"message": "You have two active tokens"}, 403
+
+        email = current_user.generate_registration_email()
+        email_pkg.send_email(email)
+        return {"message": "an email sent to you provided by a token"}
+
+    @jwt_required
+    def patch(self, token):
+        is_confirmed = current_user.confirm_email_with_token(token)
+        if is_confirmed:
+            return {"message": "email confirmed successfully"}
+        return {"message": "token is not valid"}, 404

@@ -1,0 +1,3 @@
+{{gettext("Your verification token to active your email:")}}
+
+{{token}}
