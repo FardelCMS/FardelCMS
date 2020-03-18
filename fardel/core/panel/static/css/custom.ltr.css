@@ -302,7 +302,7 @@ html , body{
        margin-bottom: 10px;
        float: left
    }
-   .main_menu span.fa {
+   .main_menu span.fas {
        float: right;
        text-align: center;
        margin-top: 5px;
@@ -310,7 +310,7 @@ html , body{
        min-width: inherit;
        color: #C4CFDA
    }
-   .active a span.fa {
+   .active a span.fas {
        text-align: right !important;
        margin-right: 4px
    }

@@ -1,8 +1,9 @@
 {% extends "panel_base.html" %}
 {% import '_macros.html' as macros %}
+{% block header_title %}{{gettext("Users List")}} | {{get_sitename()}}{% endblock %}
 
 {% block content %}
-<div class="row"> 
+<div class="row">
   <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="x_panel">
       <div class="x_title">
@@ -36,16 +37,21 @@
               </tr>
             </thead>
             <tbody>
-              {% for u in users %}             
+              {% for u in users %}
               <tr>
                 <td>{{u.id}}</td>
                 <td>{{u.email}}</td>
                 <td>{{u.get_first_name()}}</td>
                 <td>{{u.get_last_name()}}</td>
                 <td>{% if u.is_admin %}{{gettext("Yes")}}{% else %}{{gettext("No")}}{% endif %}</td>
-                <td>{{u.group.name}}</td>
+                <td>
+                  {% for g in u.groups %}
+                  {{g.name}}<br>
+                  {% endfor %}
+                </td>
                 <td>{% if u.confirmed %}{{gettext("Yes")}}{% else %}{{gettext("No")}}{% endif %}</td>
-                <td><a class="btn btn-warning" href="{{url_for('panel.users_edit', user_id=u.id)}}">{{gettext("Edit")}}</a></td>
+                <td><a class="btn btn-warning"
+                    href="{{url_for('panel.users_edit', user_id=u.id)}}">{{gettext("Edit")}}</a></td>
               </tr>
               {% endfor %}
             </tbody>

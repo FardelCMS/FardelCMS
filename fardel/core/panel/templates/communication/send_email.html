@@ -1,0 +1,103 @@
+{% extends "panel_base.html" %}
+
+{% block header_title %}{{gettext("Send Email")}} | {{get_sitename()}}{% endblock %}
+{% block title %}{{gettext("Send Email")}}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>{{gettext("Send Email")}}</h2>
+                <ul class="nav navbar-left panel_toolbox">
+                    {% if close %}
+                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    </li>
+                    {% endif %}
+                    {% if collapse %}
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="col-md-9">
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <input placeholder="{{gettext('Email sender')}}" type="text" id="sender" name="sender"
+                                    required="required" class="form-control col-xs-12">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-9">
+                                <select id="recievers" class="form-control" multiple="multiple" name="recievers">
+                                </select>
+                            </div>
+                            <div class="col-xs-3">
+                                <label for="sent-to-all" class="control-label">Send to all users:</label>
+                                <input id="sent-to-all" type="checkbox" name="sent-to-all">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <input placeholder="{{gettext('Title goes here ...')}}" type="text" id="title"
+                                    name="title" required="required" class="form-control col-xs-12"
+                                    {% if email %}value="{{email.title}}" {% endif %}>
+                            </div>
+                        </div><br><br><br><br><br><br>
+                        <div class="form-group">
+                            <textarea name="content" id="content">{% if email %}{{email.content}}{% endif %}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="allow_comment" class="control-label">
+                                {{gettext("Attachments")}}
+                            </label><br>
+                            {{gettext("Attachments feature is not available")}}
+                        </div>
+                        <div class="divider-dashed"></div>
+                    </div>
+                    <button class="btn btn-success" type="submit">{{gettext("Send Email[s]")}}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_block %}
+<script>
+    $(function () {
+        tinymce.init({
+            selector: '#content',
+            height: 800,
+            plugins: [
+                "advlist autolink lists link image charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table contextmenu paste imagetools wordcount"
+            ],
+            toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+
+            images_upload_url: "/panel/blog/upload/images/",
+        });
+
+        $('#recievers').select2({
+            tags: true,
+            placeholder: "Email recievers",
+            ajax: {
+                url: '/panel/auth/users/search/email/',
+                processResults: function (data) {
+                    console.log(data);
+                    return {
+                        results: data.users
+                    };
+                },
+                dataType: 'json'
+            },
+        });
+    });
+</script>
+{% endblock %}

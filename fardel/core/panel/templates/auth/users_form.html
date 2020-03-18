@@ -1,6 +1,7 @@
 {% extends "panel_base.html" %}
 
-{% block header_title %}{% if  user%}{{gettext("Edit User Information")}}{% else %}{{gettext("Create User")}}{% endif %} | {{get_sitename()}}{% endblock %}
+{% block header_title %}{% if  user%}{{gettext("Edit User Information")}}{% else %}{{gettext("Create User")}}{% endif %}
+| {{get_sitename()}}{% endblock %}
 {% block title %}{% if  user%}{{gettext("Edit User Information")}}{% else %}{{gettext("Create User")}}{% endif %}{% endblock %}
 
 {% block content %}
@@ -13,7 +14,7 @@
           <li><a class="close-link"><i class="fa fa-close"></i></a>
           </li>
           <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-          </li>            
+          </li>
         </ul>
         <div class="clearfix"></div>
       </div>
@@ -24,46 +25,54 @@
           <div class="col-xs-12">
             <div class="form-group col-xs-12">
               <label for="sku">{{gettext("email")}}</label>
-              <input placeholder="{{gettext('email')}}" type="email" id="email" name="email" required="required" class="form-control col-xs-12" {% if user %}value="{{user._email}}"{% endif %}>
+              <input placeholder="{{gettext('email')}}" type="email" id="email" name="email" required="required"
+                class="form-control col-xs-12" {% if user %}value="{{user._email}}" {% endif %}>
             </div>
             <div class="form-group col-xs-12">
               <label for="first_name" class="control-label">
                 {{gettext("First Name")}}
               </label>
-              <input placeholder = "{{gettext('first name')}}" type="text" name="first_name" class="form-control col-xs-12" {% if user %}value="{{user.first_name}}"{% endif %}>
+              <input placeholder="{{gettext('first name')}}" type="text" name="first_name"
+                class="form-control col-xs-12" {% if user %}value="{{user.first_name}}" {% endif %}>
             </div>
             <div class="form-group col-xs-12">
               <label for="last_name" class="control-label">
                 {{gettext("Last Name")}}
               </label>
-              <input placeholder = "{{gettext('last name')}}" type="text" name="last_name" class="form-control col-xs-12" {% if user %}value="{{user.last_name}}"{% endif %} required="">
+              <input placeholder="{{gettext('last name')}}" type="text" name="last_name" class="form-control col-xs-12"
+                {% if user %}value="{{user.last_name}}" {% endif %} required="">
             </div>
             <div class="form-group col-xs-12">
               <label for="password">{{gettext("Password")}}</label>
-              <input placeholder="{{gettext('password')}}" type="text" id="password" name="password"  class="form-control col-xs-12" >
+              <input placeholder="{{gettext('password')}}" type="text" id="password" name="password"
+                class="form-control col-xs-12">
             </div>
             <div class="form-group col-xs-12">
               <label for="confirmed">{{gettext("Confirmed")}}</label>
-              <input placeholder="{{gettext('confirmed')}}" type="checkbox" id="confirmed" name="confirmed"  class="form-check-input" {% if user and user.confirmed %}checked=""{% endif %}>
+              <input placeholder="{{gettext('confirmed')}}" type="checkbox" id="confirmed" name="confirmed"
+                class="form-check-input" {% if user and user.confirmed %}checked="" {% endif %}>
             </div>
             <div class="form-group col-xs-12">
               <label for="is_admin">{{gettext("Is Admin")}}</label>
-              <input placeholder="{{gettext('is_admin')}}" type="checkbox" id="is_admin" name="is_admin"  class="form-check-input" {% if user and user.is_admin %}checked=""{% endif %}>
+              <input placeholder="{{gettext('is_admin')}}" type="checkbox" id="is_admin" name="is_admin"
+                class="form-check-input" {% if user and user.is_admin %}checked="" {% endif %}>
             </div>
             <div class="form-group">
               <label for="group" class="control-label">
                 {{gettext("Group")}}
               </label>
-              <select id="group" name="group_id" class="form-control">
+              <select id="group_ids" name="group_ids" class="form-control" multiple="multiple">
                 <option value="">---</option>
                 {% for g in groups %}
-                <option value="{{g.id}}" {% if user and user.group_id == g.id %}selected="selected"{% endif %}>{{g.name}}</option>
+                <option value="{{g.id}}" {% if user and g.id in user_group_ids %}selected="selected" {% endif %}>
+                  {{g.name}}</option>
                 {% endfor %}
               </select>
             </div>
             <div class="form-group col-xs-12">
               <label for="is_staff">{{gettext("Is Staff")}}</label>
-              <input placeholder="{{gettext('is_staff')}}" type="checkbox" id="is_staff" name="is_staff"  class="form-check-input" {% if user and user.is_staff %}checked=""{% endif %}>
+              <input placeholder="{{gettext('is_staff')}}" type="checkbox" id="is_staff" name="is_staff"
+                class="form-check-input" {% if user and user.is_staff %}checked="" {% endif %}>
             </div>
             <div class="form-group">
               <div class="col-lg-12">
@@ -77,13 +86,27 @@
       </div>
     </div>
   </div>
-</div>  
+</div>
 {% endblock %}
 
 {% block js_block %}
 <script>
-$(function(){
-  $('#group').select2();
-});
+  {% if user %}
+  var data = [
+    {% for group in user.groups %}
+  { id: "{{group.id}}", text: "{{group.name}}", selected: true },
+  {% endfor %}
+  ];
+  {% else %}
+  var data = [];
+  {% endif %}
+
+  $(function () {
+    $('#group_ids').select2({
+      multiple: true,
+      tags: true,
+      data: data,
+    });
+  });
 </script>
 {% endblock %}

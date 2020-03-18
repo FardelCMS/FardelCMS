@@ -13,6 +13,7 @@ __all__ = [
     'admin_required_rest',
 ]
 
+
 def permission_required(permission):
     def decorator(f):
         @wraps(f)
@@ -23,6 +24,7 @@ def permission_required(permission):
         return decorated_function
     return decorator
 
+
 def permission_required_rest(permission):
     def decorator(f):
         @wraps(f)
@@ -32,6 +34,7 @@ def permission_required_rest(permission):
             return rest_abort(403)
         return decorated_function
     return decorator
+
 
 def staff_required(func):
     if not hasattr(func, 'decorators'):
@@ -45,6 +48,7 @@ def staff_required(func):
         return abort(403)
     return wrapper
 
+
 def staff_required_rest(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -53,6 +57,7 @@ def staff_required_rest(func):
         return rest_abort(403)
     return wrapper
 
+
 def admin_required(func):
     if not hasattr(func, 'decorators'):
         func.decorators = {}
@@ -60,10 +65,11 @@ def admin_required(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if fl_current_user and fl_current_user.is_admin:
+        if fl_current_user and fl_current_user.is_authenticated and fl_current_user.is_admin:
             return func(*args, **kwargs)
         return abort(403)
     return wrapper
+
 
 def admin_required_rest(func):
     @wraps(func)

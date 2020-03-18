@@ -1,93 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% block header_title %}{% endblock %}</title>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link href="{{url_for('panel.static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
-    <link href="{{url_for('panel.static', filename='css/font-awesome.min.css')}}" rel="stylesheet">
-    <link href="{{url_for('panel.static', filename='css/nprogress.css')}}" rel="stylesheet">
-    <link href="{{url_for('panel.static', filename='css/select2.min.css')}}" rel="stylesheet">
-    <link href="{{url_for('panel.static', filename='css/dropzone.min.css')}}" rel="stylesheet">
-{% if get_text_direction() == "rtl" %}
-    <link href="{{url_for('panel.static', filename='css/custom.css')}}" rel="stylesheet">
-{% else %}
-    <link href="{{url_for('panel.static', filename='css/custom.ltr.css')}}" rel="stylesheet">
-{% endif %}
-    {% block css_block %}{% endblock %}
-  </head>
+  <title>{% block header_title %}{% endblock %}</title>
 
-  <body class="nav-md">
-    <div class="container body">
-      <div class="main_container">
-        {% include "panel_sidebar.html" %}
+  <link href="{{url_for('panel.static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+  <link href="{{url_for('panel.static', filename='css/font-awesome.min.css')}}" rel="stylesheet">
+  <link href="{{url_for('panel.static', filename='css/nprogress.css')}}" rel="stylesheet">
+  <link href="{{url_for('panel.static', filename='css/select2.min.css')}}" rel="stylesheet">
+  <link href="{{url_for('panel.static', filename='css/dropzone.min.css')}}" rel="stylesheet">
+  {% if get_text_direction() == "rtl" %}
+  <link href="{{url_for('panel.static', filename='css/custom.css')}}" rel="stylesheet">
+  {% else %}
+  <link href="{{url_for('panel.static', filename='css/custom.ltr.css')}}" rel="stylesheet">
+  {% endif %}
+  {% block css_block %}{% endblock %}
+</head>
 
-        <!-- top navigation -->
-        <div class="top_nav">
-          <div class="nav_menu">
-            <nav>
-              <div class="nav navbar-{{rightrtl_leftltr()}} toggle">
-                <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-              </div>
+<body class="nav-md">
+  <div class="container body">
+    <div class="main_container">
+      {% include "panel_sidebar.html" %}
 
-              <ul class="nav navbar-nav navbar-{{leftrtl_rightltr()}}">
-                <li class="">
-                  <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <img src="images/img.jpg" alt="">{{current_user.email}}
-                    <span class=" fa fa-angle-down"></span>
-                  </a>
-                  <ul class="dropdown-menu dropdown-usermenu pull-left">
-                    <li><a href="{{url_for('panel.logout')}}"><i class="fa fa-sign-out pull-right"></i> {{gettext("logout")}} </a></li>
-                  </ul>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-        <!-- /top navigation -->
-
-        <!-- page content -->
-        <div class="right_col" role="main">
-          <div>
-            <div class="page-title">
-              <div class="title_right">
-                <h3>{% block title %}{% endblock %}</h3>
-              </div>
+      <!-- top navigation -->
+      <div class="top_nav">
+        <div class="nav_menu">
+          <nav>
+            <div class="nav navbar-{{rightrtl_leftltr()}} toggle">
+              <a id="menu_toggle"><i class="fa fa-bars"></i></a>
             </div>
 
-            <div class="clearfix"></div>
-
-            {% block content %}{% endblock %}
-          </div>
+            <ul class="nav navbar-nav navbar-{{leftrtl_rightltr()}}">
+              <li class="">
+                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                  aria-expanded="false">
+                  <img src="images/img.jpg" alt="">{{current_user.email}}
+                  <span class=" fa fa-angle-down"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-usermenu pull-left">
+                  <li><a href="{{url_for('panel.logout')}}"><i class="fa fa-sign-out pull-right"></i>
+                      {{gettext("logout")}} </a></li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
         </div>
-        <!-- /page content -->
-
-        <!-- footer content -->
-        <footer>
-          <div class="pull-right">
-            Copy right 2018 - {{gettext("Fardel")}} + Gentelella(<a href="https://colorlib.com">Colorlib</a>)
-          </div>
-          <div class="clearfix"></div>
-        </footer>
-        <!-- /footer content -->
       </div>
-    </div>
+      <!-- /top navigation -->
 
-    <script src="{{url_for('panel.static', filename='js/jquery.min.js')}}"></script>
-    <script src="{{url_for('panel.static', filename='js/moment.min.js')}}"></script>
-    <script src="{{url_for('panel.static', filename='js/popper.min.js')}}"></script>
-    <script src="{{url_for('panel.static', filename='js/tooltip.min.js')}}"></script>
-    <script src="{{url_for('panel.static', filename='js/bootstrap.min.js')}}"></script>
-    <script src="{{url_for('panel.static', filename='js/select2.min.js')}}"></script>
-    <script src="{{url_for('panel.static', filename='js/fastclick.js')}}"></script>
-    <script src="{{url_for('panel.static', filename='js/nprogress.js')}}"></script>
-    <script src="{{url_for('panel.static', filename='js/dropzone.min.js')}}"></script>
-    <script type="text/javascript" src="{{url_for('panel.static', filename='tinymce.min.js')}}"></script>
-    <script src="{{url_for('panel.static', filename='js/custom.js')}}"></script>
-    {% block js_block %}{% endblock %}
-  </body>
+      <!-- page content -->
+      <div class="right_col" role="main">
+        <div>
+          <div class="page-title">
+            <div class="title_right">
+              <h3>{% block title %}{% endblock %}</h3>
+            </div>
+          </div>
+
+          <div class="clearfix"></div>
+
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+      <!-- /page content -->
+
+      <!-- footer content -->
+      <footer>
+        <div class="pull-right">
+          Copy right 2018 - {{gettext("Fardel")}} + Gentelella(<a href="https://colorlib.com">Colorlib</a>)
+        </div>
+        <div class="clearfix"></div>
+      </footer>
+      <!-- /footer content -->
+    </div>
+  </div>
+
+  <script src="{{url_for('panel.static', filename='js/jquery.min.js')}}"></script>
+  <script src="{{url_for('panel.static', filename='js/moment.min.js')}}"></script>
+  <script src="{{url_for('panel.static', filename='js/popper.min.js')}}"></script>
+  <script src="{{url_for('panel.static', filename='js/tooltip.min.js')}}"></script>
+  <script src="{{url_for('panel.static', filename='js/bootstrap.min.js')}}"></script>
+  <script src="{{url_for('panel.static', filename='js/select2.min.js')}}"></script>
+  <script src="{{url_for('panel.static', filename='js/fastclick.js')}}"></script>
+  <script src="{{url_for('panel.static', filename='js/nprogress.js')}}"></script>
+  <script src="{{url_for('panel.static', filename='js/dropzone.min.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('panel.static', filename='tinymce.min.js')}}"></script>
+  <script src="{{url_for('panel.static', filename='js/custom.js')}}"></script>
+  <script src="{{url_for('panel.static', filename='js/fontawesome.min.js')}}"></script>
+  {% block js_block %}{% endblock %}
+</body>
+
 </html>

@@ -93,6 +93,13 @@ class GroupPermission(db.Model):
     permission_id = db.Column(db.Integer, db.ForeignKey('auth_permissions.id'))
 
 
+user_group_table = db.Table(
+    "auth_users_groups",
+    db.Column("user_id", db.Integer, db.ForeignKey("auth_users.id")),
+    db.Column("group_id", db.Integer, db.ForeignKey("auth_groups.id")),
+)
+
+
 class User(db.Model, AbstractModelWithPermission, UserMixin):
     __tablename__ = 'auth_users'
     id = db.Column(db.Integer, primary_key=True, index=True)
@@ -104,7 +111,7 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
     _email = db.Column(db.String(128), index=True, unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
 
-    group_id = db.Column(db.Integer, db.ForeignKey('auth_groups.id'))
+    groups = db.relationship("Group", secondary=user_group_table)
 
     is_admin = db.Column(db.Boolean, default=False)
     is_staff = db.Column(db.Boolean, default=False)
@@ -113,8 +120,6 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
     deleted = db.Column(db.Boolean, default=False)
 
     tokens = db.Column(db.JSON, default=[])
-
-    group = db.relationship(Group)
 
     class Meta:
         permissions = (

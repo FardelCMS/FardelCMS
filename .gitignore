@@ -104,3 +104,4 @@ ENV/
 uploads/
 fardel_apps/
 manage.py
+migrations/
