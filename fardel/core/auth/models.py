@@ -248,8 +248,8 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
 
     def access_dict(self):
         obj = {}
-        if self.group:
-            obj['group'] = self.group.dict()
+        if self.groups:
+            obj['groups'] = [g.dict() for g in self.groups]
         if self.is_admin:
             obj['is_admin'] = True
         if self.is_staff:
