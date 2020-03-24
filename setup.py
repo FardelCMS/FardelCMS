@@ -12,14 +12,14 @@ install_requires = [
     "flask_jwt_extended==3.8.1",
     "flask-script==2.0.6",
     "flask_login==0.4.1",
-    "flask_caching==1.4.0",
-    "Flask-Babel==0.11.2",
+    "flask_caching==1.8.0",
+    "Flask-Babel==1.0.0",
     "raven[flask]",
 ]
 
 setup(
     name='fardel',
-    version='1.2.0',
+    version='1.2.1',
     description='Complete and modular CMS',
     author='Sepehr Hamzehlouy',
     author_email='s.hamzelooy@gmail.com',
