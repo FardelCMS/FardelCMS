@@ -19,7 +19,7 @@ install_requires = [
 
 setup(
     name='fardel',
-    version='1.2.2',
+    version='1.3.0',
     description='Complete and modular CMS',
     author='Sepehr Hamzehlouy',
     author_email='s.hamzelooy@gmail.com',

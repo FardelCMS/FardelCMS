@@ -50,27 +50,46 @@ class Fardel(object):
         fardel_apps_path = self.app.config['FARDEL_APP_PATH']
 
         for app_name in self.app.config['ACTIVE_APPS']:
-            try:
-                bp = __import__('{fardel_apps_path}.{app_name}'.format(
-                    app_name=app_name,
-                    fardel_apps_path=fardel_apps_path
-                ), fromlist=['views', 'panel'])
-
-                if hasattr(bp, 'panel'):
-                    self._register_panel(self.app, bp.panel.mod, app_name)
-                else:
-                    self.app.logger.debug("No admin panel for %s" % app_name)
-
+            if app_name.startswith("fardel_"):
                 try:
-                    self.app.register_blueprint(bp.views.mod)
-                    self.app.logger.debug("Module %s registered" % app_name)
-                except Exception as err:
-                    self.app.logger.warning("%s app doesn't have blueprint." % app_name)
-                    self.app.logger.warning(err, exc_info=True)
+                    bp = __import__(app_name, fromlist=["views", "panel"])
 
-            except Exception as err:
-                self.app.logger.warning("%s app not found" % app_name)
-                self.app.logger.warning(err, exc_info=True)
+                    if hasattr(bp, "panel"):
+                        self._register_panel(self.app, bp.panel.mod, app_name)
+                    else:
+                        self.app.logger.debug("No admin panel for %s" % app_name)
+
+                    try:
+                        self.app.register_blueprint(bp.views.mod)
+                        self.app.logger.debug("Module %s regiestered" % app_name)
+                    except:
+                        self.app.logger.warning("%s app doesn't have blueprint." % app_name)
+                        self.app.logger.warning(err, exc_info=True)
+                except Exception as err:
+                    self.app.logger.warning("%s app not found" % app_name)
+                    self.app.logger.warning(err, exc_info=True)
+            else:
+                try:
+                    bp = __import__('{fardel_apps_path}.{app_name}'.format(
+                        app_name=app_name,
+                        fardel_apps_path=fardel_apps_path
+                    ), fromlist=['views', 'panel'])
+
+                    if hasattr(bp, 'panel'):
+                        self._register_panel(self.app, bp.panel.mod, app_name)
+                    else:
+                        self.app.logger.debug("No admin panel for %s" % app_name)
+
+                    try:
+                        self.app.register_blueprint(bp.views.mod)
+                        self.app.logger.debug("Module %s registered" % app_name)
+                    except Exception as err:
+                        self.app.logger.warning("%s app doesn't have blueprint." % app_name)
+                        self.app.logger.warning(err, exc_info=True)
+
+                except Exception as err:
+                    self.app.logger.warning("%s app not found" % app_name)
+                    self.app.logger.warning(err, exc_info=True)
 
     def configure_views(self):
         self.app.add_url_rule('/api/search/', 'search', core.search)
