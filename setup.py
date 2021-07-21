@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
+    "Werkzeug==1.0.1",
     "flask==1.1.1",
     "flask_mail==0.9.1",
     "flask_sqlalchemy==2.3.2",
