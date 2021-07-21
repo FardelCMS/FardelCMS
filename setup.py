@@ -13,7 +13,7 @@ install_requires = [
     "flask_jwt_extended==3.8.1",
     "flask-script==2.0.6",
     "flask_login==0.4.1",
-    "flask_caching==1.8.0",
+    "flask_caching==1.10.1",
     "Flask-Babel==1.0.0",
     "raven[flask]",
 ]
