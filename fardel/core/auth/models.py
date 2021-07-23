@@ -12,7 +12,7 @@ from flask_login import UserMixin
 from fardel.ext import db, jwt, login_manager
 from fardel.core.utils import random_string
 
-__all__ = ['User', 'Permission', 'Group', 'RevokedToken', 'setup_permissions']
+__all__ = ["User", "Permission", "Group", "RevokedToken", "setup_permissions"]
 
 CONFIRM_EMAIL = "email_confirm"
 
@@ -30,7 +30,7 @@ def setup_permissions():
     Permission.setup_permissions()
 
 
-class AbstractModelWithPermission():
+class AbstractModelWithPermission:
     @classmethod
     def setup_permissions(cls):
         for permission in cls.Meta.permissions:
@@ -47,15 +47,13 @@ class Permission(db.Model, AbstractModelWithPermission):
     name = db.Column(db.String(64))
     code_name = db.Column(db.String(64), index=True)
 
-    groups = db.relationship('Group', secondary='auth_groups_permissions')
+    groups = db.relationship("Group", secondary="auth_groups_permissions", viewonly=True)
 
     class Meta:
-        permissions = (
-            ('can_get_permissions', 'Can get permissions'),
-        )
+        permissions = (("can_get_permissions", "Can get permissions"),)
 
     def dict(self):
-        return {'name': self.name, 'code_name': self.code_name}
+        return {"name": self.name, "code_name": self.code_name}
 
 
 class Group(db.Model, AbstractModelWithPermission):
@@ -63,12 +61,10 @@ class Group(db.Model, AbstractModelWithPermission):
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(64))
 
-    permissions = db.relationship('Permission', secondary='auth_groups_permissions')
+    permissions = db.relationship("Permission", secondary="auth_groups_permissions", viewonly=True)
 
     class Meta:
-        permissions = (
-            ('can_get_groups', 'Can get groups'),
-        )
+        permissions = (("can_get_groups", "Can get groups"),)
 
     def add_permission(self, permission):
         perm = Permission.query.filter_by(code_name=permission).first()
@@ -80,17 +76,14 @@ class Group(db.Model, AbstractModelWithPermission):
         return False
 
     def dict(self):
-        return {
-            'id': self.id, 'name': self.name,
-            'permissions': [p.dict() for p in self.permissions]
-        }
+        return {"id": self.id, "name": self.name, "permissions": [p.dict() for p in self.permissions]}
 
 
 class GroupPermission(db.Model):
     __tablename__ = "auth_groups_permissions"
     id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(db.Integer, db.ForeignKey('auth_groups.id'))
-    permission_id = db.Column(db.Integer, db.ForeignKey('auth_permissions.id'))
+    group_id = db.Column(db.Integer, db.ForeignKey("auth_groups.id"))
+    permission_id = db.Column(db.Integer, db.ForeignKey("auth_permissions.id"))
 
 
 user_group_table = db.Table(
@@ -101,7 +94,7 @@ user_group_table = db.Table(
 
 
 class User(db.Model, AbstractModelWithPermission, UserMixin):
-    __tablename__ = 'auth_users'
+    __tablename__ = "auth_users"
     id = db.Column(db.Integer, primary_key=True, index=True)
 
     first_name = db.Column(db.String(64), nullable=False, default="")
@@ -122,14 +115,13 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
     tokens = db.Column(db.JSON, default=[])
 
     class Meta:
-        permissions = (
-            ('can_get_users', 'Can get users'),
-        )
+        permissions = (("can_get_users", "Can get users"),)
 
     @staticmethod
     def _bootstrap(count):
         from mimesis import Person
-        person = Person('en')
+
+        person = Person("en")
 
         for _ in range(count):
             u = User(
@@ -159,12 +151,10 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
 
     @password.setter
     def password(self, _password):
-        self.password_hash = bcrypt.hashpw(_password.encode('utf8'),
-                                           bcrypt.gensalt()).decode()
+        self.password_hash = bcrypt.hashpw(_password.encode("utf8"), bcrypt.gensalt()).decode()
 
     def check_password(self, _password):
-        return bcrypt.checkpw(_password.encode('utf8'),
-                              self.password.encode('utf8'))
+        return bcrypt.checkpw(_password.encode("utf8"), self.password.encode("utf8"))
 
     def generate_token(self, token_type):
         token = random_string(length=6)
@@ -180,7 +170,7 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
 
     def confirm_token(self, token, token_type):
         for t in self.tokens:
-            if t['token'] == token and t['token_type'] == token_type and t['expire_at'] > time.time():
+            if t["token"] == token and t["token_type"] == token_type and t["expire_at"] > time.time():
                 print(token)
                 self.tokens.remove(t)
                 flag_modified(self, "tokens")
@@ -216,12 +206,12 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
         token = self.generate_token(CONFIRM_EMAIL)
         return {
             "subject": gettext("Verify your email account"),
-            "html": render_template(TEMPLATES['confirm_email']['html'], token=token),
-            "text": render_template(TEMPLATES['confirm_email']['txt'], token=token),
-            "from": current_app.config['REGISTERATION_MAIL_SENDER'],
+            "html": render_template(TEMPLATES["confirm_email"]["html"], token=token),
+            "text": render_template(TEMPLATES["confirm_email"]["txt"], token=token),
+            "from": current_app.config["REGISTERATION_MAIL_SENDER"],
             "to": [
                 self.email,
-            ]
+            ],
         }
 
     def confirm_email_with_token(self, token):
@@ -241,19 +231,22 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
 
     def dict(self):
         obj = {
-            'id': self.id, 'first_name': self.first_name, 'last_name': self.last_name,
-            'email': self.email,  'is_confirmed': self.confirmed,
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email": self.email,
+            "is_confirmed": self.confirmed,
         }
         return obj
 
     def access_dict(self):
         obj = {}
         if self.groups:
-            obj['groups'] = [g.dict() for g in self.groups]
+            obj["groups"] = [g.dict() for g in self.groups]
         if self.is_admin:
-            obj['is_admin'] = True
+            obj["is_admin"] = True
         if self.is_staff:
-            obj['is_staff'] = True
+            obj["is_staff"] = True
         return obj
 
     def __repr__(self):
@@ -261,7 +254,7 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
 
 
 class RevokedToken(db.Model):
-    __tablename__ = 'auth_revoked_tokens'
+    __tablename__ = "auth_revoked_tokens"
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(120))
 
@@ -282,13 +275,13 @@ def identify(payload):
 
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
-    jti = decrypted_token['jti']
+    jti = decrypted_token["jti"]
     return RevokedToken.is_jti_blacklisted(jti)
 
 
 @jwt.revoked_token_loader
 def revoked_token_loader():
-    return jsonify({'message': 'Token has been revoked'}), 401
+    return jsonify({"message": "Token has been revoked"}), 401
 
 
 @jwt.expired_token_loader
