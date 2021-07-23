@@ -47,7 +47,7 @@ class Permission(db.Model, AbstractModelWithPermission):
     name = db.Column(db.String(64))
     code_name = db.Column(db.String(64), index=True)
 
-    groups = db.relationship("Group", secondary="auth_groups_permissions", viewonly=True)
+    groups = db.relationship("Group", secondary="auth_groups_permissions")
 
     class Meta:
         permissions = (("can_get_permissions", "Can get permissions"),)
@@ -61,7 +61,7 @@ class Group(db.Model, AbstractModelWithPermission):
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(64))
 
-    permissions = db.relationship("Permission", secondary="auth_groups_permissions", viewonly=True)
+    permissions = db.relationship("Permission", secondary="auth_groups_permissions", overlaps="groups")
 
     class Meta:
         permissions = (("can_get_groups", "Can get groups"),)
