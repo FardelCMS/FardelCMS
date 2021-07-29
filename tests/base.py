@@ -1,9 +1,11 @@
 import json
 import unittest
 
-from fardel.app import create_app
+from fardel.app import Fardel
+from fardel.config import BaseConfig
 from fardel.ext import db
 from fardel.core.auth.models import User, Group
+
 
 class BaseTestCase(unittest.TestCase):
     access_token = None
@@ -12,8 +14,12 @@ class BaseTestCase(unittest.TestCase):
     password = 'test123'
 
     def setUp(self):
-        self.app = create_app(develop=True)
+        BaseConfig.SQLALCHEMY_DATABASE_URI = "postgresql://fardel:123@localhost/fardel"
+        self.app = Fardel(BaseConfig).app
         self.client = self.app.test_client()
+        with self.app.app_context():
+            User.query.delete()
+            db.session.commit()
 
     def get_token(self, with_token, with_rtoken):
         if with_rtoken:
@@ -47,7 +53,7 @@ class BaseTestCase(unittest.TestCase):
                 url, data=json.dumps(data),
                 content_type='application/json',
                 headers=headers
-            )            
+            )
         elif method == "put":
             return self.client.put(
                 url, data=json.dumps(data),
@@ -73,7 +79,7 @@ class BaseTestCase(unittest.TestCase):
     def login(self):
         response = self.post(
             '/api/auth/login/',
-            data={'email':self.email, 'password':self.password},
+            data={'email': self.email, 'password': self.password},
         )
         json_data = self.get_json(response.data)
         if json_data.get('message') == "Successfully logined":
@@ -86,7 +92,7 @@ class BaseTestCase(unittest.TestCase):
     def register(self):
         response = self.post(
             '/api/auth/register/',
-            data={'email':self.email, 'password':self.password},
+            data={'email': self.email, 'password': self.password},
             with_token=False
         )
         json_data = self.get_json(response.data)
@@ -96,7 +102,7 @@ class BaseTestCase(unittest.TestCase):
             self.assertIsNotNone(self.access_token)
             self.assertIsNotNone(self.refresh_token)
         return json_data, response.status_code
-        
+
     def profile(self):
         response = self.get('/api/auth/profile/')
         json_data = self.get_json(response.data)
@@ -105,6 +111,17 @@ class BaseTestCase(unittest.TestCase):
 
 class BasePanelTestCase(BaseTestCase):
     group_name = "Test"
+
+    def clean(self):
+        with self.app.app_context():
+            User.query.delete()
+            db.session.commit()
+
+    def setUp(self):
+        super().setUp()
+        self.clean()
+        self.access_token = None
+
     def create_simple_group(self):
         with self.app.app_context():
             g = Group(name=self.group_name)

@@ -18,19 +18,13 @@ class BaseConfig(object):
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    JWT_BLACKLIST_ENABLED = True
-    JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
     JWT_REFRESH_TOKEN_EXPIRES = False
     JWT_ACCESS_TOKEN_EXPIRES = False
 
     UPLOAD_FOLDER = Path(__file__).parent.parent / 'uploads'
 
     FARDEL_APP_PATH = "fardel_apps"
-    ACTIVE_APPS = (
-        "blog",
-        "auth_address",
-        "ecommerce",
-    )
+    ACTIVE_APPS = ()
 
     SITE_NAME = lazy_gettext("Fardel")
 
@@ -42,8 +36,11 @@ class BaseConfig(object):
 
     SENTRY_DSN = ""
 
-    EMAIL_VERIFICATION_EMAIL_SENDER = os.getenv("EMAIL_VERIFICATION_EMAIL_SENDER")
-    EMAIL_VERIFICATION_ACTIVE = bool(os.getenv("EMAIL_VERIFICATION_ACTIVE", default=False))
+    EMAIL_ACTIVE = bool(os.getenv("EMAIL_ACTIVE", False))
+    EMAIL_VERIFICATION_EMAIL_SENDER = os.getenv(
+        "EMAIL_VERIFICATION_EMAIL_SENDER")
+    EMAIL_VERIFICATION_ACTIVE = bool(
+        os.getenv("EMAIL_VERIFICATION_ACTIVE", default=False))
 
     MAIL_SERVER = os.getenv("MAIL_SERVER")
     MAIL_PORT = int(os.getenv("MAIL_PORT", default=465))

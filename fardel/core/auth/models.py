@@ -61,7 +61,8 @@ class Group(db.Model, AbstractModelWithPermission):
     id = db.Column(db.Integer, primary_key=True, index=True)
     name = db.Column(db.String(64))
 
-    permissions = db.relationship("Permission", secondary="auth_groups_permissions", overlaps="groups")
+    permissions = db.relationship(
+        "Permission", secondary="auth_groups_permissions", overlaps="groups")
 
     class Meta:
         permissions = (("can_get_groups", "Can get groups"),)
@@ -151,7 +152,8 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
 
     @password.setter
     def password(self, _password):
-        self.password_hash = bcrypt.hashpw(_password.encode("utf8"), bcrypt.gensalt()).decode()
+        self.password_hash = bcrypt.hashpw(
+            _password.encode("utf8"), bcrypt.gensalt()).decode()
 
     def check_password(self, _password):
         return bcrypt.checkpw(_password.encode("utf8"), self.password.encode("utf8"))
@@ -160,7 +162,8 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
         token = random_string(length=6)
         if not self.tokens:
             self.tokens = []
-        self.tokens.append({"token_type": token_type, "expire_at": time.time() + 3600, "token": token})
+        self.tokens.append(
+            {"token_type": token_type, "expire_at": time.time() + 3600, "token": token})
         if len(self.tokens) > 6:
             self.tokens.pop(0)
         flag_modified(self, "tokens")
@@ -171,7 +174,6 @@ class User(db.Model, AbstractModelWithPermission, UserMixin):
     def confirm_token(self, token, token_type):
         for t in self.tokens:
             if t["token"] == token and t["token_type"] == token_type and t["expire_at"] > time.time():
-                print(token)
                 self.tokens.remove(t)
                 flag_modified(self, "tokens")
                 db.session.add(self)
@@ -268,24 +270,24 @@ class RevokedToken(db.Model):
         return bool(query)
 
 
-@jwt.user_loader_callback_loader
-def identify(payload):
-    return User.query.filter(User._email == payload).scalar()
+@jwt.user_lookup_loader
+def identify(headers, payload):
+    return User.query.filter(User._email == payload.get('sub')).scalar()
 
 
-@jwt.token_in_blacklist_loader
-def check_if_token_in_blacklist(decrypted_token):
-    jti = decrypted_token["jti"]
+@jwt.token_in_blocklist_loader
+def check_if_token_in_blacklist(jwt_headers, jwt_payload):
+    jti = jwt_payload["jti"]
     return RevokedToken.is_jti_blacklisted(jti)
 
 
 @jwt.revoked_token_loader
-def revoked_token_loader():
+def revoked_token_loader(jwt_headers, jwt_payload):
     return jsonify({"message": "Token has been revoked"}), 401
 
 
 @jwt.expired_token_loader
-def expired_token_loader():
+def expired_token_loader(header, payload):
     return jsonify({"message": "Token has expired"}), 401
 
 
@@ -295,7 +297,7 @@ def invalid_token_loader(reason):
 
 
 @jwt.needs_fresh_token_loader
-def needs_fresh_token_loader():
+def needs_fresh_token_loader(jwt_headers, jwt_payload):
     return jsonify({"message": "Fresh token required"}), 401
 
 

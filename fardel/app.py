@@ -14,15 +14,13 @@ from fardel import core
 from fardel.ext import db, jwt, cache, login_manager, babel, mail
 
 
-__all__ = (
-    'Fardel',
-)
+__all__ = ("Fardel",)
 
-DEFAULT_APP_NAME = 'fardel'
+DEFAULT_APP_NAME = "fardel"
 
 
 class Fardel(object):
-    ignored_panel_urls = ['static']
+    ignored_panel_urls = ["static"]
 
     def __init__(self, config_class, **flask_options):
         self.app = Flask(DEFAULT_APP_NAME, **flask_options)
@@ -43,13 +41,14 @@ class Fardel(object):
         from fardel.core.auth.views import mod as auth
         from fardel.core.panel.views import mod as panel
         from fardel.core.media.views import mod as media
+
         self.app.register_blueprint(auth)
         self.app.register_blueprint(panel)
         self.app.register_blueprint(media)
 
-        fardel_apps_path = self.app.config['FARDEL_APP_PATH']
+        fardel_apps_path = self.app.config["FARDEL_APP_PATH"]
 
-        for app_name in self.app.config['ACTIVE_APPS']:
+        for app_name in self.app.config["ACTIVE_APPS"]:
             if app_name.startswith("fardel_"):
                 try:
                     bp = __import__(app_name, fromlist=["views", "panel"])
@@ -70,12 +69,12 @@ class Fardel(object):
                     self.app.logger.warning(err, exc_info=True)
             else:
                 try:
-                    bp = __import__('{fardel_apps_path}.{app_name}'.format(
-                        app_name=app_name,
-                        fardel_apps_path=fardel_apps_path
-                    ), fromlist=['views', 'panel'])
+                    bp = __import__(
+                        "{fardel_apps_path}.{app_name}".format(app_name=app_name, fardel_apps_path=fardel_apps_path),
+                        fromlist=["views", "panel"],
+                    )
 
-                    if hasattr(bp, 'panel'):
+                    if hasattr(bp, "panel"):
                         self._register_panel(self.app, bp.panel.mod, app_name)
                     else:
                         self.app.logger.debug("No admin panel for %s" % app_name)
@@ -92,7 +91,7 @@ class Fardel(object):
                     self.app.logger.warning(err, exc_info=True)
 
     def configure_views(self):
-        self.app.add_url_rule('/api/search/', 'search', core.search)
+        self.app.add_url_rule("/api/search/", "search", core.search)
 
     def configure_logger(self):
         self.app.logger = logging.getLogger("fardel")
@@ -108,11 +107,12 @@ class Fardel(object):
         mail.init_app(self.app)
 
     def configure_sentry(self):
-        if self.app.config['SENTRY_DSN']:
-            sentry = Sentry(self.app, dsn=self.app.config['SENTRY_DSN'])
+        if self.app.config["SENTRY_DSN"]:
+            sentry = Sentry(self.app, dsn=self.app.config["SENTRY_DSN"])
 
     def init_jinja_globals(self):
         from fardel.core.panel.template_tags import add_globals
+
         add_globals(self.app)
 
     def _register_panel(self, app, blueprint, app_name):
@@ -120,16 +120,16 @@ class Fardel(object):
             self.panels.append(blueprint.name)
             self.app.register_blueprint(blueprint)
             for rule in self.app.url_map.iter_rules():
-                endpoint = rule.endpoint.split('.')
+                endpoint = rule.endpoint.split(".")
                 if endpoint[0] in self.panels and not rule.rule.startswith("/panel/"):
                     raise Exception("Panel url must start with /panel/")
                 if endpoint[0] in self.panels and endpoint[1] not in self.ignored_panel_urls:
                     view_func = self.app.view_functions.get(rule.endpoint)
                     has_staff_required = False
                     has_admin_required = False
-                    if hasattr(view_func, 'decorators'):
-                        has_staff_required = view_func.decorators.get('staff_required', False)
-                        has_admin_required = view_func.decorators.get('admin_required', False)
+                    if hasattr(view_func, "decorators"):
+                        has_staff_required = view_func.decorators.get("staff_required", False)
+                        has_admin_required = view_func.decorators.get("admin_required", False)
 
                     if not has_staff_required and not has_admin_required:
                         raise Exception("No staff_required or admin_required for panel function %s" % rule.endpoint)

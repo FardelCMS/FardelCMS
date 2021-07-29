@@ -71,9 +71,8 @@ from flask import render_template, redirect, url_for, jsonify, request, make_res
 from fardel.core.rest import create_api, abort, Resource
 from flask_jwt_extended import (
     create_access_token, create_refresh_token,
-    jwt_required, jwt_refresh_token_required,
-    get_jwt_identity, get_raw_jwt, current_user,
-    jwt_optional
+    jwt_required,
+    get_jwt_identity, get_jwt, current_user,
 )
 
 from fardel.ext import jwt, db
@@ -246,7 +245,7 @@ class LogoutApi(BaseResource):
     :URL: ``/api/auth/logout/``
     """
     endpoints = ['/logout/']
-    method_decorators = [jwt_required]
+    method_decorators = [jwt_required()]
 
     def post(self):
         """
@@ -260,7 +259,7 @@ class LogoutApi(BaseResource):
                     "message": "Access token has been revoked"
                 }
         """
-        jti = get_raw_jwt()['jti']
+        jti = get_jwt()['jti']
         revoked_token = RevokedToken(jti=jti)
         revoked_token.add()
         return {'message': 'Access token has been revoked'}
@@ -272,7 +271,7 @@ class LogoutRefreshApi(BaseResource):
     :URL: ``/api/auth/logout-refresh/``
     """
     endpoints = ['/logout-refresh/']
-    method_decorators = [jwt_refresh_token_required]
+    method_decorators = [jwt_required(refresh=True)]
 
     def post(self):
         """
@@ -286,7 +285,7 @@ class LogoutRefreshApi(BaseResource):
                     "message": "Refresh token has been revoked"
                 }
         """
-        jti = get_raw_jwt()['jti']
+        jti = get_jwt()['jti']
         revoked_token = RevokedToken(jti=jti)
         revoked_token.add()
         return {'message': 'Refresh token has been revoked'}
@@ -298,7 +297,7 @@ class RefreshTokenApi(BaseResource):
     :URL: ``/api/auth/refresh-token/``
     """
     endpoints = ['/refresh-token/']
-    method_decorators = [jwt_refresh_token_required]
+    method_decorators = [jwt_required(refresh=True)]
 
     def post(self):
         """
@@ -324,8 +323,8 @@ class ProfileApi(BaseResource):
     """
     endpoints = ['/profile/']
     method_decorators = {
-        'get': [jwt_required],
-        'put': [jwt_required]
+        'get': [jwt_required()],
+        'put': [jwt_required()]
     }
 
     def get(self):
@@ -385,7 +384,7 @@ class ConfirmEmailAPI(BaseResource):
                 count += 1
         return count
 
-    @jwt_required
+    @jwt_required()
     def get(self):
         if current_user.tokens and self.count_active_tokens(current_user.tokens) > 2:
             return {"message": "You have two active tokens"}, 403
@@ -394,7 +393,7 @@ class ConfirmEmailAPI(BaseResource):
         email_pkg.send_email(email)
         return {"message": "an email sent to you provided by a token"}
 
-    @jwt_required
+    @jwt_required()
     def patch(self, token):
         is_confirmed = current_user.confirm_email_with_token(token)
         if is_confirmed:

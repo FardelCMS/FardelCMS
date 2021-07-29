@@ -38,7 +38,6 @@ def email_send():
 
 
 def sanity_check_email_addresses(*emails):
-    print(emails)
     for email in emails:
         if not "@" in email:
             return False

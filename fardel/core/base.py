@@ -21,12 +21,13 @@ class BaseResource(Resource):
             satisfied = True
 
             if not isinstance(requires, list):
-                raise Exception("or_requires are list each item not %s" % type(requires))
+                raise Exception(
+                    "or_requires are list each item not %s" % type(requires))
 
             for r in requires:
                 if r not in data:
                     satisfied = False
-                if not data[r]:
+                if not data.get(r):
                     satisfied = False
 
             if satisfied:

@@ -21,15 +21,18 @@ class AuthTestCase(BaseTestCase):
         self.assertEqual(200, code)
 
         json_data, code = self.register()
-        self.assertEqual(json_data['message'], 'A user with this email already exists.')
+        self.assertEqual(json_data['message'],
+                         'A user with this email already exists.')
         self.assertEqual(409, code)
 
-        response = self.post('/api/auth/register/', data={'password':self.password}, with_token=False)
+        response = self.post('/api/auth/register/',
+                             data={'password': self.password}, with_token=False)
         json_data = self.get_json(response.data)
         self.assertEqual(json_data['message'], 'Invalid form submitted')
         self.assertEqual(400, response.status_code)
 
-        response = self.post('/api/auth/register/', data={'email':self.email}, with_token=False)
+        response = self.post('/api/auth/register/',
+                             data={'email': self.email}, with_token=False)
         json_data = self.get_json(response.data)
         self.assertEqual(json_data['message'], 'Invalid form submitted')
         self.assertEqual(400, response.status_code)
@@ -40,12 +43,14 @@ class AuthTestCase(BaseTestCase):
         self.assertEqual(json_data['message'], 'Successfully logined')
         self.assertEqual(200, code)
 
-        response = self.post('/api/auth/login/', data={'password':self.password}, with_token=False)
+        response = self.post(
+            '/api/auth/login/', data={'password': self.password}, with_token=False)
         json_data = self.get_json(response.data)
         self.assertEqual(json_data['message'], 'Invalid form submitted')
         self.assertEqual(400, response.status_code)
 
-        response = self.post('/api/auth/login/', data={'email':self.email}, with_token=False)
+        response = self.post('/api/auth/login/',
+                             data={'email': self.email}, with_token=False)
         json_data = self.get_json(response.data)
         self.assertEqual(json_data['message'], 'Invalid form submitted')
         self.assertEqual(400, response.status_code)
@@ -57,7 +62,8 @@ class AuthTestCase(BaseTestCase):
 
         response = self.post('/api/auth/logout-refresh/', with_rtoken=True)
         json_data = self.get_json(response.data)
-        self.assertEqual(json_data['message'], 'Refresh token has been revoked')
+        self.assertEqual(json_data['message'],
+                         'Refresh token has been revoked')
         self.assertEqual(200, response.status_code)
 
         response, json_data = self.profile()
@@ -65,18 +71,22 @@ class AuthTestCase(BaseTestCase):
         self.assertEqual(401, response.status_code)
 
     def test_profile(self):
-        self.register()
+        json_data, _ = self.register()
+        self.assertEqual(json_data.get('message'), "Successfully registered")
+
         response, json_data = self.profile()
         self.assertIsNotNone(json_data['user'])
         self.assertEqual(200, response.status_code)
 
-        response = self.put('/api/auth/profile/', data={'first_name':'test2'})
+        response = self.put('/api/auth/profile/', data={'first_name': 'test2'})
         json_data = self.get_json(response.data)
         self.assertEqual(json_data['user']['first_name'], 'test2')
         self.assertEqual(200, response.status_code)
 
     def test_refresh_token(self):
-        self.register()
+        json_data, response = self.register()
+        self.assertEqual(json_data.get('message'), "Successfully registered")
+
         response = self.post('/api/auth/refresh-token/', with_rtoken=True)
         json_data = self.get_json(response.data)
         self.assertIsNotNone(json_data['access_token'])
@@ -87,6 +97,7 @@ class AuthTestCase(BaseTestCase):
             u = User.query.filter_by(email=self.email).delete()
             db.session.commit()
 
-    def tearDown(self):
+    def setUp(self):
+        super().setUp()
         self.clean()
         self.access_token = None
