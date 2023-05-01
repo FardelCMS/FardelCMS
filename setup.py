@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    "flask==2.0.1",
+    "flask==2.3.2",
     "flask_mail==0.9.1",
     "flask_sqlalchemy==2.5.1",
     "psycopg2-binary",
